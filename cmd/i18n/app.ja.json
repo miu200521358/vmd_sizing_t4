@@ -1,0 +1,778 @@
+[
+    {
+        "id": "&サンプルメニュー",
+        "translation": "&サンプルメニュー"
+    },
+    {
+        "id": "サンプルヘルプ",
+        "translation": "サンプルヘルプのメッセージ\nサンプルヘルプのメッセージ\nサンプルヘルプのメッセージ\nサンプルヘルプのメッセージ\nサンプルヘルプのメッセージ"
+    },
+    {
+        "id": "サイジングセット生成エラー",
+        "translation": "サイジングセット生成エラー"
+    },
+    {
+        "id": "モーション作成元モデル(Json/Pmx)",
+        "translation": "モーション作成元モデル(Json/Pmx)"
+    },
+    {
+        "id": "モーション作成元モデルツールチップ",
+        "translation": "モーション作成元モデルPmxファイルもしくはモデル定義Jsonファイルを選択してください"
+    },
+    {
+        "id": "モーション作成元モデルの使い方",
+        "translation": "・モーションを作成するときに使われたPmxモデルを設定できます\n・元モデルを指定すると、比率タブにサイジング先モデルとの比率が計算されて表示されます\n・元モデルを指定すると、元モデルビューワー画面が開きます\n・元モデルを指定せずに比率を直接入れる事でもサイジングできます\n・モデル名欄の文字列は選択することが出来ます"
+    },
+    {
+        "id": "サイジング先モデル(Pmx)",
+        "translation": "サイジング先モデル(Pmx)"
+    },
+    {
+        "id": "サイジング先モデルツールチップ",
+        "translation": "サイジング先モデルPmxファイルを選択してください"
+    },
+    {
+        "id": "サイジング先モデルの使い方",
+        "translation": "・モーションを実際に適用したいPmxモデルを設定できます\n・先モデルを指定すると、ビューワー画面が開きます\n・モデル名欄の文字列は選択することが出来ます"
+    },
+    {
+        "id": "サイジング対象モーション(Vmd/Vpd)",
+        "translation": "サイジング対象モーション(Vmd/Vpd)"
+    },
+    {
+        "id": "サイジング対象モーションツールチップ",
+        "translation": "サイジング対象モーション(Vmd/Vpd)ファイルを選択してください"
+    },
+    {
+        "id": "サイジング対象モーションの使い方",
+        "translation": "・サイジングしたいモーションVmdもしくはVpdを設定できます\n・モーションを指定すると、ビューワー画面に表示されます\n・モーション内のモデル名欄の文字列は選択することが出来ます"
+    },
+    {
+        "id": "出力モーション(Vmd)",
+        "translation": "出力モーション(Vmd)"
+    },
+    {
+        "id": "出力モーションツールチップ",
+        "translation": "出力モーション(Vmd)ファイルパスを指定してください"
+    },
+    {
+        "id": "出力モーションの使い方",
+        "translation": "・サイジングした結果のモーションVmd出力先を設定できます\n・自動で出力先が設定されますが、任意のパスに変更する事もできます"
+    },
+    {
+        "id": "出力モデル(Pmx)",
+        "translation": "出力モデル(Pmx / 不足ボーン・調整ボーン・調整モーフ追加)"
+    },
+    {
+        "id": "出力モデルツールチップ",
+        "translation": "出力モデル(Pmx)ファイルパスを指定してください"
+    },
+    {
+        "id": "出力モデルの使い方",
+        "translation": "・サイジング対象モーションに合わせて、不足ボーンや調整用ボーンなどを追加したサイジング先モデルPmx出力先を設定できます\n・自動で出力先が設定されますが、任意のパスに変更する事もできます"
+    },
+    {
+        "id": "ファイルタブ生成エラー",
+        "translation": "ファイルタブ生成エラー"
+    },
+    {
+        "id": "サイジングセット追加",
+        "translation": "サイジングセット追加"
+    },
+    {
+        "id": "サイジングセット全削除",
+        "translation": "サイジングセット全削除"
+    },
+    {
+        "id": "サイジングセット追加エラー",
+        "translation": "サイジングセット追加エラー"
+    },
+    {
+        "id": "サイジングセット全削除エラー",
+        "translation": "サイジングセット全削除エラー"
+    },
+    {
+        "id": "サイジング用ビューワー",
+        "translation": "サイジング用ビューワー"
+    },
+    {
+        "id": "元モデル用ビューワー",
+        "translation": "元モデル用ビューワー"
+    },
+    {
+        "id": "サイジング",
+        "translation": "サイジング"
+    },
+    {
+        "id": "サイジングTabLabel",
+        "translation": "サイジングTabLabel"
+    },
+    {
+        "id": "サイジングセット設定読込",
+        "translation": "サイジングセット設定読込"
+    },
+    {
+        "id": "出力",
+        "translation": "サイジング結果出力"
+    },
+    {
+        "id": "素体読み込み失敗",
+        "translation": "素体読み込み失敗"
+    },
+    {
+        "id": "元モデル素体体格調整",
+        "translation": "元モデル素体 - 体格調整"
+    },
+    {
+        "id": "元モデル素体体格調整説明",
+        "translation": "元モデルの素体の体格を調整できます"
+    },
+    {
+        "id": "元モデル素体体格全体比率",
+        "translation": "体格全体比率"
+    },
+    {
+        "id": "元モデル素体体格全体比率説明",
+        "translation": "元モデルの素体の体格の全体的な比率を調整できます"
+    },
+    {
+        "id": "横幅",
+        "translation": "横幅"
+    },
+    {
+        "id": "長さ",
+        "translation": "長さ"
+    },
+    {
+        "id": "角度",
+        "translation": "角度"
+    },
+    {
+        "id": "元モデル素体上半身補正",
+        "translation": "上半身補正"
+    },
+    {
+        "id": "元モデル素体上半身補正説明",
+        "translation": "元モデルの素体の上半身を調整できます"
+    },
+    {
+        "id": "元モデル素体上半身2補正",
+        "translation": "上半身2補正"
+    },
+    {
+        "id": "元モデル素体上半身2補正説明",
+        "translation": "元モデルの素体の上半身2を調整できます"
+    },
+    {
+        "id": "元モデル素体首補正",
+        "translation": "首補正"
+    },
+    {
+        "id": "元モデル素体首補正説明",
+        "translation": "元モデルの素体の首を調整できます"
+    },
+    {
+        "id": "元モデル素体頭補正",
+        "translation": "頭補正"
+    },
+    {
+        "id": "元モデル素体頭補正説明",
+        "translation": "元モデルの素体の頭を調整できます"
+    },
+    {
+        "id": "元モデル素体肩補正",
+        "translation": "肩補正"
+    },
+    {
+        "id": "元モデル素体肩補正説明",
+        "translation": "元モデルの素体の肩を調整できます"
+    },
+    {
+        "id": "元モデル素体腕補正",
+        "translation": "腕補正"
+    },
+    {
+        "id": "元モデル素体腕補正説明",
+        "translation": "元モデルの素体の腕を調整できます"
+    },
+    {
+        "id": "元モデル素体ひじ補正",
+        "translation": "ひじ補正"
+    },
+    {
+        "id": "元モデル素体ひじ補正説明",
+        "translation": "元モデルの素体のひじを調整できます"
+    },
+    {
+        "id": "元モデル素体手首補正",
+        "translation": "手首補正"
+    },
+    {
+        "id": "元モデル素体手首補正説明",
+        "translation": "元モデルの素体の手首を調整できます"
+    },
+    {
+        "id": "元モデル素体下半身補正",
+        "translation": "下半身補正"
+    },
+    {
+        "id": "元モデル素体下半身補正説明",
+        "translation": "元モデルの素体の下半身を調整できます"
+    },
+    {
+        "id": "元モデル素体足補正",
+        "translation": "足補正"
+    },
+    {
+        "id": "元モデル素体足補正説明",
+        "translation": "元モデルの素体の足を調整できます"
+    },
+    {
+        "id": "元モデル素体ひざ補正",
+        "translation": "ひざ補正"
+    },
+    {
+        "id": "元モデル素体ひざ補正説明",
+        "translation": "元モデルの素体のひざを調整できます"
+    },
+    {
+        "id": "元モデル素体足首補正",
+        "translation": "足首補正"
+    },
+    {
+        "id": "元モデル素体足首補正説明",
+        "translation": "元モデルの素体の足首を調整できます"
+    },
+    {
+        "id": "モーション保存",
+        "translation": "サイジング結果モーション保存"
+    },
+    {
+        "id": "モデル保存",
+        "translation": "ボーン追加モデル保存"
+    },
+    {
+        "id": "モデルjson出力",
+        "translation": "モデルjson出力"
+    },
+    {
+        "id": "モデルjson出力説明",
+        "translation": "モデルjson出力説明"
+    },
+    {
+        "id": "json出力対象モデル",
+        "translation": "json出力対象モデル(Pmx)"
+    },
+    {
+        "id": "json出力対象モデルツールチップ",
+        "translation": "モデル定義jsonを出力したい対象モデルPmxファイルを選択してください"
+    },
+    {
+        "id": "json出力対象モデルの使い方",
+        "translation": "・モデル定義jsonを出力したい対象モデルPmxを設定できます\n・モデルを指定すると、出力ボタンが有効になります\n・モデル名欄の文字列は選択することが出来ます"
+    },
+    {
+        "id": "モデル定義json出力先",
+        "translation": "モデル定義json出力先(Json)"
+    },
+    {
+        "id": "モデル定義json出力先ツールチップ",
+        "translation": "モデル定義jsonを出力したい対象モデルPmxファイルを選択してください"
+    },
+    {
+        "id": "モデル定義json出力先の使い方",
+        "translation": "・モデル定義jsonを出力したい対象モデルPmxを設定できます\n・モデルを指定すると、出力ボタンが有効になります\n・モデル名欄の文字列は選択することが出来ます"
+    },
+    {
+        "id": "モデルjson出力説明",
+        "translation": "モデルjson出力説明"
+    },
+    {
+        "id": "モデル定義json出力",
+        "translation": "モデル定義json出力"
+    },
+    {
+        "id": "出力失敗",
+        "translation": "出力失敗"
+    },
+    {
+        "id": "出力成功",
+        "translation": "出力成功"
+    },
+    {
+        "id": "json出力成功メッセージ",
+        "translation": "モデル定義jsonの出力に成功しました\n\n{{.Path}}"
+    },
+    {
+        "id": "json出力失敗メッセージ",
+        "translation": "モデル定義jsonの出力に失敗しました\n\nエラーメッセージ: {{.Error}}"
+    },
+    {
+        "id": "サイジング出力成功メッセージ",
+        "translation": "【No.{{.Index}}】サイジング結果モーションの出力に成功しました\n\n{{.Path}}"
+    },
+    {
+        "id": "サイジング出力失敗メッセージ",
+        "translation": "【No.{{.Index}}】サイジング結果モーションの出力に失敗しました\n\nエラーメッセージ: {{.Error}}"
+    },
+    {
+        "id": "先モデル出力成功メッセージ",
+        "translation": "【No.{{.Index}}】不足ボーンを追加したサイジング先モデルの出力に成功しました\n\n{{.Path}}"
+    },
+    {
+        "id": "先モデル出力失敗メッセージ",
+        "translation": "【No.{{.Index}}】不足ボーンを追加したサイジング先モデルの出力に失敗しました\n\nエラーメッセージ: {{.Error}}"
+    },
+    {
+        "id": "サイジングオプション",
+        "translation": "サイジングオプション　（下半身系補正のみ全セット共通）"
+    },
+    {
+        "id": "サイジングオプション説明",
+        "translation": "サイジングオプション説明"
+    },
+    {
+        "id": "サイジング一括オプション",
+        "translation": "サイジング一括オプション (全セット共通)"
+    },
+    {
+        "id": "サイジング一括オプション説明",
+        "translation": "サイジング一括オプション説明"
+    },
+    {
+        "id": "全補正&最適化",
+        "translation": "全補正&&全最適化"
+    },
+    {
+        "id": "全補正&最適化説明",
+        "translation": "全ての補正および最適化を実行します"
+    },
+    {
+        "id": "全補正",
+        "translation": "全補正"
+    },
+    {
+        "id": "全補正説明",
+        "translation": "全ての補正を実行します"
+    },
+    {
+        "id": "全最適化",
+        "translation": "全最適化"
+    },
+    {
+        "id": "全最適化説明",
+        "translation": "全ての最適化を実行します"
+    },
+    {
+        "id": "足補正",
+        "translation": "下半身系補正"
+    },
+    {
+        "id": "足補正説明",
+        "translation": "移動量・下半身や足の曲げ具合を元モデルに合わせて補正します\n足の曲げ具合を、サイジング先モデルに適用するため、足首がぐねりにくくなります\nつま先の位置も同時に調整します\n下半身系補正のONOFFは全セット共通です\n記号: L"
+    },
+    {
+        "id": "上半身補正",
+        "translation": "上半身補正"
+    },
+    {
+        "id": "上半身補正説明",
+        "translation": "上半身の傾き度合いを元モデルに合わせて補正します\n記号: U"
+    },
+    {
+        "id": "肩補正",
+        "translation": "肩補正"
+    },
+    {
+        "id": "肩補正説明",
+        "translation": "肩の傾き具合を元モデルに合わせて補正します\n記号: S"
+    },
+    {
+        "id": "腕スタンス補正",
+        "translation": "腕スタンス補正"
+    },
+    {
+        "id": "腕スタンス補正説明",
+        "translation": "腕の傾き具合を元モデルに合わせて補正します\n記号: A"
+    },
+    {
+        "id": "指スタンス補正",
+        "translation": "指スタンス補正"
+    },
+    {
+        "id": "指スタンス補正説明",
+        "translation": "指の開き具合を元モデルに合わせて補正します\n記号: F"
+    },
+    {
+        "id": "足補正開始",
+        "translation": "【No.{{.No}}】下半身系補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "足補正01",
+        "translation": "【No.{{.No}}】下半身系補正 - 作成元モデルの下半身系変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正02",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正03",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの足補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正04",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのひざ補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正05",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの足首補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正06",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身系変形情報更新(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正07",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのセンター補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正08",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのつま先補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正09",
+        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身系変形情報更新(2) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正開始",
+        "translation": "【No.{{.No}}】上半身補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "肩補正開始",
+        "translation": "【No.{{.No}} 肩補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "腕スタンス補正開始",
+        "translation": "【No.{{.No}}】腕スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "指スタンス補正開始",
+        "translation": "【No.{{.No}}】指スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "足補正ボーン不足",
+        "translation": "【No.{{.No}}】足・下半身補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "上半身補正ボーン不足",
+        "translation": "【No.{{.No}}】上半身補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "肩補正ボーン不足",
+        "translation": "【No.{{.No}}】肩補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "ボーン不足",
+        "translation": "ボーン不足"
+    },
+    {
+        "id": "元モデル",
+        "translation": "作成元モデル"
+    },
+    {
+        "id": "先モデル",
+        "translation": "サイジング先モデル"
+    },
+    {
+        "id": "先モデルボーン追加",
+        "translation": "サイジング先モデル不足ボーン追加"
+    },
+    {
+        "id": "先モデルボーン追加説明",
+        "translation": "サイジング先モデルにモーションで使用されているボーンが不足していたため、不足ボーンを追加したモデルを使用します"
+    },
+    {
+        "id": "移動補正スケール",
+        "translation": "【No.{{.No}}】移動補正スケール [XZ: {{.XZ}} ({{.OrgXZ}}), Y: {{.Y}}]"
+    },
+    {
+        "id": "サイジング開始",
+        "translation": "サイジング開始"
+    },
+    {
+        "id": "サイジング終了",
+        "translation": "サイジング終了"
+    },
+    {
+        "id": "サイジング終了メッセージ",
+        "translation": "サイジングが終了しました 【所要時間: {{.ProcessTime}}】\n\n※まだVMDファイルとして保存されてません。\n　結果をご確認の上、「サイジング結果モーション保存」ボタンをクリックしてください"
+    },
+    {
+        "id": "腕指スタンス補正開始",
+        "translation": "【No.{{.No}}】腕・指スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "即時反映",
+        "translation": "即時反映"
+    },
+    {
+        "id": "即時反映説明",
+        "translation": "チェックをOFFにすると、サイジングオプションのチェックをONOFFしてもサイジングの即時反映が行われなくなります。\nチェックをONに戻すと、サイジング結果が反映されます"
+    },
+    {
+        "id": "足Dスキップ",
+        "translation": "足・ひざ・足首の標準ボーンにウェイトが乗っていない構成のため、足Dボーンへのウェイト乗せ換えをスキップします"
+    },
+    {
+        "id": "不足ボーンあり",
+        "translation": "【No.{{.No}}】モーションに使用されているボーンが不足しているため、追加しました\n【{{.addBoneNames}}】"
+    },
+    {
+        "id": "全ての親最適化",
+        "translation": "全ての親統合"
+    },
+    {
+        "id": "全ての親最適化説明",
+        "translation": "全ての親のキーフレームがある場合に、移動と回転をセンター・足IK親に振り分けて、全ての親キーフレームを削除します"
+    },
+    {
+        "id": "センター最適化",
+        "translation": "センター・腰最適化"
+    },
+    {
+        "id": "センター最適化説明",
+        "translation": "センターおよび腰のキーフレームがある場合に、移動XZをセンターに、移動Yをグルーブに、回転を上半身と下半身に振り分けて、腰キーフレームを削除します"
+    },
+    {
+        "id": "足IK親最適化",
+        "translation": "足IK親統合"
+    },
+    {
+        "id": "足IK親最適化説明",
+        "translation": "足IK親のキーフレームがある場合に、値を足IKボーンに振り分けて、足IK親キーフレームを削除します"
+    },
+    {
+        "id": "腕IK最適化",
+        "translation": "腕IK統合"
+    },
+    {
+        "id": "腕IK最適化説明",
+        "translation": "腕IKのキーフレームがある場合に、値を腕系ボーンに振り分けて、腕IKキーフレームを削除します"
+    },
+    {
+        "id": "肩P最適化",
+        "translation": "肩P統合"
+    },
+    {
+        "id": "肩P最適化説明",
+        "translation": "肩Pのキーフレームがある場合に、値を肩ボーンに振り分けて、肩Pキーフレームを削除します"
+    },
+    {
+        "id": "捩り補正",
+        "translation": "捩り分散"
+    },
+    {
+        "id": "捩り補正説明",
+        "translation": "腕のローカル軸方向の回転を捩りボーンに振り分けます\n同時にひじの回転をY回転のみに限定します\n記号: W"
+    },
+    {
+        "id": "最適化オプション",
+        "translation": "最適化オプション"
+    },
+    {
+        "id": "最適化オプション説明",
+        "translation": "モーションを調整しやすくするために、キーフレームの整理を行います\nほとんどの場合、キーフレームが追加挿入されます"
+    },
+    {
+        "id": "全ての親最適化ボーン不足",
+        "translation": "【No.{{.No}}】全ての親統合: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "全ての親最適化開始",
+        "translation": "【No.{{.No}}】全ての親統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "全ての親最適化01",
+        "translation": "【No.{{.No}}】全ての親統合 - 全ての親キーフレームの統合 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "全ての親最適化02",
+        "translation": "【No.{{.No}}】全ての親統合 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "センター最適化ボーン不足",
+        "translation": "【No.{{.No}}】センター・腰最適化: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "センター最適化開始",
+        "translation": "【No.{{.No}}】センター・腰最適化 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "センター最適化01",
+        "translation": "【No.{{.No}}】センター・腰最適化 - センターキーフレームの分離 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "センター最適化02",
+        "translation": "【No.{{.No}}】センター・腰最適化 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足IK親最適化ボーン不足",
+        "translation": "【No.{{.No}}】足IK親統合: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "足IK親最適化開始",
+        "translation": "【No.{{.No}}】足IK親統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "足IK親最適化01",
+        "translation": "【No.{{.No}}】足IK親統合 - 足IK親キーフレームの統合 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足IK親最適化02",
+        "translation": "【No.{{.No}}】足IK親統合 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "腕IK親最適化ボーン不足",
+        "translation": "【No.{{.No}}】腕IK統合: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "腕IK最適化開始",
+        "translation": "【No.{{.No}}】腕IK統合 開始 【{{.LeftBoneName}}, {{.RightBoneName}}】 ---------------------------------"
+    },
+    {
+        "id": "腕IK最適化01",
+        "translation": "【No.{{.No}}】腕IK統合 - 腕IKキーフレームの統合 【{{.BoneName}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "腕IK最適化02",
+        "translation": "【No.{{.No}}】腕IK統合 - 中間キーフレームのズレチェック 【{{.BoneName}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "下半身補正01",
+        "translation": "【No.{{.No}}】下半身補正 - 作成元モデルの下半身変形情報取得"
+    },
+    {
+        "id": "下半身補正02",
+        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルのセンター・グルーブ補正"
+    },
+    {
+        "id": "下半身補正03",
+        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足追加補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "下半身補正04",
+        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足IK追加補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正01",
+        "translation": "【No.{{.No}}】上半身補正 - 作成元モデルの上半身変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正02",
+        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身補正 上半身スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正03",
+        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身2補正 上半身2スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正ボーン不足",
+        "translation": "【No.{{.No}}】捩り分散: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "握り最適化",
+        "translation": "握り拡散統合"
+    },
+    {
+        "id": "握り最適化説明",
+        "translation": "握り拡散のキーフレームがある場合に、値を指系ボーンに振り分けて、握り拡散キーフレームを削除します"
+    },
+    {
+        "id": "握り最適化ボーン不足",
+        "translation": "【No.{{.No}}】握り拡散統合: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+    },
+    {
+        "id": "握り最適化開始",
+        "translation": "【No.{{.No}}】握り拡散統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "握り最適化01",
+        "translation": "【No.{{.No}}】握り拡散統合 - 握りキーフレームの統合 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "握り最適化02",
+        "translation": "【No.{{.No}}】握り拡散統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正01",
+        "translation": "【No.{{.No}}】肩補正 - 作成元モデルの肩変形情報取得 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正02",
+        "translation": "【No.{{.No}}】肩補正 - サイジング先モデルの肩補正 【{{.Direction}}】 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正開始",
+        "translation": "【No.{{.No}}】捩り分散 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "捩り補正01",
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕変形情報取得 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正02",
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正03",
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕捩補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正04",
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの手捩補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "捩り補正05",
+        "translation": "【No.{{.No}}】捩り分散 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩P最適化開始",
+        "translation": "【No.{{.No}}】肩P統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "肩P最適化01",
+        "translation": "【No.{{.No}}】肩P統合 - 肩Pキーフレームの統合 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩P最適化02",
+        "translation": "【No.{{.No}}】肩P統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "不要キー間引き",
+        "translation": "不要キー間引き"
+    },
+    {
+        "id": "不要キー間引き説明",
+        "translation": "サイジングの際に追加した、最終的に取り除いても問題のないキーフレームを削除します\n元の動きから変わらないように、補間曲線も再設定します\n記号: R"
+    },
+    {
+        "id": "不要キー間引き開始",
+        "translation": "【No.{{.No}}】不要キー間引き 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+    },
+    {
+        "id": "不要キー間引き01",
+        "translation": "【No.{{.No}}】不要キー間引き 【{{.Name}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "処理停止",
+        "translation": "処理停止"
+    },
+    {
+        "id": "処理停止説明",
+        "translation": "サイジング処理を中断します"
+    },
+    {
+        "id": "サイジング中断",
+        "translation": "サイジング処理を中断しました"
+    }
+]
