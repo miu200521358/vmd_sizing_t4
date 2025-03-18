@@ -3,6 +3,8 @@ package ui
 import (
 	"path/filepath"
 
+	"miu200521358/vmd_sizing_t4.git/pkg/usecase"
+
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
@@ -11,7 +13,6 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
-	"github.com/miu200521358/vmd_sizing_t4/pkg/usecase"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 )

@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"runtime"
 
+	"miu200521358/vmd_sizing_t4.git/pkg/ui"
+
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/miu200521358/vmd_sizing_t4/pkg/ui"
 	"github.com/miu200521358/walk/pkg/declarative"
 	"github.com/miu200521358/walk/pkg/walk"
 
@@ -67,7 +68,7 @@ func main() {
 			}
 
 			controlWindow, err = controller.NewControlWindow(shared, appConfig,
-				ui.NewMenuItems(), []declarative.TabPage{ui.NewTabPage(widgets)}, widgets.EnabledInPlaying,
+				ui.NewMenuItems(), []declarative.TabPage{ui.NewSizingPage(widgets)}, widgets.EnabledInPlaying,
 				widths[0], heights[0], positionXs[0], positionYs[0])
 			if err != nil {
 				app.ShowErrorDialog(appConfig.IsSetEnv(), err)
