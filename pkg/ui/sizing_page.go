@@ -169,12 +169,8 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	sizingState.SaveSetButton.SetTooltip(mi18n.T("セット設定保存説明"))
 	sizingState.SaveSetButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
 	sizingState.SaveSetButton.SetOnClicked(func(cw *controller.ControlWindow) {
-		choices := mconfig.LoadUserConfig("sizing_set_path")
-		var initialDirPath string
-		if len(choices) > 0 {
-			// ファイルパスからディレクトリパスを取得
-			initialDirPath = filepath.Dir(choices[0])
-		}
+		// サイジング元モーションパスを初期パスとする
+		initialDirPath := filepath.Dir(sizingState.CurrentSet().OriginalMotionPath)
 
 		// ファイル選択ダイアログを開く
 		dlg := walk.FileDialog{
