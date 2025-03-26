@@ -61,7 +61,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 
 	sizingState.OriginalModelPicker = widget.NewPmxPmxJsonLoadFilePicker(
 		"org_pmx",
-		mi18n.T("モーション作成元モデル(Json/Pmx)"),
+		mi18n.T("モーション作成元モデル(Pmx/Json)"),
 		mi18n.T("モーション作成元モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
 			sizingState.LoadOriginalModel(cw, rep, path)
