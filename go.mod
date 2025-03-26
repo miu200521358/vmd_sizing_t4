@@ -4,6 +4,7 @@ go 1.23.7
 
 require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240118000515-a250818d05e3
+	github.com/miu200521358/mlib_go v0.0.3
 	github.com/miu200521358/walk v0.0.4
 )
 
@@ -18,7 +19,6 @@ require (
 	github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9 // indirect
 	github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9 // indirect
 	github.com/miu200521358/dds v0.0.0 // indirect
-	github.com/miu200521358/mlib_go v0.0.2
 	github.com/miu200521358/win v0.0.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.4.0 // indirect
 	github.com/petar/GoLLRB v0.0.0-20210522233825-ae3b015fd3e9 // indirect

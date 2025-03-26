@@ -1,15 +1,12 @@
 package ui
 
 import (
-	"path/filepath"
-
-	"miu200521358/vmd_sizing_t4.git/pkg/usecase"
+	"miu200521358/vmd_sizing_t4.git/pkg/domain"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
-	"github.com/miu200521358/mlib_go/pkg/infrastructure/mfile"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -19,137 +16,191 @@ import (
 
 func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	var fileTab *walk.TabPage
+	sizingState := new(domain.SizingState)
 
 	player := widget.NewMotionPlayer()
 
-	materialTableView := widget.NewMaterialTableView(
-		mi18n.T("材質ビュー説明"),
-		func(cw *controller.ControlWindow, indexes []int) {
-			cw.StoreSelectedMaterialIndexes(0, 0, indexes)
-		},
-	)
-
-	pmxLoadPicker := widget.NewPmxXLoadFilePicker(
-		"pmx",
-		mi18n.T("モデルファイル"),
-		mi18n.T("モデルファイルを選択してください"),
-		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			if data, err := rep.Load(path); err == nil {
-				model := data.(*pmx.PmxModel)
-				cw.StoreModel(0, 0, model)
-
-				model.Textures.ForEach(func(index int, texture *pmx.Texture) {
-					// モデルパス + テクスチャ相対パス
-					texPath := filepath.Join(filepath.Dir(model.Path()), texture.Name())
-
-					// テクスチャの有効判定
-					texture.SetValid(true)
-
-					valid, err := mfile.ExistsFile(texPath)
-					if !valid || err != nil {
-						texture.SetValid(false)
-					}
-
-					// 画像を読み込み
-					if _, err := mfile.LoadImage(texPath); err != nil {
-						texture.SetValid(false)
-					}
-				})
-
-				// モデルの読み込みが成功したら材質テーブル更新
-				materialTableView.MaterialModel.ResetRows(model)
-
-				// フォーカスを当てる
-				cw.SetFocus()
-			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-			}
-		},
-	)
-
-	vmdLoadPicker := widget.NewVmdVpdLoadFilePicker(
+	originalVmdPicker := widget.NewVmdVpdLoadFilePicker(
 		"vmd",
-		mi18n.T("モーションファイル"),
-		mi18n.T("モーションファイルを選択してください"),
+		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
+		mi18n.T("サイジング対象モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			if path == "" {
+				cw.StoreMotion(0, sizingState.CurrentIndex, nil)
+				cw.StoreMotion(1, sizingState.CurrentIndex, nil)
+				return
+			}
+
 			if data, err := rep.Load(path); err == nil {
 				motion := data.(*vmd.VmdMotion)
 				player.Reset(motion.MaxFrame())
-				cw.StoreMotion(0, 0, motion)
+				cw.StoreMotion(0, sizingState.CurrentIndex, motion)
+			} else {
+				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			}
+
+			if data, err := rep.Load(path); err == nil {
+				motion := data.(*vmd.VmdMotion)
+				cw.StoreMotion(1, sizingState.CurrentIndex, motion)
 			} else {
 				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 			}
 		},
 	)
 
-	// 全選択ボタン
-	allBtn := widget.NewMPushButton()
-	allBtn.SetLabel(mi18n.T("全"))
-	allBtn.SetTooltip(mi18n.T("全ボタン説明"))
-	allBtn.SetMaxSize(declarative.Size{Width: 50})
-	allBtn.SetOnClicked(func(cw *controller.ControlWindow) {
-		for _, record := range materialTableView.MaterialModel.Records {
-			record.Checked = true
-		}
-		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
-		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
-	})
+	originalPmxPicker := widget.NewPmxJsonLoadFilePicker(
+		"org_pmx",
+		mi18n.T("モーション作成元モデル(Json/Pmx)"),
+		mi18n.T("モーション作成元モデルツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			if data, err := rep.Load(path); err == nil {
+				model := data.(*pmx.PmxModel)
+				if err := model.Bones.InsertShortageBones(); err != nil {
+					mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				} else {
+					cw.StoreModel(0, sizingState.CurrentIndex, model)
+				}
+			} else {
+				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+				cw.StoreModel(0, 0, nil)
+			}
+		},
+	)
 
-	// 選択反転ボタン
-	revertBtn := widget.NewMPushButton()
-	revertBtn.SetLabel(mi18n.T("反"))
-	revertBtn.SetTooltip(mi18n.T("反ボタン説明"))
-	revertBtn.SetMaxSize(declarative.Size{Width: 50})
-	revertBtn.SetOnClicked(func(cw *controller.ControlWindow) {
-		for _, record := range materialTableView.MaterialModel.Records {
-			record.Checked = !record.Checked
-		}
-		materialTableView.MaterialModel.PublishRowsChanged(0, materialTableView.MaterialModel.RowCount())
-		cw.StoreSelectedMaterialIndexes(0, 0, materialTableView.MaterialModel.CheckedIndexes())
-	})
+	sizingPmxPicker := widget.NewPmxJsonLoadFilePicker(
+		"rep_pmx",
+		mi18n.T("サイジング先モデル(Pmx)"),
+		mi18n.T("サイジング先モデルツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			if data, err := rep.Load(path); err == nil {
+				model := data.(*pmx.PmxModel)
+				if err := model.Bones.InsertShortageBones(); err != nil {
+					mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				} else {
+					cw.StoreModel(0, sizingState.CurrentIndex, model)
+				}
+			} else {
+				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+				cw.StoreModel(0, 0, nil)
+			}
+		},
+	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, pmxLoadPicker, vmdLoadPicker, materialTableView, allBtn, revertBtn)
+	outputVmdPicker := widget.NewVmdSaveFilePicker(
+		mi18n.T("出力モーション(Vmd)"),
+		mi18n.T("出力モーションツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			motion := cw.LoadMotion(0, sizingState.CurrentIndex)
+			if motion == nil {
+				return
+			}
+
+			if err := rep.Save(path, motion, false); err != nil {
+				mlog.ET(mi18n.T("保存失敗"), err.Error())
+			}
+		},
+	)
+
+	outputPmxPicker := widget.NewPmxSaveFilePicker(
+		mi18n.T("出力モデル(Pmx)"),
+		mi18n.T("出力モデルツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			model := cw.LoadModel(0, sizingState.CurrentIndex)
+			if model == nil {
+				return
+			}
+
+			if err := rep.Save(path, model, false); err != nil {
+				mlog.ET(mi18n.T("保存失敗"), err.Error())
+			}
+		},
+	)
+
+	mWidgets.Widgets = append(mWidgets.Widgets, player, originalVmdPicker, originalPmxPicker, sizingPmxPicker, outputVmdPicker, outputPmxPicker)
 	mWidgets.SetOnLoaded(func() {
-		// 読み込みが完了したら、モデルのパスを設定
-		if path, err := usecase.LoadModelPath(); err == nil {
-			pmxLoadPicker.SetPath(path)
-		}
+		sizingState.AddSet()
 	})
 
 	return declarative.TabPage{
 		Title:    mi18n.T("ファイル"),
 		AssignTo: &fileTab,
 		Layout:   declarative.VBox{},
-		Background: declarative.SystemColorBrush{
-			Color: walk.SysColorInactiveCaption,
+		Background: declarative.SolidColorBrush{
+			Color: controller.ColorTabBackground,
 		},
 		Children: []declarative.Widget{
 			declarative.Composite{
-				Layout: declarative.VBox{},
+				Layout:  declarative.HBox{},
+				MinSize: declarative.Size{Width: 200, Height: 40},
+				MaxSize: declarative.Size{Width: 5120, Height: 40},
 				Children: []declarative.Widget{
-					pmxLoadPicker.Widgets(),
-					vmdLoadPicker.Widgets(),
-					declarative.VSeparator{},
-					declarative.Composite{
-						Layout: declarative.HBox{},
-						Children: []declarative.Widget{
-							declarative.TextLabel{
-								Text: mi18n.T("材質ビュー"),
-								OnMouseDown: func(x, y int, button walk.MouseButton) {
-									mlog.I(mi18n.T("材質ビュー説明"))
-								},
-							},
-							declarative.HSpacer{},
-							allBtn.Widgets(),
-							revertBtn.Widgets(),
+					declarative.HSpacer{},
+					// サイジングセット追加ボタン
+					declarative.PushButton{
+						Text: mi18n.T("サイジングセット追加"),
+						OnClicked: func() {
+							sizingState.AddSet()
 						},
+						MinSize: declarative.Size{Width: 130, Height: 20},
+						MaxSize: declarative.Size{Width: 130, Height: 20},
 					},
-					materialTableView.Widgets(),
-					declarative.VSpacer{},
-					player.Widgets(),
-					declarative.VSpacer{},
+					// サイジングセット全削除ボタン
+					declarative.PushButton{
+						Text: mi18n.T("サイジングセット全削除"),
+						OnClicked: func() {
+							// toolState.resetSizingSet()
+						},
+						MinSize: declarative.Size{Width: 130, Height: 20},
+						MaxSize: declarative.Size{Width: 130, Height: 20},
+					},
+					// サイジングセット設定読み込みボタン
+					declarative.PushButton{
+						Text: mi18n.T("サイジングセット設定読込"),
+						OnClicked: func() {
+							// toolState.loadSizingSet()
+						},
+						MinSize: declarative.Size{Width: 130, Height: 20},
+						MaxSize: declarative.Size{Width: 130, Height: 20},
+					},
 				},
 			},
+			// サイジングセットスクロール
+			declarative.ScrollView{
+				Layout:        declarative.VBox{},
+				MinSize:       declarative.Size{Width: 200, Height: 40},
+				MaxSize:       declarative.Size{Width: 5120, Height: 40},
+				VerticalFixed: true,
+				Children: []declarative.Widget{
+					// ナビゲーション用ツールバー
+					declarative.ToolBar{
+						AssignTo:           &sizingState.NavToolBar,
+						MinSize:            declarative.Size{Width: 200, Height: 25},
+						MaxSize:            declarative.Size{Width: 5120, Height: 25},
+						DefaultButtonWidth: 200,
+						Background: declarative.SolidColorBrush{
+							Color: controller.ColorNavBackground,
+						},
+						Orientation: walk.Horizontal,
+						ButtonStyle: declarative.ToolBarButtonTextOnly,
+					},
+				},
+			},
+			// サイジングセットごとのサイジング内容
+			declarative.ScrollView{
+				Layout:  declarative.VBox{},
+				MinSize: declarative.Size{Width: 126, Height: 512},
+				MaxSize: declarative.Size{Width: 2560, Height: 5120},
+				Children: []declarative.Widget{
+					originalVmdPicker.Widgets(),
+					originalPmxPicker.Widgets(),
+					sizingPmxPicker.Widgets(),
+					declarative.VSeparator{},
+					outputVmdPicker.Widgets(),
+					outputPmxPicker.Widgets(),
+					declarative.VSeparator{},
+				},
+			},
+			player.Widgets(),
 		},
 	}
 }
