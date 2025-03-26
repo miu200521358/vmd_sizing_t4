@@ -2,11 +2,11 @@ package ui
 
 import (
 	"miu200521358/vmd_sizing_t4.git/pkg/domain"
+	"path/filepath"
 
+	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
-	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
-	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -18,79 +18,13 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	var fileTab *walk.TabPage
 	sizingState := new(domain.SizingState)
 
-	player := widget.NewMotionPlayer()
+	sizingState.Player = widget.NewMotionPlayer()
 
-	originalVmdPicker := widget.NewVmdVpdLoadFilePicker(
-		"vmd",
-		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
-		mi18n.T("サイジング対象モーションツールチップ"),
-		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			if path == "" {
-				cw.StoreMotion(0, sizingState.CurrentIndex, nil)
-				cw.StoreMotion(1, sizingState.CurrentIndex, nil)
-				return
-			}
-
-			if data, err := rep.Load(path); err == nil {
-				motion := data.(*vmd.VmdMotion)
-				player.Reset(motion.MaxFrame())
-				cw.StoreMotion(0, sizingState.CurrentIndex, motion)
-			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-			}
-
-			if data, err := rep.Load(path); err == nil {
-				motion := data.(*vmd.VmdMotion)
-				cw.StoreMotion(1, sizingState.CurrentIndex, motion)
-			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-			}
-		},
-	)
-
-	originalPmxPicker := widget.NewPmxJsonLoadFilePicker(
-		"org_pmx",
-		mi18n.T("モーション作成元モデル(Json/Pmx)"),
-		mi18n.T("モーション作成元モデルツールチップ"),
-		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			if data, err := rep.Load(path); err == nil {
-				model := data.(*pmx.PmxModel)
-				if err := model.Bones.InsertShortageBones(); err != nil {
-					mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-				} else {
-					cw.StoreModel(0, sizingState.CurrentIndex, model)
-				}
-			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-				cw.StoreModel(0, 0, nil)
-			}
-		},
-	)
-
-	sizingPmxPicker := widget.NewPmxJsonLoadFilePicker(
-		"rep_pmx",
-		mi18n.T("サイジング先モデル(Pmx)"),
-		mi18n.T("サイジング先モデルツールチップ"),
-		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			if data, err := rep.Load(path); err == nil {
-				model := data.(*pmx.PmxModel)
-				if err := model.Bones.InsertShortageBones(); err != nil {
-					mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-				} else {
-					cw.StoreModel(0, sizingState.CurrentIndex, model)
-				}
-			} else {
-				mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-				cw.StoreModel(0, 0, nil)
-			}
-		},
-	)
-
-	outputVmdPicker := widget.NewVmdSaveFilePicker(
+	sizingState.SizingMotionPicker = widget.NewVmdSaveFilePicker(
 		mi18n.T("出力モーション(Vmd)"),
 		mi18n.T("出力モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			motion := cw.LoadMotion(0, sizingState.CurrentIndex)
+			motion := cw.LoadMotion(0, sizingState.CurrentIndex())
 			if motion == nil {
 				return
 			}
@@ -101,11 +35,11 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		},
 	)
 
-	outputPmxPicker := widget.NewPmxSaveFilePicker(
+	sizingState.OutputModelPicker = widget.NewPmxSaveFilePicker(
 		mi18n.T("出力モデル(Pmx)"),
 		mi18n.T("出力モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			model := cw.LoadModel(0, sizingState.CurrentIndex)
+			model := cw.LoadModel(0, sizingState.CurrentIndex())
 			if model == nil {
 				return
 			}
@@ -116,9 +50,156 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		},
 	)
 
-	mWidgets.Widgets = append(mWidgets.Widgets, player, originalVmdPicker, originalPmxPicker, sizingPmxPicker, outputVmdPicker, outputPmxPicker)
+	sizingState.OriginalMotionPicker = widget.NewVmdVpdLoadFilePicker(
+		"vmd",
+		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
+		mi18n.T("サイジング対象モーションツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			sizingState.LoadSizingMotion(cw, rep, path)
+		},
+	)
+
+	sizingState.OriginalModelPicker = widget.NewPmxPmxJsonLoadFilePicker(
+		"org_pmx",
+		mi18n.T("モーション作成元モデル(Json/Pmx)"),
+		mi18n.T("モーション作成元モデルツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			sizingState.LoadOriginalModel(cw, rep, path)
+		},
+	)
+
+	sizingState.SizingModelPicker = widget.NewPmxLoadFilePicker(
+		"rep_pmx",
+		mi18n.T("サイジング先モデル(Pmx)"),
+		mi18n.T("サイジング先モデルツールチップ"),
+		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
+			sizingState.LoadSizingModel(cw, rep, path)
+		},
+	)
+
+	sizingState.AddSetButton = widget.NewMPushButton()
+	sizingState.AddSetButton.SetLabel(mi18n.T("セット追加"))
+	sizingState.AddSetButton.SetTooltip(mi18n.T("セット追加説明"))
+	sizingState.AddSetButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.AddSetButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		sizingState.SizingSets = append(sizingState.SizingSets,
+			domain.NewSizingSet(len(sizingState.SizingSets)))
+		sizingState.AddAction()
+	})
+
+	sizingState.ResetSetButton = widget.NewMPushButton()
+	sizingState.ResetSetButton.SetLabel(mi18n.T("セット全削除"))
+	sizingState.ResetSetButton.SetTooltip(mi18n.T("セット全削除説明"))
+	sizingState.ResetSetButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.ResetSetButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		for n := range 2 {
+			for m := range sizingState.NavToolBar.Actions().Len() {
+				mWidgets.Window().StoreModel(n, m, nil)
+				mWidgets.Window().StoreMotion(n, m, nil)
+			}
+		}
+
+		sizingState.ResetSet()
+	})
+
+	sizingState.LoadSetButton = widget.NewMPushButton()
+	sizingState.LoadSetButton.SetLabel(mi18n.T("セット設定読込"))
+	sizingState.LoadSetButton.SetTooltip(mi18n.T("セット設定読込説明"))
+	sizingState.LoadSetButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.LoadSetButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		choices := mconfig.LoadUserConfig("sizing_set_path")
+		var initialDirPath string
+		if len(choices) > 0 {
+			// ファイルパスからディレクトリパスを取得
+			initialDirPath = filepath.Dir(choices[0])
+		}
+
+		// ファイル選択ダイアログを開く
+		dlg := walk.FileDialog{
+			Title: mi18n.T(
+				"ファイル選択ダイアログタイトル",
+				map[string]interface{}{"Title": "Json"}),
+			Filter:         "Json files (*.json)|*.json",
+			FilterIndex:    1,
+			InitialDirPath: initialDirPath,
+		}
+		if ok, err := dlg.ShowOpen(nil); err != nil {
+			walk.MsgBox(nil, mi18n.T("ファイル選択ダイアログ選択エラー"), err.Error(), walk.MsgBoxIconError)
+		} else if ok {
+			mWidgets.Window().SetEnabled(false)
+
+			for n := range 2 {
+				for m := range sizingState.NavToolBar.Actions().Len() {
+					mWidgets.Window().StoreModel(n, m, nil)
+					mWidgets.Window().StoreMotion(n, m, nil)
+				}
+			}
+
+			sizingState.ResetSet()
+			sizingState.LoadSet(dlg.FilePath)
+			cw := mWidgets.Window()
+
+			for range len(sizingState.SizingSets) - 1 {
+				sizingState.AddAction()
+			}
+
+			for index := range sizingState.SizingSets {
+				sizingState.SetCurrentIndex(index)
+				{
+					rep := repository.NewPmxRepository()
+					sizingState.LoadOriginalModel(cw, rep, sizingState.SizingSets[index].OriginalModelPath)
+				}
+				{
+					rep := repository.NewPmxPmxJsonRepository()
+					sizingState.LoadSizingModel(cw, rep, sizingState.SizingSets[index].SizingModelPath)
+				}
+				{
+					rep := repository.NewVmdVpdRepository()
+					sizingState.LoadSizingMotion(cw, rep, sizingState.SizingSets[index].OriginalMotionPath)
+				}
+			}
+
+			sizingState.SetCurrentIndex(0)
+			mWidgets.Window().SetEnabled(true)
+		}
+	})
+
+	sizingState.SaveSetButton = widget.NewMPushButton()
+	sizingState.SaveSetButton.SetLabel(mi18n.T("セット設定保存"))
+	sizingState.SaveSetButton.SetTooltip(mi18n.T("セット設定保存説明"))
+	sizingState.SaveSetButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.SaveSetButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		choices := mconfig.LoadUserConfig("sizing_set_path")
+		var initialDirPath string
+		if len(choices) > 0 {
+			// ファイルパスからディレクトリパスを取得
+			initialDirPath = filepath.Dir(choices[0])
+		}
+
+		// ファイル選択ダイアログを開く
+		dlg := walk.FileDialog{
+			Title: mi18n.T(
+				"ファイル選択ダイアログタイトル",
+				map[string]interface{}{"Title": "Json"}),
+			Filter:         "Json files (*.json)|*.json",
+			FilterIndex:    1,
+			InitialDirPath: initialDirPath,
+		}
+		if ok, err := dlg.ShowSave(nil); err != nil {
+			walk.MsgBox(nil, mi18n.T("ファイル選択ダイアログ選択エラー"), err.Error(), walk.MsgBoxIconError)
+		} else if ok {
+			sizingState.SaveSet(dlg.FilePath)
+			mconfig.SaveUserConfig("sizing_set_path", dlg.FilePath, 1)
+		}
+	})
+
+	mWidgets.Widgets = append(mWidgets.Widgets, sizingState.Player, sizingState.OriginalMotionPicker,
+		sizingState.OriginalModelPicker, sizingState.SizingModelPicker, sizingState.SizingMotionPicker,
+		sizingState.OutputModelPicker, sizingState.AddSetButton, sizingState.ResetSetButton,
+		sizingState.LoadSetButton, sizingState.SaveSetButton)
 	mWidgets.SetOnLoaded(func() {
-		sizingState.AddSet()
+		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
+		sizingState.AddAction()
 	})
 
 	return declarative.TabPage{
@@ -135,36 +216,13 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 				MaxSize: declarative.Size{Width: 5120, Height: 40},
 				Children: []declarative.Widget{
 					declarative.HSpacer{},
-					// サイジングセット追加ボタン
-					declarative.PushButton{
-						Text: mi18n.T("サイジングセット追加"),
-						OnClicked: func() {
-							sizingState.AddSet()
-						},
-						MinSize: declarative.Size{Width: 130, Height: 20},
-						MaxSize: declarative.Size{Width: 130, Height: 20},
-					},
-					// サイジングセット全削除ボタン
-					declarative.PushButton{
-						Text: mi18n.T("サイジングセット全削除"),
-						OnClicked: func() {
-							// toolState.resetSizingSet()
-						},
-						MinSize: declarative.Size{Width: 130, Height: 20},
-						MaxSize: declarative.Size{Width: 130, Height: 20},
-					},
-					// サイジングセット設定読み込みボタン
-					declarative.PushButton{
-						Text: mi18n.T("サイジングセット設定読込"),
-						OnClicked: func() {
-							// toolState.loadSizingSet()
-						},
-						MinSize: declarative.Size{Width: 130, Height: 20},
-						MaxSize: declarative.Size{Width: 130, Height: 20},
-					},
+					sizingState.AddSetButton.Widgets(),
+					sizingState.ResetSetButton.Widgets(),
+					sizingState.LoadSetButton.Widgets(),
+					sizingState.SaveSetButton.Widgets(),
 				},
 			},
-			// サイジングセットスクロール
+			// セットスクロール
 			declarative.ScrollView{
 				Layout:        declarative.VBox{},
 				MinSize:       declarative.Size{Width: 200, Height: 40},
@@ -185,22 +243,22 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					},
 				},
 			},
-			// サイジングセットごとのサイジング内容
+			// セットごとのサイジング内容
 			declarative.ScrollView{
 				Layout:  declarative.VBox{},
 				MinSize: declarative.Size{Width: 126, Height: 512},
 				MaxSize: declarative.Size{Width: 2560, Height: 5120},
 				Children: []declarative.Widget{
-					originalVmdPicker.Widgets(),
-					originalPmxPicker.Widgets(),
-					sizingPmxPicker.Widgets(),
+					sizingState.OriginalMotionPicker.Widgets(),
+					sizingState.OriginalModelPicker.Widgets(),
+					sizingState.SizingModelPicker.Widgets(),
 					declarative.VSeparator{},
-					outputVmdPicker.Widgets(),
-					outputPmxPicker.Widgets(),
+					sizingState.SizingMotionPicker.Widgets(),
+					sizingState.OutputModelPicker.Widgets(),
 					declarative.VSeparator{},
 				},
 			},
-			player.Widgets(),
+			sizingState.Player.Widgets(),
 		},
 	}
 }

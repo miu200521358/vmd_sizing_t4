@@ -93,6 +93,7 @@ func main() {
 			}
 		}
 
+		viewerWindowList.InitOverride()
 		viewerWindowList.Run()
 	})
 }
