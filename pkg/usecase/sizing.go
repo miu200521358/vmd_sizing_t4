@@ -5,6 +5,7 @@ import (
 	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/miu200521358/mlib_go/pkg/config/merr"
@@ -19,29 +20,29 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	if !sizingState.AdoptSizingCheck.Checked() ||
 		(sizingState.CurrentSet().OriginalModel == nil &&
 			sizingState.CurrentSet().OutputModel == nil &&
-			sizingState.CurrentSet().LoadOutputMotion() == nil) {
+			sizingState.CurrentSet().OutputMotion == nil) {
 		return
 	}
 
-	completedProcessCount := 1
+	var completedProcessCount int32 = 0
 	totalProcessCount := 0
 	if sizingState.SizingLegCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 	if sizingState.SizingUpperCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 	if sizingState.SizingShoulderCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 	if sizingState.SizingArmStanceCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 	if sizingState.SizingFingerStanceCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 	if sizingState.SizingArmTwistCheck.Checked() {
-		totalProcessCount++
+		totalProcessCount += len(sizingState.SizingSets)
 	}
 
 	// 処理時間の計測開始
@@ -57,7 +58,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	var wg sync.WaitGroup
 	for _, sizingSet := range sizingState.SizingSets {
 		if sizingSet.OriginalModel == nil || sizingSet.OutputModel == nil ||
-			sizingSet.LoadOutputMotion() == nil {
+			sizingSet.OutputMotion == nil {
 			continue
 		}
 
@@ -83,7 +84,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				// オリジナルモーションをサイジング先モーションとして読み直し
 				outputMotion := cw.LoadMotion(1, sizingSet.Index)
 				outputMotion.SetRandHash()
-				sizingSet.StoreOutputMotion(outputMotion)
+				sizingSet.OutputMotion = outputMotion
 			}
 
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
@@ -91,10 +92,13 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				SizingLeg,
 			} {
 				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					completedProcessCount, totalProcessCount); err != nil {
+					int(atomic.LoadInt32(&completedProcessCount)), totalProcessCount); err != nil {
 					errorChan <- err
 					return
 				} else {
+					// アトミックにカウンタを更新
+					atomic.AddInt32(&completedProcessCount, 1)
+
 					if sizingSet.IsTerminate {
 						isExec = false
 						return
@@ -102,7 +106,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 					isExec = execResult || isExec
 					if execResult {
-						outputMotion := sizingSet.LoadOutputMotion()
+						outputMotion := sizingSet.OutputMotion
 						outputMotion.SetRandHash()
 						cw.StoreMotion(0, sizingSet.Index, outputMotion)
 
