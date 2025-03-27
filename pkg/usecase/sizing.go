@@ -24,7 +24,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
-	var completedProcessCount int32 = 0
+	var completedProcessCount int32 = 1
 	totalProcessCount := 0
 	if sizingState.SizingLegCheck.Checked() {
 		totalProcessCount += len(sizingState.SizingSets)
@@ -86,17 +86,19 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				outputMotion.SetRandHash()
 				sizingSet.OutputMotion = outputMotion
 			}
-
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
-				setSize, completedProcessCount, totalProcessCount int) (bool, error){
+				sizingSetCount, totalProcessCount int, getCompletedCount func() int) (bool, error){
 				SizingLeg,
 			} {
+				getCompletedCount := func() int {
+					return int(atomic.LoadInt32(&completedProcessCount))
+				}
 				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					int(atomic.LoadInt32(&completedProcessCount)), totalProcessCount); err != nil {
+					totalProcessCount, getCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {
-					// アトミックにカウンタを更新
+					// 完了した処理毎にatomicに更新
 					atomic.AddInt32(&completedProcessCount, 1)
 
 					if sizingSet.IsTerminate {
@@ -109,11 +111,10 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 						outputMotion := sizingSet.OutputMotion
 						outputMotion.SetRandHash()
 						cw.StoreMotion(0, sizingSet.Index, outputMotion)
-
-						completedProcessCount++
 					}
 				}
 			}
+
 		}(sizingSet)
 	}
 

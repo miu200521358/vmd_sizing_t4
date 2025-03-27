@@ -19,7 +19,7 @@ import (
 // SizingLeg は、足補正処理を行います。
 // 処理内容を機能ごとに分割することで、可読性と保守性を向上させています。
 func SizingLeg(
-	sizingSet *domain.SizingSet, scale *mmath.MVec3, sizingSetCount, completedProcessCount, totalProcessCount int,
+	sizingSet *domain.SizingSet, scale *mmath.MVec3, sizingSetCount, totalProcessCount int, getCompletedCount func() int,
 ) (bool, error) {
 	// 対象外の場合は何もせず終了
 	if !sizingSet.IsSizingLeg || sizingSet.CompletedSizingLeg {
@@ -77,12 +77,12 @@ func SizingLeg(
 	blockSize, _ := miter.GetBlockSize(len(frames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
-	originalAllDeltas, err := computeOriginalDeltas(frames, blockSize, originalModel, originalMotion, originalLeftAnkleBone, originalRightAnkleBone, sizingSet, completedProcessCount, totalProcessCount)
+	originalAllDeltas, err := computeOriginalDeltas(frames, blockSize, originalModel, originalMotion, originalLeftAnkleBone, originalRightAnkleBone, sizingSet, totalProcessCount, getCompletedCount)
 	if err != nil {
 		return false, err
 	}
 
-	processLog("足補正開始", sizingSet.Index, completedProcessCount, totalProcessCount, 0, 1)
+	processLog("足補正開始", sizingSet.Index, getCompletedCount(), totalProcessCount, 0, 1)
 
 	// サイジング先モデルに対して FK 焼き込み処理
 	if err := bakeFK(sizingProcessMotion, originalAllDeltas, sizingSet); err != nil {
@@ -101,7 +101,7 @@ func SizingLeg(
 	sizingProcessMotion.BoneFrames.Append(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
 
 	// センター・グルーブ補正を実施
-	centerPositions, groovePositions, err := applyCenterCorrection(frames, blockSize, gravityRatio, scale, originalAllDeltas, sizingModel, sizingProcessMotion, sizingCenterBone, sizingGrooveBone, sizingSet, completedProcessCount, totalProcessCount)
+	centerPositions, groovePositions, err := applyCenterCorrection(frames, blockSize, gravityRatio, scale, originalAllDeltas, sizingModel, sizingProcessMotion, sizingCenterBone, sizingGrooveBone, sizingSet, totalProcessCount, getCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -117,7 +117,7 @@ func SizingLeg(
 		originalLeftAnkleBone, originalRightAnkleBone,
 		sizingLeftLegIkBone, sizingLeftToeBone, sizingLeftToeIkBone,
 		sizingRightLegIkBone, sizingRightToeBone, sizingRightToeIkBone,
-		scale, sizingSet, completedProcessCount, totalProcessCount,
+		scale, sizingSet, totalProcessCount, getCompletedCount,
 	)
 	if err != nil {
 		return false, err
@@ -134,7 +134,7 @@ func SizingLeg(
 		recalculateLegFKRotations(frames, blockSize, sizingModel, sizingProcessMotion,
 			sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
 			sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
-			sizingSet, completedProcessCount, totalProcessCount)
+			sizingSet, totalProcessCount, getCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -175,7 +175,7 @@ func computeOriginalDeltas(
 	frames []int, blockSize int,
 	originalModel *pmx.PmxModel, originalMotion *vmd.VmdMotion,
 	originalLeftAnkleBone, originalRightAnkleBone *pmx.Bone,
-	sizingSet *domain.SizingSet, completedProcessCount, totalProcessCount int,
+	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
 ) ([]*delta.VmdDeltas, error) {
 	originalAllDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
@@ -192,7 +192,7 @@ func computeOriginalDeltas(
 			return nil
 		},
 		func(iterIndex, allCount int) {
-			processLog("足補正01", sizingSet.Index, completedProcessCount, totalProcessCount, iterIndex, allCount)
+			processLog("足補正01", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
 		})
 	return originalAllDeltas, err
 }
@@ -261,7 +261,7 @@ func applyCenterCorrection(
 	frames []int, blockSize int, gravityRatio float64, scale *mmath.MVec3,
 	originalAllDeltas []*delta.VmdDeltas, sizingModel *pmx.PmxModel, sizingProcessMotion *vmd.VmdMotion,
 	sizingCenterBone, sizingGrooveBone *pmx.Bone, sizingSet *domain.SizingSet,
-	completedProcessCount, totalProcessCount int,
+	totalProcessCount int, getCompletedCount func() int,
 ) ([]*mmath.MVec3, []*mmath.MVec3, error) {
 	centerPositions := make([]*mmath.MVec3, len(frames))
 	groovePositions := make([]*mmath.MVec3, len(frames))
@@ -305,7 +305,7 @@ func applyCenterCorrection(
 			return nil
 		},
 		func(iterIndex, allCount int) {
-			processLog("足補正07", sizingSet.Index, completedProcessCount, totalProcessCount, iterIndex, allCount)
+			processLog("足補正07", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
 		})
 	// verbose時は中間結果の出力も実施
 	if mlog.IsVerbose() && gravityMotion != nil {
@@ -339,7 +339,7 @@ func processLegIKCorrection(
 	originalAllDeltas []*delta.VmdDeltas, originalLeftAnkleBone, originalRightAnkleBone *pmx.Bone,
 	sizingLeftLegIkBone, sizingLeftToeBone, sizingLeftToeIkBone,
 	sizingRightLegIkBone, sizingRightToeBone, sizingRightToeIkBone *pmx.Bone,
-	scale *mmath.MVec3, sizingSet *domain.SizingSet, completedProcessCount, totalProcessCount int,
+	scale *mmath.MVec3, sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
 ) ([]*mmath.MVec3, []*mmath.MQuaternion, []*mmath.MVec3, []*mmath.MQuaternion, error) {
 	leftLegIkPositions := make([]*mmath.MVec3, len(frames))
 	leftLegIkRotations := make([]*mmath.MQuaternion, len(frames))
@@ -400,7 +400,7 @@ func processLegIKCorrection(
 			return nil
 		},
 		func(iterIndex, allCount int) {
-			processLog("足補正08", sizingSet.Index, completedProcessCount, totalProcessCount, iterIndex, allCount)
+			processLog("足補正08", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
 		})
 	return leftLegIkPositions, leftLegIkRotations, rightLegIkPositions, rightLegIkRotations, err
 }
@@ -458,7 +458,7 @@ func recalculateLegFKRotations(
 	frames []int, blockSize int, sizingModel *pmx.PmxModel, sizingProcessMotion *vmd.VmdMotion,
 	sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
 	sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone *pmx.Bone,
-	sizingSet *domain.SizingSet, completedProcessCount, totalProcessCount int,
+	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
 ) ([]*mmath.MQuaternion, []*mmath.MQuaternion, []*mmath.MQuaternion,
 	[]*mmath.MQuaternion, []*mmath.MQuaternion, []*mmath.MQuaternion, error) {
 	leftLegRotations := make([]*mmath.MQuaternion, len(frames))
@@ -485,7 +485,7 @@ func recalculateLegFKRotations(
 			return nil
 		},
 		func(iterIndex, allCount int) {
-			processLog("足補正09", sizingSet.Index, completedProcessCount, totalProcessCount, iterIndex, allCount)
+			processLog("足補正09", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
 		})
 	return leftLegRotations, leftKneeRotations, leftAnkleRotations, rightLegRotations, rightKneeRotations, rightAnkleRotations, err
 }
