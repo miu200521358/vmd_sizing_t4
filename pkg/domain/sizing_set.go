@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"sync/atomic"
 
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
@@ -26,7 +25,7 @@ type SizingSet struct {
 	OriginalMotion *vmd.VmdMotion `json:"-"` // 元モデル
 	OriginalModel  *pmx.PmxModel  `json:"-"` // 元モーション
 	OutputModel    *pmx.PmxModel  `json:"-"` // サイジング先モデル
-	outputMotion   atomic.Value   `json:"-"` // 出力結果モーション
+	OutputMotion   *vmd.VmdMotion `json:"-"` // 出力結果モーション
 
 	IsSizingLeg          bool `json:"is_sizing_leg"`           // 足補正
 	IsSizingUpper        bool `json:"is_sizing_upper"`         // 上半身補正
@@ -47,8 +46,7 @@ type SizingSet struct {
 
 func NewSizingSet(index int) *SizingSet {
 	return &SizingSet{
-		Index:        index,
-		outputMotion: atomic.Value{},
+		Index: index,
 	}
 }
 
@@ -129,24 +127,12 @@ func (ss *SizingSet) SetOriginalModel(model *pmx.PmxModel) {
 func (ss *SizingSet) SetOutputMotion(motion *vmd.VmdMotion) {
 	if motion == nil {
 		ss.OutputMotionPath = ""
-		ss.StoreOutputMotion(nil)
+		ss.OutputMotion = nil
 		return
 	}
 
 	ss.OutputMotionPath = motion.Path()
-	ss.StoreOutputMotion(motion)
-}
-
-func (ss *SizingSet) LoadOutputMotion() *vmd.VmdMotion {
-	if ss.outputMotion.Load() == nil {
-		return nil
-	}
-
-	return ss.outputMotion.Load().(*vmd.VmdMotion)
-}
-
-func (ss *SizingSet) StoreOutputMotion(motion *vmd.VmdMotion) {
-	ss.outputMotion.Store(motion)
+	ss.OutputMotion = motion
 }
 
 func (ss *SizingSet) SetSizingModel(model *pmx.PmxModel) {
@@ -176,7 +162,7 @@ func (ss *SizingSet) Delete() {
 	ss.OriginalMotion = nil
 	ss.OriginalModel = nil
 	ss.OutputModel = nil
-	ss.StoreOutputMotion(nil)
+	ss.OutputMotion = nil
 
 	ss.IsSizingLeg = false
 	ss.IsSizingUpper = false

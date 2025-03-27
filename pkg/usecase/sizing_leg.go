@@ -32,7 +32,7 @@ func SizingLeg(
 	originalModel := sizingSet.OriginalModel
 	originalMotion := sizingSet.OriginalMotion
 	sizingModel := sizingSet.OutputModel
-	sizingProcessMotion := sizingSet.LoadOutputMotion()
+	sizingProcessMotion := sizingSet.OutputMotion.Copy()
 
 	// 初期重心計算用の空 VMD モーション
 	initialMotion := vmd.NewVmdMotion("")
@@ -151,7 +151,7 @@ func SizingLeg(
 		outputMotion("足補正09_FK再計算", sizingSet.OriginalMotionPath, sizingProcessMotion)
 	}
 
-	sizingSet.StoreOutputMotion(sizingProcessMotion)
+	sizingSet.OutputMotion = sizingProcessMotion
 	sizingSet.CompletedSizingLeg = true
 
 	return true, nil

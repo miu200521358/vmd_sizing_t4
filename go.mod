@@ -22,6 +22,7 @@ require (
 	github.com/miu200521358/win v0.0.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.4.0 // indirect
 	github.com/petar/GoLLRB v0.0.0-20210522233825-ae3b015fd3e9 // indirect
+	github.com/tiendc/go-deepcopy v1.5.1 // indirect
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
