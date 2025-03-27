@@ -17,7 +17,7 @@ import (
 )
 
 func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
-	var fileTab *walk.TabPage
+	var sizingTab *walk.TabPage
 	sizingState := new(domain.SizingState)
 
 	sizingState.Player = widget.NewMotionPlayer()
@@ -204,18 +204,25 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		}
 	})
 
+	sizingState.SaveButton = widget.NewMPushButton()
+	sizingState.SaveButton.SetLabel(mi18n.T("モーション保存"))
+	sizingState.SaveButton.SetTooltip(mi18n.T("モーション保存説明"))
+	sizingState.SaveButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.SaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
+	})
+
 	mWidgets.Widgets = append(mWidgets.Widgets, sizingState.Player, sizingState.OriginalMotionPicker,
 		sizingState.OriginalModelPicker, sizingState.SizingModelPicker, sizingState.SizingMotionPicker,
 		sizingState.OutputModelPicker, sizingState.AddSetButton, sizingState.ResetSetButton,
-		sizingState.LoadSetButton, sizingState.SaveSetButton)
+		sizingState.LoadSetButton, sizingState.SaveSetButton, sizingState.TerminateButton)
 	mWidgets.SetOnLoaded(func() {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
 	})
 
 	return declarative.TabPage{
-		Title:    mi18n.T("ファイル"),
-		AssignTo: &fileTab,
+		Title:    mi18n.T("サイジング"),
+		AssignTo: &sizingTab,
 		Layout:   declarative.VBox{},
 		Background: declarative.SolidColorBrush{
 			Color: controller.ColorTabBackground,
@@ -282,7 +289,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								ToolTipText: mi18n.T("即時反映説明"),
 								Checked:     true,
 								OnCheckStateChanged: func() {
-									go usecase.ExecSizing(sizingState)
+									go usecase.ExecSizing(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
@@ -297,7 +304,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("足補正"),
 								ToolTipText: mi18n.T("足補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.LEG)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
 								},
 							},
 							declarative.CheckBox{
@@ -305,7 +312,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("上半身補正"),
 								ToolTipText: mi18n.T("上半身補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.UPPER)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.UPPER)
 								},
 							},
 							declarative.CheckBox{
@@ -313,7 +320,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("肩補正"),
 								ToolTipText: mi18n.T("肩補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.SHOULDER)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.SHOULDER)
 								},
 							},
 							declarative.CheckBox{
@@ -321,7 +328,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("腕スタンス補正"),
 								ToolTipText: mi18n.T("腕スタンス補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.LEG)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
 								},
 							},
 							declarative.CheckBox{
@@ -329,7 +336,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("指スタンス補正"),
 								ToolTipText: mi18n.T("指スタンス補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.INDEX1)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.INDEX1)
 								},
 							},
 							declarative.CheckBox{
@@ -337,7 +344,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("捩り補正"),
 								ToolTipText: mi18n.T("捩り補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(sizingState, pmx.ARM_TWIST)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM_TWIST)
 								},
 							},
 						},
@@ -349,7 +356,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	}
 }
 
-func changeSizingCheck(sizingState *domain.SizingState, bone pmx.StandardBoneName) {
+func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingState, bone pmx.StandardBoneName) {
 	startIndex := 0
 	endIndex := len(sizingState.SizingSets)
 	if !sizingState.AdoptAllCheck.Checked() {
@@ -376,12 +383,16 @@ func changeSizingCheck(sizingState *domain.SizingState, bone pmx.StandardBoneNam
 
 		outputPath := sizingSet.CreateOutputMotionPath()
 		if outputPath != "" {
-			sizingSet.SizingMotionPath = outputPath
+			sizingSet.OutputMotionPath = outputPath
 			if sizingSet.Index == sizingState.CurrentIndex() {
 				sizingState.SizingMotionPicker.SetPath(outputPath)
 			}
 		}
 	}
 
-	go usecase.ExecSizing(sizingState)
+	sizingState.SetSizingEnabled(false)
+
+	go usecase.ExecSizing(cw, sizingState)
+
+	sizingState.SetSizingEnabled(true)
 }

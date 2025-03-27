@@ -33,6 +33,7 @@ type SizingState struct {
 	AdoptSizingCheck        *walk.CheckBox       // サイジング反映チェック
 	AdoptAllCheck           *walk.CheckBox       // 全セット反映チェック
 	TerminateButton         *widget.MPushButton  // 終了ボタン
+	SaveButton              *widget.MPushButton  // 保存ボタン
 	SizingLegCheck          *walk.CheckBox       // 足チェック
 	SizingUpperCheck        *walk.CheckBox       // 上半身チェック
 	SizingShoulderCheck     *walk.CheckBox       // 肩チェック
@@ -95,7 +96,7 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 	ss.OriginalMotionPicker.ChangePath(ss.CurrentSet().OriginalMotionPath)
 	ss.OriginalModelPicker.ChangePath(ss.CurrentSet().OriginalModelPath)
 	ss.SizingModelPicker.ChangePath(ss.CurrentSet().SizingModelPath)
-	ss.SizingMotionPicker.ChangePath(ss.CurrentSet().SizingMotionPath)
+	ss.SizingMotionPicker.ChangePath(ss.CurrentSet().OutputMotionPath)
 	ss.OutputModelPicker.ChangePath(ss.CurrentSet().OutputModelPath)
 
 	// サイジングオプションの情報を表示
@@ -224,7 +225,8 @@ func (sizingState *SizingState) LoadSizingMotion(
 		sizingState.CurrentSet().SetOriginalMotion(nil)
 
 		cw.StoreMotion(0, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetSizingMotion(nil)
+		sizingState.CurrentSet().SetOutputMotion(nil)
+
 		return
 	}
 
@@ -265,10 +267,10 @@ func (sizingState *SizingState) LoadSizingMotion(
 	sizingState.CurrentSet().SetOriginalMotion(originalMotion)
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingMotion)
-	sizingState.CurrentSet().SetSizingMotion(sizingMotion)
+	sizingState.CurrentSet().SetOutputMotion(sizingMotion)
 
 	outputPath := sizingState.CurrentSet().CreateOutputMotionPath()
-	sizingState.CurrentSet().SizingMotionPath = outputPath
+	sizingState.CurrentSet().OutputMotionPath = outputPath
 	sizingState.SizingMotionPicker.ChangePath(outputPath)
 }
 
@@ -291,5 +293,5 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.SizingArmStanceCheck.SetEnabled(enabled)
 	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
 	sizingState.SizingArmTwistCheck.SetEnabled(enabled)
-	sizingState.SizingReductionCheck.SetEnabled(enabled)
+	// sizingState.SizingReductionCheck.SetEnabled(enabled)
 }

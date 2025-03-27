@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"sync/atomic"
 
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
@@ -15,17 +16,17 @@ type SizingSet struct {
 	OriginalMotionPath string `json:"original_motion_path"` // 元モーションパス
 	OriginalModelPath  string `json:"original_model_path"`  // 元モデルパス
 	SizingModelPath    string `json:"sizing_model_path"`    // サイジング先モデルパス
-	SizingMotionPath   string `json:"-"`                    // 出力モーションパス
+	OutputMotionPath   string `json:"-"`                    // 出力モーションパス
 	OutputModelPath    string `json:"-"`                    // 出力モデルパス
 
 	OriginalMotionName string `json:"-"` // 元モーション名
 	OriginalModelName  string `json:"-"` // 元モーション名
-	SizingModelName    string `json:"-"` // サイジング先モデル名
+	OutputModelName    string `json:"-"` // サイジング先モデル名
 
 	OriginalMotion *vmd.VmdMotion `json:"-"` // 元モデル
 	OriginalModel  *pmx.PmxModel  `json:"-"` // 元モーション
-	SizingModel    *pmx.PmxModel  `json:"-"` // サイジング先モデル
-	SizingMotion   *vmd.VmdMotion `json:"-"` // 出力モーション
+	OutputModel    *pmx.PmxModel  `json:"-"` // サイジング先モデル
+	outputMotion   atomic.Value   `json:"-"` // 出力結果モーション
 
 	IsSizingLeg          bool `json:"is_sizing_leg"`           // 足補正
 	IsSizingUpper        bool `json:"is_sizing_upper"`         // 上半身補正
@@ -46,7 +47,8 @@ type SizingSet struct {
 
 func NewSizingSet(index int) *SizingSet {
 	return &SizingSet{
-		Index: index,
+		Index:        index,
+		outputMotion: atomic.Value{},
 	}
 }
 
@@ -124,45 +126,57 @@ func (ss *SizingSet) SetOriginalModel(model *pmx.PmxModel) {
 	ss.OriginalModel = model
 }
 
-func (ss *SizingSet) SetSizingMotion(motion *vmd.VmdMotion) {
+func (ss *SizingSet) SetOutputMotion(motion *vmd.VmdMotion) {
 	if motion == nil {
-		ss.SizingMotionPath = ""
-		ss.SizingMotion = nil
+		ss.OutputMotionPath = ""
+		ss.StoreOutputMotion(nil)
 		return
 	}
 
-	ss.SizingMotionPath = motion.Path()
-	ss.SizingMotion = motion
+	ss.OutputMotionPath = motion.Path()
+	ss.StoreOutputMotion(motion)
+}
+
+func (ss *SizingSet) LoadOutputMotion() *vmd.VmdMotion {
+	if ss.outputMotion.Load() == nil {
+		return nil
+	}
+
+	return ss.outputMotion.Load().(*vmd.VmdMotion)
+}
+
+func (ss *SizingSet) StoreOutputMotion(motion *vmd.VmdMotion) {
+	ss.outputMotion.Store(motion)
 }
 
 func (ss *SizingSet) SetSizingModel(model *pmx.PmxModel) {
 	if model == nil {
 		ss.SizingModelPath = ""
-		ss.SizingModelName = ""
-		ss.SizingModel = nil
+		ss.OutputModelName = ""
+		ss.OutputModel = nil
 		return
 	}
 
 	ss.SizingModelPath = model.Path()
-	ss.SizingModelName = model.Name()
-	ss.SizingModel = model
+	ss.OutputModelName = model.Name()
+	ss.OutputModel = model
 }
 
 func (ss *SizingSet) Delete() {
 	ss.OriginalMotionPath = ""
 	ss.OriginalModelPath = ""
 	ss.SizingModelPath = ""
-	ss.SizingMotionPath = ""
+	ss.OutputMotionPath = ""
 	ss.OutputModelPath = ""
 
 	ss.OriginalMotionName = ""
 	ss.OriginalModelName = ""
-	ss.SizingModelName = ""
+	ss.OutputModelName = ""
 
 	ss.OriginalMotion = nil
 	ss.OriginalModel = nil
-	ss.SizingModel = nil
-	ss.SizingMotion = nil
+	ss.OutputModel = nil
+	ss.StoreOutputMotion(nil)
 
 	ss.IsSizingLeg = false
 	ss.IsSizingUpper = false
