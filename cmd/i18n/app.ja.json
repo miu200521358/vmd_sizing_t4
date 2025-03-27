@@ -349,11 +349,11 @@
     },
     {
         "id": "サイジングオプション",
-        "translation": "サイジングオプション　（下半身系補正のみ全セット共通）"
+        "translation": "サイジングオプション　（足補正のみ全セット共通）"
     },
     {
         "id": "サイジングオプション説明",
-        "translation": "サイジングオプション説明"
+        "translation": "サイジング先モデルに適用したモーションが、元モデルと同じ感じになるように補正します"
     },
     {
         "id": "サイジング一括オプション",
@@ -389,11 +389,11 @@
     },
     {
         "id": "足補正",
-        "translation": "下半身系補正"
+        "translation": "足補正"
     },
     {
         "id": "足補正説明",
-        "translation": "移動量・下半身や足の曲げ具合を元モデルに合わせて補正します\n足の曲げ具合を、サイジング先モデルに適用するため、足首がぐねりにくくなります\nつま先の位置も同時に調整します\n下半身系補正のONOFFは全セット共通です\n記号: L"
+        "translation": "移動量・下半身や足の曲げ具合を元モデルに合わせて補正します\n足の曲げ具合を、サイジング先モデルに適用するため、足首がぐねりにくくなります\nつま先の位置も同時に調整します\n記号: L"
     },
     {
         "id": "上半身補正",
@@ -429,43 +429,43 @@
     },
     {
         "id": "足補正開始",
-        "translation": "【No.{{.No}}】下半身系補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】足補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
     },
     {
         "id": "足補正01",
-        "translation": "【No.{{.No}}】下半身系補正 - 作成元モデルの下半身系変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 作成元モデルの下半身系変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正02",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正03",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの足補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの足補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正04",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのひざ補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのひざ補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正05",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの足首補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの足首補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正06",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身系変形情報更新(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身系変形情報更新(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正07",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのセンター補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのセンター補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正08",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルのつま先補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのつま先補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正09",
-        "translation": "【No.{{.No}}】下半身系補正 - サイジング先モデルの下半身系変形情報更新(2) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身系変形情報更新(2) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正開始",
@@ -542,6 +542,14 @@
     {
         "id": "即時反映説明",
         "translation": "チェックをOFFにすると、サイジングオプションのチェックをONOFFしてもサイジングの即時反映が行われなくなります。\nチェックをONに戻すと、サイジング結果が反映されます"
+    },
+    {
+        "id": "全セット反映",
+        "translation": "全セット反映"
+    },
+    {
+        "id": "全セット反映説明",
+        "translation": "チェックがOFFにすると、サイジングオプションをモデルごとに個別に適用できます。\nチェックをONに戻すと、全セットに反映されます"
     },
     {
         "id": "足Dスキップ",

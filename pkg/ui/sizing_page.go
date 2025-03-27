@@ -1,12 +1,14 @@
 package ui
 
 import (
-	"miu200521358/vmd_sizing_t4.git/pkg/domain"
+	"miu200521358/vmd_sizing_t4/pkg/domain"
+	"miu200521358/vmd_sizing_t4/pkg/usecase"
 	"path/filepath"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
+	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -118,7 +120,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		dlg := walk.FileDialog{
 			Title: mi18n.T(
 				"ファイル選択ダイアログタイトル",
-				map[string]interface{}{"Title": "Json"}),
+				map[string]any{"Title": "Json"}),
 			Filter:         "Json files (*.json)|*.json",
 			FilterIndex:    1,
 			InitialDirPath: initialDirPath,
@@ -127,6 +129,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			walk.MsgBox(nil, mi18n.T("ファイル選択ダイアログ選択エラー"), err.Error(), walk.MsgBoxIconError)
 		} else if ok {
 			mWidgets.Window().SetEnabled(false)
+			mconfig.SaveUserConfig("sizing_set_path", dlg.FilePath, 1)
 
 			for n := range 2 {
 				for m := range sizingState.NavToolBar.Actions().Len() {
@@ -176,7 +179,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		dlg := walk.FileDialog{
 			Title: mi18n.T(
 				"ファイル選択ダイアログタイトル",
-				map[string]interface{}{"Title": "Json"}),
+				map[string]any{"Title": "Json"}),
 			Filter:         "Json files (*.json)|*.json",
 			FilterIndex:    1,
 			InitialDirPath: initialDirPath,
@@ -186,6 +189,18 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		} else if ok {
 			sizingState.SaveSet(dlg.FilePath)
 			mconfig.SaveUserConfig("sizing_set_path", dlg.FilePath, 1)
+		}
+	})
+
+	sizingState.TerminateButton = widget.NewMPushButton()
+	sizingState.TerminateButton.SetLabel(mi18n.T("処理停止"))
+	sizingState.TerminateButton.SetTooltip(mi18n.T("処理停止説明"))
+	sizingState.TerminateButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.TerminateButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		// 押したら非活性
+		sizingState.TerminateButton.SetEnabled(false)
+		for _, sizingSet := range sizingState.SizingSets {
+			sizingSet.IsTerminate = true
 		}
 	})
 
@@ -252,9 +267,121 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					sizingState.SizingMotionPicker.Widgets(),
 					sizingState.OutputModelPicker.Widgets(),
 					declarative.VSeparator{},
+					declarative.TextLabel{
+						Text: mi18n.T("サイジングオプション"),
+						OnMouseDown: func(x, y int, button walk.MouseButton) {
+							mlog.ILT(mi18n.T("サイジングオプション"), mi18n.T("サイジングオプション説明"))
+						},
+					},
+					declarative.Composite{
+						Layout: declarative.Grid{Columns: 3},
+						Children: []declarative.Widget{
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptSizingCheck,
+								Text:        mi18n.T("即時反映"),
+								ToolTipText: mi18n.T("即時反映説明"),
+								Checked:     true,
+								OnCheckStateChanged: func() {
+									go usecase.ExecSizing(sizingState)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptAllCheck,
+								Text:        mi18n.T("全セット反映"),
+								ToolTipText: mi18n.T("全セット反映説明"),
+								Checked:     true,
+							},
+							sizingState.TerminateButton.Widgets(),
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingLegCheck,
+								Text:        mi18n.T("足補正"),
+								ToolTipText: mi18n.T("足補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.LEG)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingUpperCheck,
+								Text:        mi18n.T("上半身補正"),
+								ToolTipText: mi18n.T("上半身補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.UPPER)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingShoulderCheck,
+								Text:        mi18n.T("肩補正"),
+								ToolTipText: mi18n.T("肩補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.SHOULDER)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingArmStanceCheck,
+								Text:        mi18n.T("腕スタンス補正"),
+								ToolTipText: mi18n.T("腕スタンス補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.LEG)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingFingerStanceCheck,
+								Text:        mi18n.T("指スタンス補正"),
+								ToolTipText: mi18n.T("指スタンス補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.INDEX1)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingArmTwistCheck,
+								Text:        mi18n.T("捩り補正"),
+								ToolTipText: mi18n.T("捩り補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(sizingState, pmx.ARM_TWIST)
+								},
+							},
+						},
+					},
 				},
 			},
 			sizingState.Player.Widgets(),
 		},
 	}
+}
+
+func changeSizingCheck(sizingState *domain.SizingState, bone pmx.StandardBoneName) {
+	startIndex := 0
+	endIndex := len(sizingState.SizingSets)
+	if !sizingState.AdoptAllCheck.Checked() {
+		// 現在のインデックスのみ
+		startIndex = sizingState.CurrentIndex()
+		endIndex = startIndex + 1
+	}
+
+	for _, sizingSet := range sizingState.SizingSets[startIndex:endIndex] {
+		switch bone {
+		case pmx.LEG:
+			sizingSet.IsSizingLeg = sizingState.SizingLegCheck.Checked()
+		case pmx.UPPER:
+			sizingSet.IsSizingUpper = sizingState.SizingUpperCheck.Checked()
+		case pmx.SHOULDER:
+			sizingSet.IsSizingShoulder = sizingState.SizingShoulderCheck.Checked()
+		case pmx.ARM:
+			sizingSet.IsSizingArmStance = sizingState.SizingArmStanceCheck.Checked()
+		case pmx.INDEX1:
+			sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
+		case pmx.ARM_TWIST:
+			sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
+		}
+
+		outputPath := sizingSet.CreateOutputMotionPath()
+		if outputPath != "" {
+			sizingSet.SizingMotionPath = outputPath
+			if sizingSet.Index == sizingState.CurrentIndex() {
+				sizingState.SizingMotionPicker.SetPath(outputPath)
+			}
+		}
+	}
+
+	go usecase.ExecSizing(sizingState)
 }

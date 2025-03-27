@@ -19,19 +19,29 @@ import (
 )
 
 type SizingState struct {
-	AddSetButton         *widget.MPushButton  // セット追加ボタン
-	ResetSetButton       *widget.MPushButton  // セットリセットボタン
-	SaveSetButton        *widget.MPushButton  // セット保存ボタン
-	LoadSetButton        *widget.MPushButton  // セット読込ボタン
-	NavToolBar           *walk.ToolBar        // セットツールバー
-	currentIndex         int                  // 現在のインデックス
-	OriginalMotionPicker *widget.FilePicker   // 元モーション
-	OriginalModelPicker  *widget.FilePicker   // 元モデル
-	SizingModelPicker    *widget.FilePicker   // サイジング先モデル
-	SizingMotionPicker   *widget.FilePicker   // 出力モーション
-	OutputModelPicker    *widget.FilePicker   // 出力モデル
-	Player               *widget.MotionPlayer // モーションプレイヤー
-	SizingSets           []*SizingSet         `json:"sizing_sets"` // サイジングセット
+	AddSetButton            *widget.MPushButton  // セット追加ボタン
+	ResetSetButton          *widget.MPushButton  // セットリセットボタン
+	SaveSetButton           *widget.MPushButton  // セット保存ボタン
+	LoadSetButton           *widget.MPushButton  // セット読込ボタン
+	NavToolBar              *walk.ToolBar        // セットツールバー
+	currentIndex            int                  // 現在のインデックス
+	OriginalMotionPicker    *widget.FilePicker   // 元モーション
+	OriginalModelPicker     *widget.FilePicker   // 元モデル
+	SizingModelPicker       *widget.FilePicker   // サイジング先モデル
+	SizingMotionPicker      *widget.FilePicker   // 出力モーション
+	OutputModelPicker       *widget.FilePicker   // 出力モデル
+	AdoptSizingCheck        *walk.CheckBox       // サイジング反映チェック
+	AdoptAllCheck           *walk.CheckBox       // 全セット反映チェック
+	TerminateButton         *widget.MPushButton  // 終了ボタン
+	SizingLegCheck          *walk.CheckBox       // 足チェック
+	SizingUpperCheck        *walk.CheckBox       // 上半身チェック
+	SizingShoulderCheck     *walk.CheckBox       // 肩チェック
+	SizingArmStanceCheck    *walk.CheckBox       // 腕チェック
+	SizingFingerStanceCheck *walk.CheckBox       // 指チェック
+	SizingArmTwistCheck     *walk.CheckBox       // 腕捩りチェック
+	SizingReductionCheck    *walk.CheckBox       // 間引きチェック
+	Player                  *widget.MotionPlayer // モーションプレイヤー
+	SizingSets              []*SizingSet         `json:"sizing_sets"` // サイジングセット
 }
 
 func (ss *SizingState) AddAction() {
@@ -87,6 +97,15 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 	ss.SizingModelPicker.ChangePath(ss.CurrentSet().SizingModelPath)
 	ss.SizingMotionPicker.ChangePath(ss.CurrentSet().SizingMotionPath)
 	ss.OutputModelPicker.ChangePath(ss.CurrentSet().OutputModelPath)
+
+	// サイジングオプションの情報を表示
+	ss.SizingLegCheck.SetChecked(ss.CurrentSet().IsSizingLeg)
+	ss.SizingUpperCheck.SetChecked(ss.CurrentSet().IsSizingUpper)
+	ss.SizingShoulderCheck.SetChecked(ss.CurrentSet().IsSizingShoulder)
+	ss.SizingArmStanceCheck.SetChecked(ss.CurrentSet().IsSizingArmStance)
+	ss.SizingFingerStanceCheck.SetChecked(ss.CurrentSet().IsSizingFingerStance)
+	ss.SizingArmTwistCheck.SetChecked(ss.CurrentSet().IsSizingArmTwist)
+	// ss.SizingReductionCheck.SetChecked(ss.CurrentSet().IsSizingReduction)
 }
 
 func (ss *SizingState) SetCurrentIndex(index int) {
@@ -251,4 +270,26 @@ func (sizingState *SizingState) LoadSizingMotion(
 	outputPath := sizingState.CurrentSet().CreateOutputMotionPath()
 	sizingState.CurrentSet().SizingMotionPath = outputPath
 	sizingState.SizingMotionPicker.ChangePath(outputPath)
+}
+
+// SetSizingEnabled サイジング有効無効設定
+func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
+	sizingState.AddSetButton.SetEnabled(enabled)
+	sizingState.ResetSetButton.SetEnabled(enabled)
+	sizingState.SaveSetButton.SetEnabled(enabled)
+	sizingState.LoadSetButton.SetEnabled(enabled)
+
+	sizingState.OriginalMotionPicker.SetEnabled(enabled)
+	sizingState.OriginalModelPicker.SetEnabled(enabled)
+	sizingState.SizingModelPicker.SetEnabled(enabled)
+	sizingState.SizingMotionPicker.SetEnabled(enabled)
+	sizingState.OutputModelPicker.SetEnabled(enabled)
+
+	sizingState.SizingLegCheck.SetEnabled(enabled)
+	sizingState.SizingUpperCheck.SetEnabled(enabled)
+	sizingState.SizingShoulderCheck.SetEnabled(enabled)
+	sizingState.SizingArmStanceCheck.SetEnabled(enabled)
+	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
+	sizingState.SizingArmTwistCheck.SetEnabled(enabled)
+	sizingState.SizingReductionCheck.SetEnabled(enabled)
 }

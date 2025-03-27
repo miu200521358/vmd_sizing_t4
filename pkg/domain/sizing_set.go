@@ -9,7 +9,8 @@ import (
 )
 
 type SizingSet struct {
-	Index int
+	Index       int  // インデックス
+	IsTerminate bool // 処理停止フラグ
 
 	OriginalMotionPath string `json:"original_motion_path"` // 元モーションパス
 	OriginalModelPath  string `json:"original_model_path"`  // 元モデルパス

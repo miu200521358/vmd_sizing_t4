@@ -1,4 +1,4 @@
-module miu200521358/vmd_sizing_t4.git
+module miu200521358/vmd_sizing_t4
 
 go 1.23.7
 
