@@ -13,13 +13,16 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
 	"github.com/miu200521358/mlib_go/pkg/domain/mmath"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
+	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
+	"github.com/miu200521358/mlib_go/pkg/infrastructure/mfile"
+	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 )
 
 func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	if !sizingState.AdoptSizingCheck.Checked() ||
 		(sizingState.CurrentSet().OriginalModel == nil &&
-			sizingState.CurrentSet().OutputModel == nil &&
+			sizingState.CurrentSet().SizingConfigModel == nil &&
 			sizingState.CurrentSet().OutputMotion == nil) {
 		return
 	}
@@ -57,7 +60,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 	var wg sync.WaitGroup
 	for _, sizingSet := range sizingState.SizingSets {
-		if sizingSet.OriginalModel == nil || sizingSet.OutputModel == nil ||
+		if sizingSet.OriginalModel == nil || sizingSet.SizingConfigModel == nil ||
 			sizingSet.OutputMotion == nil {
 			continue
 		}
@@ -162,7 +165,7 @@ func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
 
 	for i, sizingSet := range sizingSets {
 		originalModel := sizingSet.OriginalModel
-		sizingModel := sizingSet.OutputModel
+		sizingModel := sizingSet.SizingConfigModel
 
 		if originalModel == nil || sizingModel == nil {
 			scales[i] = &mmath.MVec3{X: 1.0, Y: 1.0, Z: 1.0}
@@ -232,6 +235,12 @@ func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
 // processLog 処理ログを出力する
 func processLog(key string, index, completedProcessCount, totalProcessCount, iterIndex, allCount int) {
 	mlog.I(mi18n.T(key, map[string]interface{}{"No": index + 1, "CompletedProcessCount": fmt.Sprintf("%02d", completedProcessCount), "TotalProcessCount": fmt.Sprintf("%02d", totalProcessCount), "IterIndex": fmt.Sprintf("%04d", iterIndex), "AllCount": fmt.Sprintf("%02d", allCount)}))
+}
+
+func outputMotion(title string, originalMotionPath string, motion *vmd.VmdMotion) {
+	outputPath := mfile.CreateOutputPath(originalMotionPath, title)
+	repository.NewVmdRepository(true).Save(outputPath, motion, true)
+	mlog.V("%s: %s", title, outputPath)
 }
 
 // ログはCPUのサイズに応じて可変でブロッキングして出力する

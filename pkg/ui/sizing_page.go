@@ -75,7 +75,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("サイジング先モデル(Pmx)"),
 		mi18n.T("サイジング先モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadSizingModel(cw, rep, path)
+			sizingState.LoadSizingModel(cw, path)
 		},
 	)
 
@@ -149,15 +149,14 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			for index := range sizingState.SizingSets {
 				sizingState.SetCurrentIndex(index)
 				{
-					rep := repository.NewPmxRepository()
+					rep := repository.NewPmxRepository(true)
 					sizingState.LoadOriginalModel(cw, rep, sizingState.SizingSets[index].OriginalModelPath)
 				}
 				{
-					rep := repository.NewPmxPmxJsonRepository()
-					sizingState.LoadSizingModel(cw, rep, sizingState.SizingSets[index].SizingModelPath)
+					sizingState.LoadSizingModel(cw, sizingState.SizingSets[index].SizingModelPath)
 				}
 				{
-					rep := repository.NewVmdVpdRepository()
+					rep := repository.NewVmdVpdRepository(true)
 					sizingState.LoadSizingMotion(cw, rep, sizingState.SizingSets[index].OriginalMotionPath)
 				}
 			}
@@ -207,14 +206,25 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	sizingState.SaveButton = widget.NewMPushButton()
 	sizingState.SaveButton.SetLabel(mi18n.T("モーション保存"))
 	sizingState.SaveButton.SetTooltip(mi18n.T("モーション保存説明"))
-	sizingState.SaveButton.SetMaxSize(declarative.Size{Width: 100, Height: 20})
+	sizingState.SaveButton.SetMinSize(declarative.Size{Width: 256, Height: 20})
+	sizingState.SaveButton.SetStretchFactor(20)
 	sizingState.SaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		for _, sizingSet := range sizingState.SizingSets {
+			if sizingSet.OutputMotionPath != "" && sizingSet.OutputMotion != nil {
+				rep := repository.NewVmdRepository(true)
+				if err := rep.Save(sizingSet.OutputMotionPath, sizingSet.OutputMotion, false); err != nil {
+					mlog.ET(mi18n.T("保存失敗"), err.Error())
+				}
+			}
+		}
+
+		controller.Beep()
 	})
 
 	mWidgets.Widgets = append(mWidgets.Widgets, sizingState.Player, sizingState.OriginalMotionPicker,
 		sizingState.OriginalModelPicker, sizingState.SizingModelPicker, sizingState.SizingMotionPicker,
 		sizingState.OutputModelPicker, sizingState.AddSetButton, sizingState.ResetSetButton,
-		sizingState.LoadSetButton, sizingState.SaveSetButton, sizingState.TerminateButton)
+		sizingState.LoadSetButton, sizingState.SaveSetButton, sizingState.TerminateButton, sizingState.SaveButton)
 	mWidgets.SetOnLoaded(func() {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
@@ -264,7 +274,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			// セットごとのサイジング内容
 			declarative.ScrollView{
 				Layout:  declarative.VBox{},
-				MinSize: declarative.Size{Width: 126, Height: 512},
+				MinSize: declarative.Size{Width: 126, Height: 450},
 				MaxSize: declarative.Size{Width: 2560, Height: 5120},
 				Children: []declarative.Widget{
 					sizingState.OriginalMotionPicker.Widgets(),
@@ -351,6 +361,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					},
 				},
 			},
+			sizingState.SaveButton.Widgets(),
 			sizingState.Player.Widgets(),
 		},
 	}

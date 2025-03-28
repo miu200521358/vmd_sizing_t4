@@ -156,7 +156,7 @@ func (ss *SizingState) LoadSet(jsonPath string) {
 
 // LoadOriginalModel 元モデルを読み込む
 func (sizingState *SizingState) LoadSizingModel(
-	cw *controller.ControlWindow, rep repository.IRepository, path string,
+	cw *controller.ControlWindow, path string,
 ) {
 	if path == "" {
 		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
@@ -164,26 +164,64 @@ func (sizingState *SizingState) LoadSizingModel(
 		return
 	}
 
-	if data, err := rep.Load(path); err == nil {
-		model := data.(*pmx.PmxModel)
-		if err := model.Bones.InsertShortageBones(); err != nil {
-			mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+	var wg sync.WaitGroup
+	var sizingModel, sizingConfigModel *pmx.PmxModel
 
-			cw.StoreModel(0, sizingState.CurrentIndex(), nil)
-			sizingState.CurrentSet().SetSizingModel(nil)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		pmxRep := repository.NewPmxRepository(true)
+		if data, err := pmxRep.Load(path); err == nil {
+			sizingModel = data.(*pmx.PmxModel)
 		} else {
-			cw.StoreModel(0, sizingState.CurrentIndex(), model)
-			sizingState.CurrentSet().SetSizingModel(model)
-
-			outputPath := sizingState.CurrentSet().CreateOutputModelPath()
-			sizingState.CurrentSet().OutputModelPath = outputPath
-			sizingState.OutputModelPicker.ChangePath(outputPath)
+			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
-	} else {
-		mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+	}()
 
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		pmxRep := repository.NewPmxRepository(false)
+		if data, err := pmxRep.Load(path); err == nil {
+			sizingConfigModel = data.(*pmx.PmxModel)
+		} else {
+			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+		}
+	}()
+
+	wg.Wait()
+
+	if sizingModel == nil || sizingConfigModel == nil {
 		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
 		sizingState.CurrentSet().SetSizingModel(nil)
+		return
+	}
+	if err := sizingConfigModel.Bones.InsertShortageBones(); err != nil {
+		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
+		sizingState.CurrentSet().SetSizingModel(nil)
+		return
+	}
+
+	// 定義ボーン追加済みモデル
+	sizingState.CurrentSet().SizingConfigModel = sizingConfigModel
+
+	// サイジングモデル（素のまま）
+	sizingState.CurrentSet().SetSizingModel(sizingModel)
+	cw.StoreModel(0, sizingState.CurrentIndex(), sizingModel)
+
+	// 出力パスを設定
+	outputPath := sizingState.CurrentSet().CreateOutputModelPath()
+	sizingState.CurrentSet().OutputModelPath = outputPath
+	sizingState.OutputModelPicker.ChangePath(outputPath)
+
+	if mlog.IsVerbose() {
+		pmxRep := repository.NewPmxRepository(true)
+		if err := pmxRep.Save(outputPath, sizingConfigModel, true); err != nil {
+			mlog.ET(mi18n.T("保存失敗"), err.Error())
+		}
 	}
 }
 
@@ -237,7 +275,7 @@ func (sizingState *SizingState) LoadSizingMotion(
 	go func() {
 		defer wg.Done()
 
-		vmdRep := repository.NewVmdVpdRepository()
+		vmdRep := repository.NewVmdVpdRepository(false)
 		if data, err := vmdRep.Load(path); err == nil {
 			originalMotion = data.(*vmd.VmdMotion)
 		} else {
@@ -249,9 +287,15 @@ func (sizingState *SizingState) LoadSizingMotion(
 	go func() {
 		defer wg.Done()
 
-		vmdRep := repository.NewVmdVpdRepository()
+		vmdRep := repository.NewVmdVpdRepository(true)
 		if data, err := vmdRep.Load(path); err == nil {
 			sizingMotion = data.(*vmd.VmdMotion)
+			for boneName := range pmx.GetStandardBoneConfigs() {
+				// 枠だけ用意しておく
+				sizingMotion.BoneFrames.Get(boneName.String())
+				sizingMotion.BoneFrames.Get(boneName.Left())
+				sizingMotion.BoneFrames.Get(boneName.Right())
+			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}

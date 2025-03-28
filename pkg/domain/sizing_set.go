@@ -22,10 +22,11 @@ type SizingSet struct {
 	OriginalModelName  string `json:"-"` // 元モーション名
 	OutputModelName    string `json:"-"` // サイジング先モデル名
 
-	OriginalMotion *vmd.VmdMotion `json:"-"` // 元モデル
-	OriginalModel  *pmx.PmxModel  `json:"-"` // 元モーション
-	OutputModel    *pmx.PmxModel  `json:"-"` // サイジング先モデル
-	OutputMotion   *vmd.VmdMotion `json:"-"` // 出力結果モーション
+	OriginalMotion    *vmd.VmdMotion `json:"-"` // 元モデル
+	OriginalModel     *pmx.PmxModel  `json:"-"` // 元モーション
+	SizingModel       *pmx.PmxModel  `json:"-"` // サイジング先モデル
+	SizingConfigModel *pmx.PmxModel  `json:"-"` // サイジング先モデル(ボーン追加)
+	OutputMotion      *vmd.VmdMotion `json:"-"` // 出力結果モーション
 
 	IsSizingLeg          bool `json:"is_sizing_leg"`           // 足補正
 	IsSizingUpper        bool `json:"is_sizing_upper"`         // 上半身補正
@@ -139,13 +140,13 @@ func (ss *SizingSet) SetSizingModel(model *pmx.PmxModel) {
 	if model == nil {
 		ss.SizingModelPath = ""
 		ss.OutputModelName = ""
-		ss.OutputModel = nil
+		ss.SizingModel = nil
 		return
 	}
 
 	ss.SizingModelPath = model.Path()
 	ss.OutputModelName = model.Name()
-	ss.OutputModel = model
+	ss.SizingModel = model
 }
 
 func (ss *SizingSet) Delete() {
@@ -161,7 +162,8 @@ func (ss *SizingSet) Delete() {
 
 	ss.OriginalMotion = nil
 	ss.OriginalModel = nil
-	ss.OutputModel = nil
+	ss.SizingModel = nil
+	ss.SizingConfigModel = nil
 	ss.OutputMotion = nil
 
 	ss.IsSizingLeg = false
