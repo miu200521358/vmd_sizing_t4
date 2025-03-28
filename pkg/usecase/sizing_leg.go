@@ -77,7 +77,7 @@ func SizingLeg(
 	blockSize, _ := miter.GetBlockSize(len(frames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
-	originalAllDeltas, err := computeOriginalDeltas(frames, blockSize, originalModel, originalMotion, originalLeftAnkleBone, originalRightAnkleBone, sizingSet, totalProcessCount, getCompletedCount)
+	originalAllDeltas, err := computeOriginalDeltas(frames, blockSize, originalModel, originalMotion, sizingSet, totalProcessCount, getCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -174,7 +174,6 @@ func computeInitialGravity(model *pmx.PmxModel, initialMotion *vmd.VmdMotion) *m
 func computeOriginalDeltas(
 	frames []int, blockSize int,
 	originalModel *pmx.PmxModel, originalMotion *vmd.VmdMotion,
-	originalLeftAnkleBone, originalRightAnkleBone *pmx.Bone,
 	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
 ) ([]*delta.VmdDeltas, error) {
 	originalAllDeltas := make([]*delta.VmdDeltas, len(frames))
@@ -187,7 +186,7 @@ func computeOriginalDeltas(
 			vmdDeltas := delta.NewVmdDeltas(frame, originalModel.Bones, originalModel.Hash(), originalMotion.Hash())
 			vmdDeltas.Morphs = deform.DeformMorph(originalModel, originalMotion.MorphFrames, frame, nil)
 			// 足補正で必要なボーン群（重心および下半身・足）を対象とする
-			vmdDeltas.Bones = deform.DeformBone(originalModel, originalMotion, true, data, append(all_gravity_lower_leg_bone_names, originalLeftAnkleBone.Name(), originalRightAnkleBone.Name()))
+			vmdDeltas.Bones = deform.DeformBone(originalModel, originalMotion, true, data, all_gravity_lower_leg_bone_names)
 			originalAllDeltas[index] = vmdDeltas
 			return nil
 		},
