@@ -22,7 +22,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 
 	sizingState.Player = widget.NewMotionPlayer()
 
-	sizingState.SizingMotionPicker = widget.NewVmdSaveFilePicker(
+	sizingState.OutputMotionPicker = widget.NewVmdSaveFilePicker(
 		mi18n.T("出力モーション(Vmd)"),
 		mi18n.T("出力モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
@@ -57,7 +57,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
 		mi18n.T("サイジング対象モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadSizingMotion(cw, rep, path)
+			sizingState.LoadSizingMotion(cw, path)
 		},
 	)
 
@@ -66,7 +66,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("モーション作成元モデル(Pmx/Json)"),
 		mi18n.T("モーション作成元モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadOriginalModel(cw, rep, path)
+			sizingState.LoadOriginalModel(cw, path)
 		},
 	)
 
@@ -140,25 +140,16 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 
 			sizingState.ResetSet()
 			sizingState.LoadSet(dlg.FilePath)
-			cw := mWidgets.Window()
 
 			for range len(sizingState.SizingSets) - 1 {
 				sizingState.AddAction()
 			}
 
 			for index := range sizingState.SizingSets {
-				sizingState.SetCurrentIndex(index)
-				{
-					rep := repository.NewPmxRepository(true)
-					sizingState.LoadOriginalModel(cw, rep, sizingState.SizingSets[index].OriginalModelPath)
-				}
-				{
-					sizingState.LoadSizingModel(cw, sizingState.SizingSets[index].SizingModelPath)
-				}
-				{
-					rep := repository.NewVmdVpdRepository(true)
-					sizingState.LoadSizingMotion(cw, rep, sizingState.SizingSets[index].OriginalMotionPath)
-				}
+				sizingState.ChangeCurrentAction(index)
+				sizingState.OriginalMotionPicker.SetPath(sizingState.SizingSets[index].OriginalMotionPath)
+				sizingState.OriginalModelPicker.SetPath(sizingState.SizingSets[index].OriginalModelPath)
+				sizingState.SizingModelPicker.SetPath(sizingState.SizingSets[index].SizingModelPath)
 			}
 
 			sizingState.SetCurrentIndex(0)
@@ -209,6 +200,8 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	sizingState.SaveButton.SetMinSize(declarative.Size{Width: 256, Height: 20})
 	sizingState.SaveButton.SetStretchFactor(20)
 	sizingState.SaveButton.SetOnClicked(func(cw *controller.ControlWindow) {
+		sizingState.SetSizingEnabled(false)
+
 		for _, sizingSet := range sizingState.SizingSets {
 			if sizingSet.OutputMotionPath != "" && sizingSet.OutputMotion != nil {
 				rep := repository.NewVmdRepository(true)
@@ -218,11 +211,12 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			}
 		}
 
+		sizingState.SetSizingEnabled(true)
 		controller.Beep()
 	})
 
 	mWidgets.Widgets = append(mWidgets.Widgets, sizingState.Player, sizingState.OriginalMotionPicker,
-		sizingState.OriginalModelPicker, sizingState.SizingModelPicker, sizingState.SizingMotionPicker,
+		sizingState.OriginalModelPicker, sizingState.SizingModelPicker, sizingState.OutputMotionPicker,
 		sizingState.OutputModelPicker, sizingState.AddSetButton, sizingState.ResetSetButton,
 		sizingState.LoadSetButton, sizingState.SaveSetButton, sizingState.TerminateButton, sizingState.SaveButton)
 	mWidgets.SetOnLoaded(func() {
@@ -281,7 +275,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					sizingState.OriginalModelPicker.Widgets(),
 					sizingState.SizingModelPicker.Widgets(),
 					declarative.VSeparator{},
-					sizingState.SizingMotionPicker.Widgets(),
+					sizingState.OutputMotionPicker.Widgets(),
 					sizingState.OutputModelPicker.Widgets(),
 					declarative.VSeparator{},
 					declarative.TextLabel{
@@ -396,7 +390,7 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		if outputPath != "" {
 			sizingSet.OutputMotionPath = outputPath
 			if sizingSet.Index == sizingState.CurrentIndex() {
-				sizingState.SizingMotionPicker.SetPath(outputPath)
+				sizingState.OutputMotionPicker.SetPath(outputPath)
 			}
 		}
 	}

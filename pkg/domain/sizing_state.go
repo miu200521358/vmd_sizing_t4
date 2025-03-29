@@ -6,13 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
-	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
-	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
-	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
 	"github.com/miu200521358/walk/pkg/walk"
@@ -28,7 +24,7 @@ type SizingState struct {
 	OriginalMotionPicker    *widget.FilePicker   // 元モーション
 	OriginalModelPicker     *widget.FilePicker   // 元モデル
 	SizingModelPicker       *widget.FilePicker   // サイジング先モデル
-	SizingMotionPicker      *widget.FilePicker   // 出力モーション
+	OutputMotionPicker      *widget.FilePicker   // 出力モーション
 	OutputModelPicker       *widget.FilePicker   // 出力モデル
 	AdoptSizingCheck        *walk.CheckBox       // サイジング反映チェック
 	AdoptAllCheck           *walk.CheckBox       // 全セット反映チェック
@@ -96,7 +92,7 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 	ss.OriginalMotionPicker.ChangePath(ss.CurrentSet().OriginalMotionPath)
 	ss.OriginalModelPicker.ChangePath(ss.CurrentSet().OriginalModelPath)
 	ss.SizingModelPicker.ChangePath(ss.CurrentSet().SizingModelPath)
-	ss.SizingMotionPicker.ChangePath(ss.CurrentSet().OutputMotionPath)
+	ss.OutputMotionPicker.ChangePath(ss.CurrentSet().OutputMotionPath)
 	ss.OutputModelPicker.ChangePath(ss.CurrentSet().OutputModelPath)
 
 	// サイジングオプションの情報を表示
@@ -131,12 +127,12 @@ func (ss *SizingState) SaveSet(jsonPath string) {
 	// セット情報をJSONに変換してファイルダイアログで選択した箇所に保存
 	if output, err := json.Marshal(ss.SizingSets); err == nil && len(output) > 0 {
 		if err := os.WriteFile(jsonPath, output, 0644); err == nil {
-			mlog.I(mi18n.T("サイジングセット保存成功"), map[string]any{"Path": jsonPath})
+			mlog.I(mi18n.T("サイジングセット保存成功", map[string]any{"Path": jsonPath}))
 		} else {
-			mlog.E(mi18n.T("サイジングセット保存失敗エラー"), map[string]any{"Error": err.Error()})
+			mlog.E(mi18n.T("サイジングセット保存失敗エラー", map[string]any{"Error": err.Error()}))
 		}
 	} else {
-		mlog.E(mi18n.T("サイジングセット保存失敗エラー"), map[string]any{"Error": err.Error()})
+		mlog.E(mi18n.T("サイジングセット保存失敗エラー", map[string]any{"Error": err.Error()}))
 	}
 }
 
@@ -145,177 +141,58 @@ func (ss *SizingState) LoadSet(jsonPath string) {
 	// セット情報をJSONから読み込んでセット情報を更新
 	if input, err := os.ReadFile(jsonPath); err == nil && len(input) > 0 {
 		if err := json.Unmarshal(input, &ss.SizingSets); err == nil {
-			mlog.I(mi18n.T("サイジングセット読込成功"), map[string]any{"Path": jsonPath})
+			mlog.I(mi18n.T("サイジングセット読込成功", map[string]any{"Path": jsonPath}))
 		} else {
-			mlog.E(mi18n.T("サイジングセット読込失敗エラー"), map[string]any{"Error": err.Error()})
+			mlog.E(mi18n.T("サイジングセット読込失敗エラー", map[string]any{"Error": err.Error()}))
 		}
 	} else {
-		mlog.E(mi18n.T("サイジングセット読込失敗エラー"), map[string]any{"Error": err.Error()})
+		mlog.E(mi18n.T("サイジングセット読込失敗エラー", map[string]any{"Error": err.Error()}))
 	}
 }
 
 // LoadOriginalModel 元モデルを読み込む
+func (sizingState *SizingState) LoadOriginalModel(
+	cw *controller.ControlWindow, path string,
+) {
+	sizingState.CurrentSet().LoadOriginalModel(path)
+
+	cw.StoreModel(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalModel)
+
+	sizingState.CurrentSet().PrepareBoneNameFrames()
+	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
+	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
+}
+
+// LoadSizingModel サイジング先モデルを読み込む
 func (sizingState *SizingState) LoadSizingModel(
 	cw *controller.ControlWindow, path string,
 ) {
-	if path == "" {
-		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetSizingModel(nil)
-		return
-	}
+	sizingState.CurrentSet().LoadSizingModel(path)
 
-	var wg sync.WaitGroup
-	var sizingModel, sizingConfigModel *pmx.PmxModel
+	cw.StoreModel(0, sizingState.CurrentIndex(), sizingState.CurrentSet().SizingModel)
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	sizingState.CurrentSet().PrepareBoneNameFrames()
+	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
+	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
-		pmxRep := repository.NewPmxRepository(true)
-		if data, err := pmxRep.Load(path); err == nil {
-			sizingModel = data.(*pmx.PmxModel)
-		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		pmxRep := repository.NewPmxRepository(false)
-		if data, err := pmxRep.Load(path); err == nil {
-			sizingConfigModel = data.(*pmx.PmxModel)
-		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-		}
-	}()
-
-	wg.Wait()
-
-	if sizingModel == nil || sizingConfigModel == nil {
-		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetSizingModel(nil)
-		return
-	}
-	if err := sizingConfigModel.Bones.InsertShortageBones(); err != nil {
-		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-		cw.StoreModel(0, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetSizingModel(nil)
-		return
-	}
-
-	// 定義ボーン追加済みモデル
-	sizingState.CurrentSet().SizingConfigModel = sizingConfigModel
-
-	// サイジングモデル（素のまま）
-	sizingState.CurrentSet().SetSizingModel(sizingModel)
-	cw.StoreModel(0, sizingState.CurrentIndex(), sizingModel)
-
-	// 出力パスを設定
-	outputPath := sizingState.CurrentSet().CreateOutputModelPath()
-	sizingState.CurrentSet().OutputModelPath = outputPath
-	sizingState.OutputModelPicker.ChangePath(outputPath)
-
-	if mlog.IsVerbose() {
-		pmxRep := repository.NewPmxRepository(true)
-		if err := pmxRep.Save(outputPath, sizingConfigModel, true); err != nil {
-			mlog.ET(mi18n.T("保存失敗"), err.Error())
-		}
-	}
-}
-
-// LoadOriginalModel オリジナルモデルを読み込む
-func (sizingState *SizingState) LoadOriginalModel(
-	cw *controller.ControlWindow, rep repository.IRepository, path string,
-) {
-	if path == "" {
-		cw.StoreModel(1, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetOriginalModel(nil)
-		return
-	}
-
-	if data, err := rep.Load(path); err == nil {
-		model := data.(*pmx.PmxModel)
-		if err := model.Bones.InsertShortageBones(); err != nil {
-			mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-
-			cw.StoreModel(1, sizingState.CurrentIndex(), nil)
-			sizingState.CurrentSet().SetOriginalModel(nil)
-		} else {
-			cw.StoreModel(1, sizingState.CurrentIndex(), model)
-			sizingState.CurrentSet().SetOriginalModel(model)
-		}
-	} else {
-		mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-
-		cw.StoreModel(1, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetOriginalModel(nil)
-	}
+	sizingState.OutputModelPicker.SetPath(sizingState.CurrentSet().OriginalModelPath)
 }
 
 // LoadSizingMotion サイジングモーションを読み込む
 func (sizingState *SizingState) LoadSizingMotion(
-	cw *controller.ControlWindow, rep repository.IRepository, path string,
+	cw *controller.ControlWindow, path string,
 ) {
-	if path == "" {
-		cw.StoreMotion(1, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetOriginalMotion(nil)
+	sizingState.CurrentSet().LoadMotion(path)
+	sizingState.CurrentSet().PrepareBoneNameFrames()
 
-		cw.StoreMotion(0, sizingState.CurrentIndex(), nil)
-		sizingState.CurrentSet().SetOutputMotion(nil)
+	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
+	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
-		return
+	if sizingState.CurrentSet().OriginalMotion != nil {
+		sizingState.Player.Reset(sizingState.CurrentSet().OriginalMotion.MaxFrame())
 	}
 
-	var wg sync.WaitGroup
-	var originalMotion, sizingMotion *vmd.VmdMotion
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		vmdRep := repository.NewVmdVpdRepository(false)
-		if data, err := vmdRep.Load(path); err == nil {
-			originalMotion = data.(*vmd.VmdMotion)
-		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-		}
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		vmdRep := repository.NewVmdVpdRepository(true)
-		if data, err := vmdRep.Load(path); err == nil {
-			sizingMotion = data.(*vmd.VmdMotion)
-			for boneName := range pmx.GetStandardBoneConfigs() {
-				// 枠だけ用意しておく
-				sizingMotion.BoneFrames.Get(boneName.String())
-				sizingMotion.BoneFrames.Get(boneName.Left())
-				sizingMotion.BoneFrames.Get(boneName.Right())
-			}
-		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
-		}
-	}()
-
-	wg.Wait()
-
-	if originalMotion != nil {
-		sizingState.Player.Reset(originalMotion.MaxFrame())
-	}
-
-	cw.StoreMotion(1, sizingState.CurrentIndex(), originalMotion)
-	sizingState.CurrentSet().SetOriginalMotion(originalMotion)
-
-	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingMotion)
-	sizingState.CurrentSet().SetOutputMotion(sizingMotion)
-
-	outputPath := sizingState.CurrentSet().CreateOutputMotionPath()
-	sizingState.CurrentSet().OutputMotionPath = outputPath
-	sizingState.SizingMotionPicker.ChangePath(outputPath)
+	sizingState.OutputMotionPicker.ChangePath(sizingState.CurrentSet().OutputMotionPath)
 }
 
 // SetSizingEnabled サイジング有効無効設定
@@ -328,7 +205,7 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.OriginalMotionPicker.SetEnabled(enabled)
 	sizingState.OriginalModelPicker.SetEnabled(enabled)
 	sizingState.SizingModelPicker.SetEnabled(enabled)
-	sizingState.SizingMotionPicker.SetEnabled(enabled)
+	sizingState.OutputMotionPicker.SetEnabled(enabled)
 	sizingState.OutputModelPicker.SetEnabled(enabled)
 
 	sizingState.SizingLegCheck.SetEnabled(enabled)

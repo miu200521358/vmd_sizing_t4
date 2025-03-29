@@ -85,9 +85,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				sizingSet.CompletedSizingArmTwist = false
 
 				// オリジナルモーションをサイジング先モーションとして読み直し
-				outputMotion := cw.LoadMotion(1, sizingSet.Index)
-				outputMotion.SetRandHash()
-				sizingSet.OutputMotion = outputMotion
+				sizingState.SetCurrentIndex(sizingSet.Index)
+				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
 			}
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
 				sizingSetCount, totalProcessCount int, getCompletedCount func() int) (bool, error){
@@ -110,14 +109,12 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 					}
 
 					isExec = execResult || isExec
-					if execResult {
-						outputMotion := sizingSet.OutputMotion
-						outputMotion.SetRandHash()
-						cw.StoreMotion(0, sizingSet.Index, outputMotion)
-					}
+
+					outputMotion := sizingSet.OutputMotion
+					outputMotion.SetRandHash()
+					cw.StoreMotion(0, sizingSet.Index, outputMotion)
 				}
 			}
-
 		}(sizingSet)
 	}
 
@@ -154,6 +151,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		}
 	}
 
+	// 最初に戻す(読み直しとかでINDEXがズレた時用)
+	sizingState.ChangeCurrentAction(0)
 	controller.Beep()
 }
 
