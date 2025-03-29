@@ -257,11 +257,8 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 						MinSize:            declarative.Size{Width: 200, Height: 25},
 						MaxSize:            declarative.Size{Width: 5120, Height: 25},
 						DefaultButtonWidth: 200,
-						Background: declarative.SolidColorBrush{
-							Color: controller.ColorNavBackground,
-						},
-						Orientation: walk.Horizontal,
-						ButtonStyle: declarative.ToolBarButtonTextOnly,
+						Orientation:        walk.Horizontal,
+						ButtonStyle:        declarative.ToolBarButtonTextOnly,
 					},
 				},
 			},
@@ -293,7 +290,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								ToolTipText: mi18n.T("即時反映説明"),
 								Checked:     true,
 								OnCheckStateChanged: func() {
-									go usecase.ExecSizing(mWidgets.Window(), sizingState)
+									// go usecase.ExecSizing(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{

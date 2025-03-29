@@ -27,8 +27,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
-	sizingState.SetSizingEnabled(false)
-
 	var completedProcessCount int32 = 1
 	totalProcessCount := 0
 	if sizingState.SizingLegCheck.Checked() {
@@ -152,8 +150,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			sizingSet.IsTerminate = false
 		}
 	}
-
-	sizingState.SetSizingEnabled(true)
 
 	// 最初に戻す(読み直しとかでINDEXがズレた時用)
 	sizingState.ChangeCurrentAction(0)

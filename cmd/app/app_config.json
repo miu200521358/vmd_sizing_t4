@@ -1,6 +1,6 @@
 {
     "Name": "VmdSizing",
-    "Version": "6.0.0_beta_51",
+    "Version": "6.0.0_beta_52",
     "Horizontal": true,
     "CloseConfirm": true,
     "ControlWindowSize": {

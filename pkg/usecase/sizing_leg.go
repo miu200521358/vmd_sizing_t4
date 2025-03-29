@@ -217,7 +217,7 @@ func updateLegResultMotion(
 
 					// 現時点の結果
 					resultVmdDeltas := delta.NewVmdDeltas(frame, sizingModel.Bones, sizingModel.Hash(), outputMotion.Hash())
-					resultVmdDeltas.Morphs = deform.DeformMorph(sizingModel, outputMotion.MorphFrames, frame, nil)
+					resultVmdDeltas.Morphs = deform.DeformBoneMorph(sizingModel, outputMotion.MorphFrames, frame, nil)
 					resultVmdDeltas.Bones = deform.DeformBone(sizingModel, outputMotion, true, iFrame, leg_direction_bone_names[dIndex])
 
 					// ひざの位置をチェック
@@ -284,7 +284,7 @@ func updateLegResultMotion(
 // computeInitialGravity は、対象モデルの初期重心位置を計算します。
 func computeInitialGravity(model *pmx.PmxModel, initialMotion *vmd.VmdMotion) *mmath.MVec3 {
 	vmdDeltas := delta.NewVmdDeltas(0, model.Bones, model.Hash(), initialMotion.Hash())
-	vmdDeltas.Morphs = deform.DeformMorph(model, initialMotion.MorphFrames, 0, nil) // FIXME: ボーンモーフを加味するか
+	vmdDeltas.Morphs = deform.DeformBoneMorph(model, initialMotion.MorphFrames, 0, nil) // FIXME: ボーンモーフを加味するか
 	vmdDeltas.Bones = deform.DeformBone(model, initialMotion, true, 0, gravity_bone_names)
 	return calcGravity(vmdDeltas)
 }
@@ -305,7 +305,7 @@ func computeVmdDeltas(
 
 			frame := float32(data)
 			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
-			vmdDeltas.Morphs = deform.DeformMorph(model, motion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
+			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
 			// 足補正で必要なボーン群（重心および下半身・足）を対象とする
 			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalc, data, all_gravity_lower_leg_bone_names)
 			allDeltas[index] = vmdDeltas
@@ -396,7 +396,7 @@ func calculateAdjustedCenter(
 			}
 			frame := float32(data)
 			vmdDeltas := delta.NewVmdDeltas(frame, sizingModel.Bones, sizingModel.Hash(), sizingProcessMotion.Hash())
-			vmdDeltas.Morphs = deform.DeformMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
+			vmdDeltas.Morphs = deform.DeformBoneMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
 			vmdDeltas.Bones = deform.DeformBone(sizingModel, sizingProcessMotion, false, data, gravity_bone_names)
 
 			originalGravityPos := calcGravity(originalAllDeltas[index])
@@ -514,7 +514,7 @@ func calculateAdjustedLegIK(
 
 			// frame := float32(data)
 			// vmdDeltas := delta.NewVmdDeltas(frame, sizingModel.Bones, sizingModel.Hash(), sizingProcessMotion.Hash())
-			// vmdDeltas.Morphs = deform.DeformMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
+			// vmdDeltas.Morphs = deform.DeformBoneMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
 			// vmdDeltas.Bones = deform.DeformBone(sizingModel, sizingProcessMotion, false, data, all_lower_leg_bone_names)
 
 			// 元モデルから各種足ボーンの位置取得
@@ -639,7 +639,7 @@ func calculateAdjustedLegFK(
 			}
 			frame := float32(data)
 			vmdDeltas := delta.NewVmdDeltas(frame, sizingModel.Bones, sizingModel.Hash(), sizingProcessMotion.Hash())
-			vmdDeltas.Morphs = deform.DeformMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
+			vmdDeltas.Morphs = deform.DeformBoneMorph(sizingModel, sizingProcessMotion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
 			vmdDeltas.Bones = deform.DeformBone(sizingModel, sizingProcessMotion, true, data, all_lower_leg_bone_names)
 
 			leftLegRotations[index] = vmdDeltas.Bones.Get(sizingLeftLegBone.Index()).FilledFrameRotation()

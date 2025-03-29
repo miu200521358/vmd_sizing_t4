@@ -1,0 +1,6401 @@
+{
+  "Name": "サイジング用マネキン4",
+  "Bones": [
+    {
+      "index": 0,
+      "name": "全ての親",
+      "english_name": "Root",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "parent_index": -1,
+      "layer": 0,
+      "bone_flag": 31,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 1,
+      "name": "センター",
+      "english_name": "Center",
+      "position": {
+        "x": 0,
+        "y": 8.302715301513672,
+        "z": -0.031591661274433136
+      },
+      "parent_index": 0,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 2,
+      "name": "グルーブ",
+      "english_name": "Groove",
+      "position": {
+        "x": 0,
+        "y": 9.48881721496582,
+        "z": -0.036104753613471985
+      },
+      "parent_index": 1,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 3,
+      "name": "腰",
+      "english_name": "J_Bip_C_Hips",
+      "position": {
+        "x": 0,
+        "y": 11.861021995544434,
+        "z": -0.04513094201683998
+      },
+      "parent_index": 2,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 4,
+      "name": "体幹中心",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 12.5,
+        "z": -0.19928109645843506
+      },
+      "parent_index": 3,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 5,
+      "name": "下半身根元",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 12.5,
+        "z": -0.19928109645843506
+      },
+      "parent_index": 4,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 6,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 6,
+      "name": "下半身",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 12.399999618530273,
+        "z": -0.19928109645843506
+      },
+      "parent_index": 5,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 7,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 7,
+      "name": "足中心",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 11.370100021362305,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 6,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": -1,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 8,
+      "name": "上半身根元",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 12.5,
+        "z": -0.19928109645843506
+      },
+      "parent_index": 4,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 9,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 9,
+      "name": "上半身",
+      "english_name": "J_Bip_C_Spine2",
+      "position": {
+        "x": 0,
+        "y": 12.600000381469727,
+        "z": -0.19928109645843506
+      },
+      "parent_index": 8,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 10,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 10,
+      "name": "上半身2",
+      "english_name": "J_Bip_C_Chest",
+      "position": {
+        "x": 0,
+        "y": 13.881440162658691,
+        "z": -0.234580397605896
+      },
+      "parent_index": 9,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 11,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 11,
+      "name": "首根元",
+      "english_name": "J_Bip_C_Chest",
+      "position": {
+        "x": 0,
+        "y": 16.343080520629883,
+        "z": 0.3165527880191803
+      },
+      "parent_index": 10,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 12,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 12,
+      "name": "首",
+      "english_name": "J_Bip_C_Neck",
+      "position": {
+        "x": 0,
+        "y": 16.84402084350586,
+        "z": 0.4202483892440796
+      },
+      "parent_index": 11,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 13,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 13,
+      "name": "頭",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 17.987539291381836,
+        "z": 0.2792825996875763
+      },
+      "parent_index": 12,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 126,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 14,
+      "name": "両目",
+      "english_name": "J_Adj_FaceEye",
+      "position": {
+        "x": 0,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 26,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 15,
+      "name": "左目",
+      "english_name": "J_Adj_L_FaceEye",
+      "position": {
+        "x": 0.18859492242336273,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 14,
+      "effect_factor": 0.30000001192092896,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 16,
+      "name": "右目",
+      "english_name": "J_Adj_R_FaceEye",
+      "position": {
+        "x": -0.18859492242336273,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 14,
+      "effect_factor": 0.30000001192092896,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 17,
+      "name": "両目光",
+      "english_name": "J_Adj_FaceEyeHighlight",
+      "position": {
+        "x": 4.7957986026858634e-8,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 14,
+      "layer": 0,
+      "bone_flag": 286,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 14,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 18,
+      "name": "左目光",
+      "english_name": "J_Adj_L_FaceEyeHighlight",
+      "position": {
+        "x": 0.18859492242336273,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 286,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 17,
+      "effect_factor": 0.30000001192092896,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 19,
+      "name": "右目光",
+      "english_name": "J_Adj_R_FaceEyeHighlight",
+      "position": {
+        "x": -0.18859492242336273,
+        "y": 18.742403030395508,
+        "z": 0.034115180373191833
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 286,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 17,
+      "effect_factor": 0.30000001192092896,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 20,
+      "name": "舌1",
+      "english_name": "J_Adj_FaceTongue1",
+      "position": {
+        "x": 0,
+        "y": 18.067737579345703,
+        "z": -0.42909806966781616
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 21,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": -0.4523197412490845,
+        "z": -0.8918558359146118
+      },
+      "local_axis_z": {
+        "x": -1,
+        "y": -0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 21,
+      "name": "舌2",
+      "english_name": "J_Adj_FaceTongue2",
+      "position": {
+        "x": 0,
+        "y": 17.9970645904541,
+        "z": -0.5684494972229004
+      },
+      "parent_index": 20,
+      "layer": 0,
+      "bone_flag": 2079,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 22,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": -0.4523197412490845,
+        "z": -0.8918558359146118
+      },
+      "local_axis_z": {
+        "x": -1,
+        "y": -0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 22,
+      "name": "舌3",
+      "english_name": "J_Adj_FaceTongue3",
+      "position": {
+        "x": 0,
+        "y": 17.94405746459961,
+        "z": -0.67296302318573
+      },
+      "parent_index": 21,
+      "layer": 0,
+      "bone_flag": 2079,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 23,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": -0.4523197412490845,
+        "z": -0.8918558359146118
+      },
+      "local_axis_z": {
+        "x": -1,
+        "y": -0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 23,
+      "name": "舌4",
+      "english_name": "J_Adj_FaceTongue4",
+      "position": {
+        "x": 0,
+        "y": 17.89105224609375,
+        "z": -0.7774766087532043
+      },
+      "parent_index": 22,
+      "layer": 0,
+      "bone_flag": 2079,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": -0.4523197412490845,
+        "z": -0.8918558359146118
+      },
+      "local_axis_z": {
+        "x": -1,
+        "y": -0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 24,
+      "name": "左肩根元",
+      "english_name": "J_Bip_C_Chest",
+      "position": {
+        "x": 0,
+        "y": 16.343080520629883,
+        "z": 0.3165527880191803
+      },
+      "parent_index": 11,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 25,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 25,
+      "name": "左肩P",
+      "english_name": "shoulderP_L",
+      "position": {
+        "x": 0.2634580135345459,
+        "y": 16.51512908935547,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 24,
+      "layer": 0,
+      "bone_flag": 26,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 26,
+      "name": "左肩",
+      "english_name": "J_Bip_L_Shoulder",
+      "position": {
+        "x": 0.2634580135345459,
+        "y": 16.515132904052734,
+        "z": 0.31655266880989075
+      },
+      "parent_index": 25,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 28,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.9890021085739136,
+        "y": -0.1479014754295349,
+        "z": 8.006099250223997e-8
+      },
+      "local_axis_z": {
+        "x": 8.095128833929266e-8,
+        "y": 1.0763046490435422e-16,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 27,
+      "name": "左肩C",
+      "english_name": "shoulderC_L",
+      "position": {
+        "x": 1.413930892944336,
+        "y": 16.34308433532715,
+        "z": 0.3165527582168579
+      },
+      "parent_index": 26,
+      "layer": 0,
+      "bone_flag": 258,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 25,
+      "effect_factor": -1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 28,
+      "name": "左腕",
+      "english_name": "J_Bip_L_UpperArm",
+      "position": {
+        "x": 1.4139310121536255,
+        "y": 16.343080520629883,
+        "z": 0.3165527880191803
+      },
+      "parent_index": 27,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 29,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8191519975662231,
+        "y": -0.5735764503479004,
+        "z": -6.714384426231845e-8
+      },
+      "local_axis_z": {
+        "x": -8.196750655997675e-8,
+        "y": -5.613262459861423e-16,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 29,
+      "name": "左腕捩",
+      "english_name": "arm_twist_L",
+      "position": {
+        "x": 2.550139904022217,
+        "y": 15.547499656677246,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 28,
+      "layer": 0,
+      "bone_flag": 3099,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 33,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0.8191520335549334,
+        "y": -0.5735764516808659,
+        "z": -6.714384454636296e-8
+      },
+      "local_axis_x": {
+        "x": 0.8191521167755127,
+        "y": -0.5735765099525452,
+        "z": -6.714385136774581e-8
+      },
+      "local_axis_z": {
+        "x": -8.19674994545494e-8,
+        "y": -3.9087406847727966e-15,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 30,
+      "name": "左腕捩1",
+      "english_name": "arm_twist_1L",
+      "position": {
+        "x": 1.9820359945297241,
+        "y": 15.945289611816406,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 28,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 33,
+      "effect_index": 29,
+      "effect_factor": 0.25,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 31,
+      "name": "左腕捩2",
+      "english_name": "arm_twist_2L",
+      "position": {
+        "x": 2.550139904022217,
+        "y": 15.547499656677246,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 28,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 33,
+      "effect_index": 29,
+      "effect_factor": 0.5,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 32,
+      "name": "左腕捩3",
+      "english_name": "arm_twist_3L",
+      "position": {
+        "x": 3.1182448863983154,
+        "y": 15.149709701538086,
+        "z": 0.31655260920524597
+      },
+      "parent_index": 28,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 33,
+      "effect_index": 29,
+      "effect_factor": 0.75,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 33,
+      "name": "左ひじ",
+      "english_name": "J_Bip_L_LowerArm",
+      "position": {
+        "x": 3.686350107192993,
+        "y": 14.751919746398926,
+        "z": 0.31655260920524597
+      },
+      "parent_index": 29,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 34,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8191534876823425,
+        "y": -0.5735713839530945,
+        "z": -0.0018371170153841376
+      },
+      "local_axis_z": {
+        "x": 0.002242696238681674,
+        "y": -2.136081173054194e-10,
+        "z": 0.9999975562095642
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 34,
+      "name": "左手捩",
+      "english_name": "wrist_twist_L",
+      "position": {
+        "x": 4.810564041137695,
+        "y": 13.964739799499512,
+        "z": 0.31403130292892456
+      },
+      "parent_index": 33,
+      "layer": 0,
+      "bone_flag": 3099,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 38,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0.8191535106715003,
+        "y": -0.573571400050106,
+        "z": -0.0018371170669419638
+      },
+      "local_axis_x": {
+        "x": 0.8191534876823425,
+        "y": -0.5735713839530945,
+        "z": -0.0018371170153841376
+      },
+      "local_axis_z": {
+        "x": -0.0022426960058510303,
+        "y": 1.0410739631483423e-10,
+        "z": -0.9999974966049194
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 35,
+      "name": "左手捩1",
+      "english_name": "wrist_twist_1L",
+      "position": {
+        "x": 4.248456954956055,
+        "y": 14.358329772949219,
+        "z": 0.3152919113636017
+      },
+      "parent_index": 33,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 38,
+      "effect_index": 34,
+      "effect_factor": 0.25,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 36,
+      "name": "左手捩2",
+      "english_name": "wrist_twist_2L",
+      "position": {
+        "x": 4.810564041137695,
+        "y": 13.964739799499512,
+        "z": 0.31403130292892456
+      },
+      "parent_index": 33,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 38,
+      "effect_index": 34,
+      "effect_factor": 0.5,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 37,
+      "name": "左手捩3",
+      "english_name": "wrist_twist_3L",
+      "position": {
+        "x": 5.372671127319336,
+        "y": 13.571160316467285,
+        "z": 0.31277069449424744
+      },
+      "parent_index": 33,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 38,
+      "effect_index": 34,
+      "effect_factor": 0.75,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 38,
+      "name": "左手首",
+      "english_name": "J_Bip_L_Hand",
+      "position": {
+        "x": 5.934778213500977,
+        "y": 13.177570343017578,
+        "z": 0.31150999665260315
+      },
+      "parent_index": 34,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 127,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8804110884666443,
+        "y": -0.47304949164390564,
+        "z": -0.03317413106560707
+      },
+      "local_axis_z": {
+        "x": -0.03765356168150902,
+        "y": -1.2963180751057735e-8,
+        "z": -0.9992908835411072
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 39,
+      "name": "左親指０",
+      "english_name": "J_Bip_L_Thumb1",
+      "position": {
+        "x": 5.900128364562988,
+        "y": 13.062067985534668,
+        "z": 0.12559723854064941
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 40,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.43992653489112854,
+        "y": -0.5549468994140625,
+        "z": -0.7060443162918091
+      },
+      "local_axis_z": {
+        "x": -0.8487275838851929,
+        "y": -4.894023675205972e-8,
+        "z": -0.5288304686546326
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 40,
+      "name": "左親指１",
+      "english_name": "J_Bip_L_Thumb2",
+      "position": {
+        "x": 6.235121250152588,
+        "y": 12.798700332641602,
+        "z": -0.17051532864570618
+      },
+      "parent_index": 39,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 41,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.7184292078018188,
+        "y": -0.554990828037262,
+        "z": -0.41933828592300415
+      },
+      "local_axis_z": {
+        "x": -0.5040993690490723,
+        "y": 4.287493471366588e-9,
+        "z": -0.8636456727981567
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 41,
+      "name": "左親指２",
+      "english_name": "J_Bip_L_Thumb3",
+      "position": {
+        "x": 6.486378192901611,
+        "y": 12.609187126159668,
+        "z": -0.21658959984779358
+      },
+      "parent_index": 40,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 128,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.7865886688232422,
+        "y": -0.6105179786682129,
+        "z": -0.09244509041309357
+      },
+      "local_axis_z": {
+        "x": -0.11672323942184448,
+        "y": -6.218169978922106e-9,
+        "z": -0.9931644201278687
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 42,
+      "name": "左人指１",
+      "english_name": "J_Bip_L_Index1",
+      "position": {
+        "x": 6.559603691101074,
+        "y": 12.84312629699707,
+        "z": 0.08258266001939774
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 43,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8440006375312805,
+        "y": -0.49617892503738403,
+        "z": -0.20364044606685638
+      },
+      "local_axis_z": {
+        "x": -0.23454926908016205,
+        "y": 1.995897846995831e-8,
+        "z": -0.9721042513847351
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 43,
+      "name": "左人指２",
+      "english_name": "J_Bip_L_Index2",
+      "position": {
+        "x": 6.852389335632324,
+        "y": 12.638114929199219,
+        "z": 0.0901087298989296
+      },
+      "parent_index": 42,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 44,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8120373487472534,
+        "y": -0.5828972458839417,
+        "z": 0.028742356225848198
+      },
+      "local_axis_z": {
+        "x": 0.03537321090698242,
+        "y": -3.9852754429858805e-10,
+        "z": -0.9993741512298584
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 44,
+      "name": "左人指３",
+      "english_name": "J_Bip_L_Index3",
+      "position": {
+        "x": 7.028598785400391,
+        "y": 12.506471633911133,
+        "z": 0.09918292611837387
+      },
+      "parent_index": 43,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 129,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8045691847801208,
+        "y": -0.5915035009384155,
+        "z": 0.05284019187092781
+      },
+      "local_axis_z": {
+        "x": 0.06553395837545395,
+        "y": -3.751772670312903e-9,
+        "z": -0.9978503584861755
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 45,
+      "name": "左中指１",
+      "english_name": "J_Bip_L_Middle1",
+      "position": {
+        "x": 6.567454814910889,
+        "y": 12.837628364562988,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 46,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8600460886955261,
+        "y": -0.5097680687904358,
+        "z": -0.02138255350291729
+      },
+      "local_axis_z": {
+        "x": -0.024854421615600586,
+        "y": -2.2869744986664386e-10,
+        "z": -0.9996910691261292
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 46,
+      "name": "左中指２",
+      "english_name": "J_Bip_L_Middle2",
+      "position": {
+        "x": 6.893644332885742,
+        "y": 12.609228134155273,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 45,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 47,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 47,
+      "name": "左中指３",
+      "english_name": "J_Bip_L_Middle3",
+      "position": {
+        "x": 7.09487771987915,
+        "y": 12.46832275390625,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 46,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 130,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8282394409179688,
+        "y": -0.5603592991828918,
+        "z": 0.004103022161871195
+      },
+      "local_axis_z": {
+        "x": 0.004953847266733646,
+        "y": -2.3281848671174998e-10,
+        "z": -0.9999877214431763
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 48,
+      "name": "左薬指１",
+      "english_name": "J_Bip_L_Ring1",
+      "position": {
+        "x": 6.5607991218566895,
+        "y": 12.842288970947266,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 49,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8524244427680969,
+        "y": -0.5022644996643066,
+        "z": 0.14526833593845367
+      },
+      "local_axis_z": {
+        "x": 0.16799581050872803,
+        "y": 7.871914675661174e-9,
+        "z": -0.9857876896858215
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 49,
+      "name": "左薬指２",
+      "english_name": "J_Bip_L_Ring2",
+      "position": {
+        "x": 6.863381385803223,
+        "y": 12.63041877746582,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 48,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 50,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 50,
+      "name": "左薬指３",
+      "english_name": "J_Bip_L_Ring3",
+      "position": {
+        "x": 7.0380024909973145,
+        "y": 12.508147239685059,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 49,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 131,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8339301347732544,
+        "y": -0.5518442392349243,
+        "z": 0.005339509807527065
+      },
+      "local_axis_z": {
+        "x": 0.006402695085853338,
+        "y": 1.2353283326826947e-11,
+        "z": -0.9999794960021973
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 51,
+      "name": "左小指１",
+      "english_name": "J_Bip_L_Little1",
+      "position": {
+        "x": 6.521029472351074,
+        "y": 12.870136260986328,
+        "z": 0.6512971520423889
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 52,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8185936808586121,
+        "y": -0.47542691230773926,
+        "z": 0.32229429483413696
+      },
+      "local_axis_z": {
+        "x": 0.3663454055786133,
+        "y": -2.4362737605088114e-8,
+        "z": -0.9304789304733276
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 52,
+      "name": "左小指２",
+      "english_name": "J_Bip_L_Little2",
+      "position": {
+        "x": 6.797801494598389,
+        "y": 12.676338195800781,
+        "z": 0.6512971520423889
+      },
+      "parent_index": 51,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 53,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": -3.497220006920543e-7
+      },
+      "local_axis_z": {
+        "x": -4.269317344096635e-7,
+        "y": 1.870394437204423e-15,
+        "z": -1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 53,
+      "name": "左小指３",
+      "english_name": "J_Bip_L_Little3",
+      "position": {
+        "x": 6.957315921783447,
+        "y": 12.564644813537598,
+        "z": 0.6512969732284546
+      },
+      "parent_index": 52,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 132,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0.8351799249649048,
+        "y": -0.5496751666069031,
+        "z": -0.01821204461157322
+      },
+      "local_axis_z": {
+        "x": -0.021800952032208443,
+        "y": -3.220840538720182e-10,
+        "z": -0.9997624158859253
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 54,
+      "name": "右肩根元",
+      "english_name": "J_Bip_C_Chest",
+      "position": {
+        "x": 0,
+        "y": 16.343080520629883,
+        "z": 0.3165527880191803
+      },
+      "parent_index": 11,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 55,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 55,
+      "name": "右肩P",
+      "english_name": "shoulderP_R",
+      "position": {
+        "x": -0.2634580135345459,
+        "y": 16.51512908935547,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 54,
+      "layer": 0,
+      "bone_flag": 26,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 56,
+      "name": "右肩",
+      "english_name": "J_Bip_R_Shoulder",
+      "position": {
+        "x": -0.2634580135345459,
+        "y": 16.515132904052734,
+        "z": 0.31655266880989075
+      },
+      "parent_index": 55,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 58,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.9890021085739136,
+        "y": -0.1479014754295349,
+        "z": 8.006099250223997e-8
+      },
+      "local_axis_z": {
+        "x": 8.095128833929266e-8,
+        "y": -1.0763046490435422e-16,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 57,
+      "name": "右肩C",
+      "english_name": "shoulderC_R",
+      "position": {
+        "x": -1.413930892944336,
+        "y": 16.34308433532715,
+        "z": 0.3165527582168579
+      },
+      "parent_index": 56,
+      "layer": 0,
+      "bone_flag": 258,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 55,
+      "effect_factor": -1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 58,
+      "name": "右腕",
+      "english_name": "J_Bip_R_UpperArm",
+      "position": {
+        "x": -1.4139310121536255,
+        "y": 16.343080520629883,
+        "z": 0.3165527880191803
+      },
+      "parent_index": 57,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 59,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8191521167755127,
+        "y": -0.5735765099525452,
+        "z": -6.714385136774581e-8
+      },
+      "local_axis_z": {
+        "x": -8.19674994545494e-8,
+        "y": 3.9087406847727966e-15,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 59,
+      "name": "右腕捩",
+      "english_name": "arm_twist_R",
+      "position": {
+        "x": -2.550139904022217,
+        "y": 15.547499656677246,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 58,
+      "layer": 0,
+      "bone_flag": 3099,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 63,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": -0.8191520335549334,
+        "y": -0.5735764516808659,
+        "z": -6.714384454636296e-8
+      },
+      "local_axis_x": {
+        "x": -0.8191519975662231,
+        "y": -0.5735764503479004,
+        "z": -6.714384426231845e-8
+      },
+      "local_axis_z": {
+        "x": -8.196750655997675e-8,
+        "y": 5.613262459861423e-16,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 60,
+      "name": "右腕捩1",
+      "english_name": "arm_twist_1R",
+      "position": {
+        "x": -1.9820359945297241,
+        "y": 15.945289611816406,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 58,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 63,
+      "effect_index": 59,
+      "effect_factor": 0.25,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 61,
+      "name": "右腕捩2",
+      "english_name": "arm_twist_2R",
+      "position": {
+        "x": -2.550139904022217,
+        "y": 15.547499656677246,
+        "z": 0.31655269861221313
+      },
+      "parent_index": 58,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 63,
+      "effect_index": 59,
+      "effect_factor": 0.5,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 62,
+      "name": "右腕捩3",
+      "english_name": "arm_twist_3R",
+      "position": {
+        "x": -3.1182448863983154,
+        "y": 15.149709701538086,
+        "z": 0.31655260920524597
+      },
+      "parent_index": 58,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 63,
+      "effect_index": 59,
+      "effect_factor": 0.75,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 63,
+      "name": "右ひじ",
+      "english_name": "J_Bip_R_LowerArm",
+      "position": {
+        "x": -3.686350107192993,
+        "y": 14.751919746398926,
+        "z": 0.31655260920524597
+      },
+      "parent_index": 59,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 64,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8191534876823425,
+        "y": -0.5735713839530945,
+        "z": -0.0018371170153841376
+      },
+      "local_axis_z": {
+        "x": 0.0022426960058510303,
+        "y": 1.0410739631483423e-10,
+        "z": -0.9999974966049194
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 64,
+      "name": "右手捩",
+      "english_name": "wrist_twist_R",
+      "position": {
+        "x": -4.810564041137695,
+        "y": 13.964739799499512,
+        "z": 0.31403130292892456
+      },
+      "parent_index": 63,
+      "layer": 0,
+      "bone_flag": 3099,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 68,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": -0.8191535106715003,
+        "y": -0.573571400050106,
+        "z": -0.0018371170669419638
+      },
+      "local_axis_x": {
+        "x": -0.8191534876823425,
+        "y": -0.5735713839530945,
+        "z": -0.0018371170153841376
+      },
+      "local_axis_z": {
+        "x": -0.002242696238681674,
+        "y": -2.136081173054194e-10,
+        "z": 0.9999975562095642
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 65,
+      "name": "右手捩1",
+      "english_name": "wrist_twist_1R",
+      "position": {
+        "x": -4.248456954956055,
+        "y": 14.358329772949219,
+        "z": 0.3152919113636017
+      },
+      "parent_index": 63,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 68,
+      "effect_index": 64,
+      "effect_factor": 0.25,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 66,
+      "name": "右手捩2",
+      "english_name": "wrist_twist_2R",
+      "position": {
+        "x": -4.810564041137695,
+        "y": 13.964739799499512,
+        "z": 0.31403130292892456
+      },
+      "parent_index": 63,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 68,
+      "effect_index": 64,
+      "effect_factor": 0.5,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 67,
+      "name": "右手捩3",
+      "english_name": "wrist_twist_3R",
+      "position": {
+        "x": -5.372671127319336,
+        "y": 13.571160316467285,
+        "z": 0.31277069449424744
+      },
+      "parent_index": 63,
+      "layer": 0,
+      "bone_flag": 259,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 68,
+      "effect_index": 64,
+      "effect_factor": 0.75,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 68,
+      "name": "右手首",
+      "english_name": "J_Bip_R_Hand",
+      "position": {
+        "x": -5.934778213500977,
+        "y": 13.177570343017578,
+        "z": 0.31150999665260315
+      },
+      "parent_index": 64,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 133,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8804110884666443,
+        "y": -0.47304949164390564,
+        "z": -0.03317413106560707
+      },
+      "local_axis_z": {
+        "x": -0.03765355795621872,
+        "y": 1.0334620270668893e-8,
+        "z": 0.9992908239364624
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 69,
+      "name": "右親指０",
+      "english_name": "J_Bip_R_Thumb1",
+      "position": {
+        "x": -5.900128364562988,
+        "y": 13.062067985534668,
+        "z": 0.12559723854064941
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 70,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.43992653489112854,
+        "y": -0.5549468994140625,
+        "z": -0.7060443162918091
+      },
+      "local_axis_z": {
+        "x": -0.8487275838851929,
+        "y": 4.894023675205972e-8,
+        "z": 0.5288304686546326
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 70,
+      "name": "右親指１",
+      "english_name": "J_Bip_R_Thumb2",
+      "position": {
+        "x": -6.235121250152588,
+        "y": 12.798700332641602,
+        "z": -0.17051532864570618
+      },
+      "parent_index": 69,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 71,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.7184292078018188,
+        "y": -0.554990828037262,
+        "z": -0.41933828592300415
+      },
+      "local_axis_z": {
+        "x": -0.5040993690490723,
+        "y": -4.287493471366588e-9,
+        "z": 0.8636456727981567
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 71,
+      "name": "右親指２",
+      "english_name": "J_Bip_R_Thumb3",
+      "position": {
+        "x": -6.486378192901611,
+        "y": 12.609187126159668,
+        "z": -0.21658959984779358
+      },
+      "parent_index": 70,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 134,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.7865886688232422,
+        "y": -0.6105179786682129,
+        "z": -0.09244509041309357
+      },
+      "local_axis_z": {
+        "x": -0.11672323942184448,
+        "y": 6.218169978922106e-9,
+        "z": 0.9931644201278687
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 72,
+      "name": "右人指１",
+      "english_name": "J_Bip_R_Index1",
+      "position": {
+        "x": -6.559603691101074,
+        "y": 12.84312629699707,
+        "z": 0.08258266001939774
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 73,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8440006375312805,
+        "y": -0.49617892503738403,
+        "z": -0.20364044606685638
+      },
+      "local_axis_z": {
+        "x": -0.23454926908016205,
+        "y": -1.995897846995831e-8,
+        "z": 0.9721042513847351
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 73,
+      "name": "右人指２",
+      "english_name": "J_Bip_R_Index2",
+      "position": {
+        "x": -6.852389335632324,
+        "y": 12.638114929199219,
+        "z": 0.0901087298989296
+      },
+      "parent_index": 72,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 74,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8120373487472534,
+        "y": -0.5828972458839417,
+        "z": 0.028742356225848198
+      },
+      "local_axis_z": {
+        "x": 0.03537321090698242,
+        "y": 3.9852754429858805e-10,
+        "z": 0.9993741512298584
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 74,
+      "name": "右人指３",
+      "english_name": "J_Bip_R_Index3",
+      "position": {
+        "x": -7.028598785400391,
+        "y": 12.506471633911133,
+        "z": 0.09918292611837387
+      },
+      "parent_index": 73,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 135,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8045691847801208,
+        "y": -0.5915035009384155,
+        "z": 0.05284019187092781
+      },
+      "local_axis_z": {
+        "x": 0.06553395837545395,
+        "y": 3.751772670312903e-9,
+        "z": 0.9978503584861755
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 75,
+      "name": "右中指１",
+      "english_name": "J_Bip_R_Middle1",
+      "position": {
+        "x": -6.567454814910889,
+        "y": 12.837628364562988,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 76,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8600460886955261,
+        "y": -0.5097680687904358,
+        "z": -0.02138255350291729
+      },
+      "local_axis_z": {
+        "x": -0.024854421615600586,
+        "y": 2.2869744986664386e-10,
+        "z": 0.9996910691261292
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 76,
+      "name": "右中指２",
+      "english_name": "J_Bip_R_Middle2",
+      "position": {
+        "x": -6.893644332885742,
+        "y": 12.609228134155273,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 75,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 77,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 77,
+      "name": "右中指３",
+      "english_name": "J_Bip_R_Middle3",
+      "position": {
+        "x": -7.09487771987915,
+        "y": 12.46832275390625,
+        "z": 0.2876705825328827
+      },
+      "parent_index": 76,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 136,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8282394409179688,
+        "y": -0.5603592991828918,
+        "z": 0.004103022161871195
+      },
+      "local_axis_z": {
+        "x": 0.004953847266733646,
+        "y": 2.3281848671174998e-10,
+        "z": 0.9999877214431763
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 78,
+      "name": "右薬指１",
+      "english_name": "J_Bip_R_Ring1",
+      "position": {
+        "x": -6.5607991218566895,
+        "y": 12.842288970947266,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 79,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8524244427680969,
+        "y": -0.5022644996643066,
+        "z": 0.14526833593845367
+      },
+      "local_axis_z": {
+        "x": 0.16799581050872803,
+        "y": -7.871914675661174e-9,
+        "z": 0.9857876896858215
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 79,
+      "name": "右薬指２",
+      "english_name": "J_Bip_R_Ring2",
+      "position": {
+        "x": -6.863381385803223,
+        "y": 12.63041877746582,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 78,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 80,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 80,
+      "name": "右薬指３",
+      "english_name": "J_Bip_R_Ring3",
+      "position": {
+        "x": -7.0380024909973145,
+        "y": 12.508147239685059,
+        "z": 0.46976059675216675
+      },
+      "parent_index": 79,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 137,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8339301347732544,
+        "y": -0.5518442392349243,
+        "z": 0.005339509807527065
+      },
+      "local_axis_z": {
+        "x": 0.006402695085853338,
+        "y": -1.2353283326826947e-11,
+        "z": 0.9999794960021973
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 81,
+      "name": "右小指１",
+      "english_name": "J_Bip_R_Little1",
+      "position": {
+        "x": -6.521029472351074,
+        "y": 12.870136260986328,
+        "z": 0.6512971520423889
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 82,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8185936808586121,
+        "y": -0.47542691230773926,
+        "z": 0.32229429483413696
+      },
+      "local_axis_z": {
+        "x": 0.3663454055786133,
+        "y": 2.4362737605088114e-8,
+        "z": 0.9304789304733276
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 82,
+      "name": "右小指２",
+      "english_name": "J_Bip_R_Little2",
+      "position": {
+        "x": -6.797801494598389,
+        "y": 12.676338195800781,
+        "z": 0.6512971520423889
+      },
+      "parent_index": 81,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 83,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8191520571708679,
+        "y": -0.5735764503479004,
+        "z": -3.497220006920543e-7
+      },
+      "local_axis_z": {
+        "x": -4.269317344096635e-7,
+        "y": -1.870394437204423e-15,
+        "z": 1
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 83,
+      "name": "右小指３",
+      "english_name": "J_Bip_R_Little3",
+      "position": {
+        "x": -6.957315921783447,
+        "y": 12.564644813537598,
+        "z": 0.6512969732284546
+      },
+      "parent_index": 82,
+      "layer": 0,
+      "bone_flag": 2075,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 138,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": -0.8351799249649048,
+        "y": -0.5496751666069031,
+        "z": -0.01821204461157322
+      },
+      "local_axis_z": {
+        "x": -0.021800952032208443,
+        "y": 3.220840538720182e-10,
+        "z": 0.9997624158859253
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 84,
+      "name": "左足根元",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 11.370100021362305,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 7,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 85,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 85,
+      "name": "腰キャンセル左",
+      "english_name": "waistCancel_L",
+      "position": {
+        "x": 0.9076589941978455,
+        "y": 11.370100021362305,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 84,
+      "layer": 0,
+      "bone_flag": 258,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 3,
+      "effect_factor": -1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 86,
+      "name": "左足",
+      "english_name": "J_Bip_L_UpperLeg",
+      "position": {
+        "x": 0.9076589941978455,
+        "y": 11.370095252990723,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 85,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 87,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 87,
+      "name": "左ひざ",
+      "english_name": "J_Bip_L_LowerLeg",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 6.661874294281006,
+        "z": 0.02357144095003605
+      },
+      "parent_index": 86,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 88,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 88,
+      "name": "左足首",
+      "english_name": "J_Bip_L_Foot",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 1.5331902503967285,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 87,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 90,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 89,
+      "name": "左かかと",
+      "english_name": "ankle_D_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 0,
+        "z": 1.0577830076217651
+      },
+      "parent_index": 88,
+      "layer": 0,
+      "bone_flag": 7,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 90,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 90,
+      "name": "左つま先",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 88,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 91,
+      "name": "左つま先先",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 90,
+      "layer": 0,
+      "bone_flag": 6,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 92,
+      "name": "左つま先親",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 0.612701416015625,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 91,
+      "layer": 0,
+      "bone_flag": 7,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 93,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 93,
+      "name": "左つま先子",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 1.212701439857483,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 92,
+      "layer": 0,
+      "bone_flag": 6,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 94,
+      "name": "左足IK親",
+      "english_name": "leg_IK_Parent_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 0,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 0,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 95,
+      "name": "左足ＩＫ",
+      "english_name": "leg_IK_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 1.5331902503967285,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 94,
+      "layer": 0,
+      "bone_flag": 62,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": {
+        "bone_index": 88,
+        "loop_count": 40,
+        "unit_rotation": 1,
+        "links": [
+          {
+            "bone_index": 87,
+            "angle_limit": true,
+            "min_angle": {
+              "x": -3.1415927410125732,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": -0.008726646192371845,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "bone_index": 86,
+            "angle_limit": false,
+            "min_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 96,
+      "name": "左つま先ＩＫ",
+      "english_name": "toe_IK_L",
+      "position": {
+        "x": 0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 95,
+      "layer": 0,
+      "bone_flag": 62,
+      "tail_position": {
+        "x": 0,
+        "y": -1,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": {
+        "bone_index": 90,
+        "loop_count": 40,
+        "unit_rotation": 1,
+        "links": [
+          {
+            "bone_index": 88,
+            "angle_limit": false,
+            "min_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 97,
+      "name": "右足根元",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 11.370100021362305,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 7,
+      "layer": 0,
+      "bone_flag": 3,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 98,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 98,
+      "name": "腰キャンセル右",
+      "english_name": "waistCancel_R",
+      "position": {
+        "x": -0.9076589941978455,
+        "y": 11.370100021362305,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 97,
+      "layer": 0,
+      "bone_flag": 258,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 3,
+      "effect_factor": -1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 99,
+      "name": "右足",
+      "english_name": "J_Bip_R_UpperLeg",
+      "position": {
+        "x": -0.9076589941978455,
+        "y": 11.370095252990723,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 98,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 100,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 100,
+      "name": "右ひざ",
+      "english_name": "J_Bip_R_LowerLeg",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 6.661874294281006,
+        "z": 0.02357144095003605
+      },
+      "parent_index": 99,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 101,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 101,
+      "name": "右足首",
+      "english_name": "J_Bip_R_Foot",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 1.5331902503967285,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 100,
+      "layer": 0,
+      "bone_flag": 27,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 103,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 102,
+      "name": "右かかと",
+      "english_name": "ankle_D_L",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 0,
+        "z": 1.0577830076217651
+      },
+      "parent_index": 101,
+      "layer": 0,
+      "bone_flag": 7,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 103,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 103,
+      "name": "右つま先",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 101,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 104,
+      "name": "右つま先先",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 103,
+      "layer": 0,
+      "bone_flag": 6,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 105,
+      "name": "右つま先親",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -0.612701416015625,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 104,
+      "layer": 0,
+      "bone_flag": 7,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 106,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 106,
+      "name": "右つま先子",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -1.2127009630203247,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 105,
+      "layer": 0,
+      "bone_flag": 6,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 107,
+      "name": "右足IK親",
+      "english_name": "leg_IK_Parent_R",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 0,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 0,
+      "layer": 0,
+      "bone_flag": 30,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 108,
+      "name": "右足ＩＫ",
+      "english_name": "leg_IK_R",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 1.5331902503967285,
+        "z": 0.42577826976776123
+      },
+      "parent_index": 107,
+      "layer": 0,
+      "bone_flag": 62,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": {
+        "bone_index": 101,
+        "loop_count": 40,
+        "unit_rotation": 1,
+        "links": [
+          {
+            "bone_index": 100,
+            "angle_limit": true,
+            "min_angle": {
+              "x": -3.1415927410125732,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": -0.008726646192371845,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "bone_index": 99,
+            "angle_limit": false,
+            "min_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 109,
+      "name": "右つま先ＩＫ",
+      "english_name": "toe_IK_R",
+      "position": {
+        "x": -0.9127013683319092,
+        "y": 0,
+        "z": -1.622138500213623
+      },
+      "parent_index": 108,
+      "layer": 0,
+      "bone_flag": 62,
+      "tail_position": {
+        "x": 0,
+        "y": -1,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": {
+        "bone_index": 103,
+        "loop_count": 40,
+        "unit_rotation": 1,
+        "links": [
+          {
+            "bone_index": 101,
+            "angle_limit": false,
+            "min_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "max_angle": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 110,
+      "name": "左足D",
+      "english_name": "leg_D_L",
+      "position": {
+        "x": 0.9076589941978455,
+        "y": 11.370095252990723,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 85,
+      "layer": 1,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 86,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 111,
+      "name": "左ひざD",
+      "english_name": "knee_D_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 6.661874294281006,
+        "z": 0.02357144095003605
+      },
+      "parent_index": 110,
+      "layer": 1,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 87,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 112,
+      "name": "左足首D",
+      "english_name": "ankle_D_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 1.5331900119781494,
+        "z": 0.4257782995700836
+      },
+      "parent_index": 111,
+      "layer": 1,
+      "bone_flag": 283,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 113,
+      "effect_index": 88,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 113,
+      "name": "左かかとD",
+      "english_name": "ankle_D_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 0,
+        "z": 1.0577830076217651
+      },
+      "parent_index": 112,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 89,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 114,
+      "name": "左足先EX",
+      "english_name": "toe_EX_L",
+      "position": {
+        "x": 0.9076588153839111,
+        "y": 0.6648035645484924,
+        "z": -0.9746915102005005
+      },
+      "parent_index": 112,
+      "layer": 1,
+      "bone_flag": 26,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 115,
+      "name": "左つま先先D",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 114,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 116,
+      "effect_index": 90,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 116,
+      "name": "左つま先親D",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 0.612701416015625,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 115,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 117,
+      "effect_index": 92,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 117,
+      "name": "左つま先子D",
+      "english_name": "J_Bip_L_ToeBase",
+      "position": {
+        "x": 1.2127009630203247,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 116,
+      "layer": 1,
+      "bone_flag": 774,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 93,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 118,
+      "name": "右足D",
+      "english_name": "leg_D_R",
+      "position": {
+        "x": -0.9076589941978455,
+        "y": 11.370095252990723,
+        "z": 0.09997089207172394
+      },
+      "parent_index": 98,
+      "layer": 1,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 99,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 119,
+      "name": "右ひざD",
+      "english_name": "knee_D_R",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 6.661874294281006,
+        "z": 0.02357144095003605
+      },
+      "parent_index": 118,
+      "layer": 1,
+      "bone_flag": 282,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 100,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 120,
+      "name": "右足首D",
+      "english_name": "ankle_D_R",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 1.5331900119781494,
+        "z": 0.4257782995700836
+      },
+      "parent_index": 119,
+      "layer": 1,
+      "bone_flag": 283,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 121,
+      "effect_index": 101,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 121,
+      "name": "右かかとD",
+      "english_name": "ankle_D_L",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 0,
+        "z": 1.0577830076217651
+      },
+      "parent_index": 120,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 102,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 122,
+      "name": "右足先EX",
+      "english_name": "toe_EX_R",
+      "position": {
+        "x": -0.9076588153839111,
+        "y": 0.6648035645484924,
+        "z": -0.9746915102005005
+      },
+      "parent_index": 120,
+      "layer": 1,
+      "bone_flag": 26,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": -1
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 123,
+      "name": "右つま先先D",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -0.912701427936554,
+        "y": 0,
+        "z": -1.6221389770507812
+      },
+      "parent_index": 122,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 124,
+      "effect_index": 103,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 124,
+      "name": "右つま先親D",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -0.612701416015625,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 123,
+      "layer": 1,
+      "bone_flag": 775,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": 125,
+      "effect_index": 105,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 125,
+      "name": "右つま先子D",
+      "english_name": "J_Bip_R_ToeBase",
+      "position": {
+        "x": -1.2127009630203247,
+        "y": 0,
+        "z": -1.5221389532089233
+      },
+      "parent_index": 124,
+      "layer": 1,
+      "bone_flag": 774,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": 106,
+      "effect_factor": 1,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 126,
+      "name": "頭先先",
+      "english_name": "J_Bip_C_Spine",
+      "position": {
+        "x": 0,
+        "y": 18.987539291381836,
+        "z": 0.2792825996875763
+      },
+      "parent_index": 13,
+      "layer": 0,
+      "bone_flag": 0,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 127,
+      "name": "左手首先先",
+      "english_name": "J_Bip_L_Hand",
+      "position": {
+        "x": 6.0443549156188965,
+        "y": 12.390780448913574,
+        "z": 0.059140000492334366
+      },
+      "parent_index": 38,
+      "layer": 0,
+      "bone_flag": 0,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 128,
+      "name": "左親指先先",
+      "english_name": "J_Bip_L_Thumb3_end",
+      "position": {
+        "x": 6.6680779457092285,
+        "y": 12.46265983581543,
+        "z": -0.22139930725097656
+      },
+      "parent_index": 41,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 129,
+      "name": "左人指先先",
+      "english_name": "J_Bip_L_Index3_end",
+      "position": {
+        "x": 7.23661994934082,
+        "y": 12.355640411376953,
+        "z": 0.11534319818019867
+      },
+      "parent_index": 44,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 130,
+      "name": "左中指先先",
+      "english_name": "J_Bip_L_Middle3_end",
+      "position": {
+        "x": 7.32047176361084,
+        "y": 12.320449829101562,
+        "z": 0.28978508710861206
+      },
+      "parent_index": 47,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 131,
+      "name": "左薬指先先",
+      "english_name": "J_Bip_L_Ring3_end",
+      "position": {
+        "x": 7.231235980987549,
+        "y": 12.38700008392334,
+        "z": 0.4721159040927887
+      },
+      "parent_index": 50,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 132,
+      "name": "左小指先先",
+      "english_name": "J_Bip_L_Little3_end",
+      "position": {
+        "x": 7.131941795349121,
+        "y": 12.456419944763184,
+        "z": 0.6440107822418213
+      },
+      "parent_index": 53,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 133,
+      "name": "右手首先先",
+      "english_name": "J_Bip_R_Hand",
+      "position": {
+        "x": -6.0443549156188965,
+        "y": 12.390780448913574,
+        "z": 0.059140000492334366
+      },
+      "parent_index": 68,
+      "layer": 0,
+      "bone_flag": 0,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 134,
+      "name": "右親指先先",
+      "english_name": "J_Bip_R_Thumb3_end",
+      "position": {
+        "x": -6.6680779457092285,
+        "y": 12.46265983581543,
+        "z": -0.22139930725097656
+      },
+      "parent_index": 71,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 135,
+      "name": "右人指先先",
+      "english_name": "J_Bip_R_Index3_end",
+      "position": {
+        "x": -7.23661994934082,
+        "y": 12.355640411376953,
+        "z": 0.11534319818019867
+      },
+      "parent_index": 74,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 136,
+      "name": "右中指先先",
+      "english_name": "J_Bip_R_Middle3_end",
+      "position": {
+        "x": -7.32047176361084,
+        "y": 12.320449829101562,
+        "z": 0.28978508710861206
+      },
+      "parent_index": 77,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 137,
+      "name": "右薬指先先",
+      "english_name": "J_Bip_R_Ring3_end",
+      "position": {
+        "x": -7.231235980987549,
+        "y": 12.38700008392334,
+        "z": 0.4721159040927887
+      },
+      "parent_index": 80,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    },
+    {
+      "index": 138,
+      "name": "右小指先先",
+      "english_name": "J_Bip_R_Little3_end",
+      "position": {
+        "x": -7.131941795349121,
+        "y": 12.456419944763184,
+        "z": 0.6440107822418213
+      },
+      "parent_index": 83,
+      "layer": 0,
+      "bone_flag": 2,
+      "tail_position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tail_index": -1,
+      "effect_index": -1,
+      "effect_factor": 0,
+      "fixed_axis": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_x": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "local_axis_z": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "effector_key": 0,
+      "ik": null
+    }
+  ],
+  "DisplaySlots": [
+    {
+      "index": 0,
+      "name": "Root",
+      "english_name": "Root",
+      "special_flag": 1,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 0
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "name": "表情",
+      "english_name": "Exp",
+      "special_flag": 1,
+      "references": [
+        {
+          "display_type": 1,
+          "display_index": 0
+        },
+        {
+          "display_type": 1,
+          "display_index": 1
+        },
+        {
+          "display_type": 1,
+          "display_index": 2
+        },
+        {
+          "display_type": 1,
+          "display_index": 3
+        },
+        {
+          "display_type": 1,
+          "display_index": 4
+        },
+        {
+          "display_type": 1,
+          "display_index": 5
+        },
+        {
+          "display_type": 1,
+          "display_index": 6
+        },
+        {
+          "display_type": 1,
+          "display_index": 7
+        },
+        {
+          "display_type": 1,
+          "display_index": 8
+        },
+        {
+          "display_type": 1,
+          "display_index": 9
+        },
+        {
+          "display_type": 1,
+          "display_index": 10
+        },
+        {
+          "display_type": 1,
+          "display_index": 11
+        },
+        {
+          "display_type": 1,
+          "display_index": 12
+        },
+        {
+          "display_type": 1,
+          "display_index": 13
+        },
+        {
+          "display_type": 1,
+          "display_index": 14
+        },
+        {
+          "display_type": 1,
+          "display_index": 15
+        },
+        {
+          "display_type": 1,
+          "display_index": 16
+        },
+        {
+          "display_type": 1,
+          "display_index": 17
+        },
+        {
+          "display_type": 1,
+          "display_index": 18
+        },
+        {
+          "display_type": 1,
+          "display_index": 19
+        },
+        {
+          "display_type": 1,
+          "display_index": 20
+        },
+        {
+          "display_type": 1,
+          "display_index": 21
+        },
+        {
+          "display_type": 1,
+          "display_index": 22
+        },
+        {
+          "display_type": 1,
+          "display_index": 23
+        },
+        {
+          "display_type": 1,
+          "display_index": 24
+        },
+        {
+          "display_type": 1,
+          "display_index": 25
+        },
+        {
+          "display_type": 1,
+          "display_index": 26
+        },
+        {
+          "display_type": 1,
+          "display_index": 27
+        },
+        {
+          "display_type": 1,
+          "display_index": 28
+        },
+        {
+          "display_type": 1,
+          "display_index": 29
+        },
+        {
+          "display_type": 1,
+          "display_index": 30
+        },
+        {
+          "display_type": 1,
+          "display_index": 31
+        },
+        {
+          "display_type": 1,
+          "display_index": 32
+        },
+        {
+          "display_type": 1,
+          "display_index": 33
+        },
+        {
+          "display_type": 1,
+          "display_index": 34
+        },
+        {
+          "display_type": 1,
+          "display_index": 35
+        },
+        {
+          "display_type": 1,
+          "display_index": 36
+        },
+        {
+          "display_type": 1,
+          "display_index": 37
+        },
+        {
+          "display_type": 1,
+          "display_index": 38
+        },
+        {
+          "display_type": 1,
+          "display_index": 39
+        },
+        {
+          "display_type": 1,
+          "display_index": 40
+        },
+        {
+          "display_type": 1,
+          "display_index": 41
+        },
+        {
+          "display_type": 1,
+          "display_index": 42
+        },
+        {
+          "display_type": 1,
+          "display_index": 43
+        },
+        {
+          "display_type": 1,
+          "display_index": 44
+        },
+        {
+          "display_type": 1,
+          "display_index": 45
+        },
+        {
+          "display_type": 1,
+          "display_index": 47
+        },
+        {
+          "display_type": 1,
+          "display_index": 48
+        },
+        {
+          "display_type": 1,
+          "display_index": 50
+        },
+        {
+          "display_type": 1,
+          "display_index": 51
+        },
+        {
+          "display_type": 1,
+          "display_index": 52
+        },
+        {
+          "display_type": 1,
+          "display_index": 53
+        },
+        {
+          "display_type": 1,
+          "display_index": 55
+        },
+        {
+          "display_type": 1,
+          "display_index": 56
+        },
+        {
+          "display_type": 1,
+          "display_index": 58
+        },
+        {
+          "display_type": 1,
+          "display_index": 59
+        },
+        {
+          "display_type": 1,
+          "display_index": 60
+        },
+        {
+          "display_type": 1,
+          "display_index": 61
+        },
+        {
+          "display_type": 1,
+          "display_index": 62
+        },
+        {
+          "display_type": 1,
+          "display_index": 63
+        },
+        {
+          "display_type": 1,
+          "display_index": 64
+        },
+        {
+          "display_type": 1,
+          "display_index": 65
+        },
+        {
+          "display_type": 1,
+          "display_index": 66
+        },
+        {
+          "display_type": 1,
+          "display_index": 67
+        },
+        {
+          "display_type": 1,
+          "display_index": 68
+        },
+        {
+          "display_type": 1,
+          "display_index": 69
+        },
+        {
+          "display_type": 1,
+          "display_index": 70
+        },
+        {
+          "display_type": 1,
+          "display_index": 71
+        },
+        {
+          "display_type": 1,
+          "display_index": 72
+        },
+        {
+          "display_type": 1,
+          "display_index": 73
+        },
+        {
+          "display_type": 1,
+          "display_index": 74
+        },
+        {
+          "display_type": 1,
+          "display_index": 75
+        },
+        {
+          "display_type": 1,
+          "display_index": 76
+        },
+        {
+          "display_type": 1,
+          "display_index": 77
+        },
+        {
+          "display_type": 1,
+          "display_index": 78
+        },
+        {
+          "display_type": 1,
+          "display_index": 81
+        },
+        {
+          "display_type": 1,
+          "display_index": 83
+        },
+        {
+          "display_type": 1,
+          "display_index": 85
+        },
+        {
+          "display_type": 1,
+          "display_index": 88
+        },
+        {
+          "display_type": 1,
+          "display_index": 89
+        },
+        {
+          "display_type": 1,
+          "display_index": 90
+        },
+        {
+          "display_type": 1,
+          "display_index": 91
+        },
+        {
+          "display_type": 1,
+          "display_index": 92
+        },
+        {
+          "display_type": 1,
+          "display_index": 93
+        },
+        {
+          "display_type": 1,
+          "display_index": 94
+        },
+        {
+          "display_type": 1,
+          "display_index": 95
+        },
+        {
+          "display_type": 1,
+          "display_index": 98
+        },
+        {
+          "display_type": 1,
+          "display_index": 101
+        },
+        {
+          "display_type": 1,
+          "display_index": 104
+        },
+        {
+          "display_type": 1,
+          "display_index": 107
+        },
+        {
+          "display_type": 1,
+          "display_index": 110
+        },
+        {
+          "display_type": 1,
+          "display_index": 111
+        },
+        {
+          "display_type": 1,
+          "display_index": 112
+        },
+        {
+          "display_type": 1,
+          "display_index": 113
+        },
+        {
+          "display_type": 1,
+          "display_index": 114
+        },
+        {
+          "display_type": 1,
+          "display_index": 115
+        },
+        {
+          "display_type": 1,
+          "display_index": 116
+        },
+        {
+          "display_type": 1,
+          "display_index": 117
+        },
+        {
+          "display_type": 1,
+          "display_index": 118
+        },
+        {
+          "display_type": 1,
+          "display_index": 119
+        },
+        {
+          "display_type": 1,
+          "display_index": 120
+        },
+        {
+          "display_type": 1,
+          "display_index": 121
+        },
+        {
+          "display_type": 1,
+          "display_index": 122
+        },
+        {
+          "display_type": 1,
+          "display_index": 123
+        },
+        {
+          "display_type": 1,
+          "display_index": 124
+        },
+        {
+          "display_type": 1,
+          "display_index": 125
+        },
+        {
+          "display_type": 1,
+          "display_index": 126
+        },
+        {
+          "display_type": 1,
+          "display_index": 127
+        },
+        {
+          "display_type": 1,
+          "display_index": 128
+        },
+        {
+          "display_type": 1,
+          "display_index": 131
+        },
+        {
+          "display_type": 1,
+          "display_index": 134
+        },
+        {
+          "display_type": 1,
+          "display_index": 137
+        },
+        {
+          "display_type": 1,
+          "display_index": 139
+        },
+        {
+          "display_type": 1,
+          "display_index": 141
+        },
+        {
+          "display_type": 1,
+          "display_index": 142
+        },
+        {
+          "display_type": 1,
+          "display_index": 143
+        },
+        {
+          "display_type": 1,
+          "display_index": 144
+        },
+        {
+          "display_type": 1,
+          "display_index": 145
+        },
+        {
+          "display_type": 1,
+          "display_index": 146
+        },
+        {
+          "display_type": 1,
+          "display_index": 147
+        },
+        {
+          "display_type": 1,
+          "display_index": 148
+        },
+        {
+          "display_type": 1,
+          "display_index": 149
+        },
+        {
+          "display_type": 1,
+          "display_index": 150
+        },
+        {
+          "display_type": 1,
+          "display_index": 151
+        },
+        {
+          "display_type": 1,
+          "display_index": 152
+        },
+        {
+          "display_type": 1,
+          "display_index": 153
+        },
+        {
+          "display_type": 1,
+          "display_index": 154
+        },
+        {
+          "display_type": 1,
+          "display_index": 155
+        },
+        {
+          "display_type": 1,
+          "display_index": 156
+        },
+        {
+          "display_type": 1,
+          "display_index": 157
+        },
+        {
+          "display_type": 1,
+          "display_index": 158
+        },
+        {
+          "display_type": 1,
+          "display_index": 159
+        },
+        {
+          "display_type": 1,
+          "display_index": 160
+        },
+        {
+          "display_type": 1,
+          "display_index": 161
+        },
+        {
+          "display_type": 1,
+          "display_index": 162
+        },
+        {
+          "display_type": 1,
+          "display_index": 163
+        },
+        {
+          "display_type": 1,
+          "display_index": 164
+        },
+        {
+          "display_type": 1,
+          "display_index": 165
+        },
+        {
+          "display_type": 1,
+          "display_index": 166
+        },
+        {
+          "display_type": 1,
+          "display_index": 167
+        },
+        {
+          "display_type": 1,
+          "display_index": 168
+        },
+        {
+          "display_type": 1,
+          "display_index": 169
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "センター",
+      "english_name": "センター",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 1
+        },
+        {
+          "display_type": 0,
+          "display_index": 2
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "体幹",
+      "english_name": "体幹",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 3
+        },
+        {
+          "display_type": 0,
+          "display_index": 6
+        },
+        {
+          "display_type": 0,
+          "display_index": 9
+        },
+        {
+          "display_type": 0,
+          "display_index": 10
+        },
+        {
+          "display_type": 0,
+          "display_index": 12
+        },
+        {
+          "display_type": 0,
+          "display_index": 13
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "顔",
+      "english_name": "顔",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 14
+        },
+        {
+          "display_type": 0,
+          "display_index": 15
+        },
+        {
+          "display_type": 0,
+          "display_index": 16
+        },
+        {
+          "display_type": 0,
+          "display_index": 17
+        },
+        {
+          "display_type": 0,
+          "display_index": 18
+        },
+        {
+          "display_type": 0,
+          "display_index": 19
+        },
+        {
+          "display_type": 0,
+          "display_index": 20
+        },
+        {
+          "display_type": 0,
+          "display_index": 21
+        },
+        {
+          "display_type": 0,
+          "display_index": 22
+        },
+        {
+          "display_type": 0,
+          "display_index": 23
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "name": "胸",
+      "english_name": "胸",
+      "special_flag": 0,
+      "references": []
+    },
+    {
+      "index": 6,
+      "name": "左手",
+      "english_name": "左手",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 25
+        },
+        {
+          "display_type": 0,
+          "display_index": 26
+        },
+        {
+          "display_type": 0,
+          "display_index": 28
+        },
+        {
+          "display_type": 0,
+          "display_index": 29
+        },
+        {
+          "display_type": 0,
+          "display_index": 33
+        },
+        {
+          "display_type": 0,
+          "display_index": 34
+        },
+        {
+          "display_type": 0,
+          "display_index": 38
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "name": "左指",
+      "english_name": "左指",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 39
+        },
+        {
+          "display_type": 0,
+          "display_index": 40
+        },
+        {
+          "display_type": 0,
+          "display_index": 41
+        },
+        {
+          "display_type": 0,
+          "display_index": 42
+        },
+        {
+          "display_type": 0,
+          "display_index": 43
+        },
+        {
+          "display_type": 0,
+          "display_index": 44
+        },
+        {
+          "display_type": 0,
+          "display_index": 45
+        },
+        {
+          "display_type": 0,
+          "display_index": 46
+        },
+        {
+          "display_type": 0,
+          "display_index": 47
+        },
+        {
+          "display_type": 0,
+          "display_index": 48
+        },
+        {
+          "display_type": 0,
+          "display_index": 49
+        },
+        {
+          "display_type": 0,
+          "display_index": 50
+        },
+        {
+          "display_type": 0,
+          "display_index": 51
+        },
+        {
+          "display_type": 0,
+          "display_index": 52
+        },
+        {
+          "display_type": 0,
+          "display_index": 53
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "name": "右手",
+      "english_name": "右手",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 55
+        },
+        {
+          "display_type": 0,
+          "display_index": 56
+        },
+        {
+          "display_type": 0,
+          "display_index": 58
+        },
+        {
+          "display_type": 0,
+          "display_index": 59
+        },
+        {
+          "display_type": 0,
+          "display_index": 63
+        },
+        {
+          "display_type": 0,
+          "display_index": 64
+        },
+        {
+          "display_type": 0,
+          "display_index": 68
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "name": "右指",
+      "english_name": "右指",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 69
+        },
+        {
+          "display_type": 0,
+          "display_index": 70
+        },
+        {
+          "display_type": 0,
+          "display_index": 71
+        },
+        {
+          "display_type": 0,
+          "display_index": 72
+        },
+        {
+          "display_type": 0,
+          "display_index": 73
+        },
+        {
+          "display_type": 0,
+          "display_index": 74
+        },
+        {
+          "display_type": 0,
+          "display_index": 75
+        },
+        {
+          "display_type": 0,
+          "display_index": 76
+        },
+        {
+          "display_type": 0,
+          "display_index": 77
+        },
+        {
+          "display_type": 0,
+          "display_index": 78
+        },
+        {
+          "display_type": 0,
+          "display_index": 79
+        },
+        {
+          "display_type": 0,
+          "display_index": 80
+        },
+        {
+          "display_type": 0,
+          "display_index": 81
+        },
+        {
+          "display_type": 0,
+          "display_index": 82
+        },
+        {
+          "display_type": 0,
+          "display_index": 83
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "name": "左足",
+      "english_name": "左足",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 86
+        },
+        {
+          "display_type": 0,
+          "display_index": 87
+        },
+        {
+          "display_type": 0,
+          "display_index": 88
+        },
+        {
+          "display_type": 0,
+          "display_index": 90
+        },
+        {
+          "display_type": 0,
+          "display_index": 94
+        },
+        {
+          "display_type": 0,
+          "display_index": 95
+        },
+        {
+          "display_type": 0,
+          "display_index": 96
+        },
+        {
+          "display_type": 0,
+          "display_index": 110
+        },
+        {
+          "display_type": 0,
+          "display_index": 111
+        },
+        {
+          "display_type": 0,
+          "display_index": 112
+        },
+        {
+          "display_type": 0,
+          "display_index": 114
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "name": "右足",
+      "english_name": "右足",
+      "special_flag": 0,
+      "references": [
+        {
+          "display_type": 0,
+          "display_index": 99
+        },
+        {
+          "display_type": 0,
+          "display_index": 100
+        },
+        {
+          "display_type": 0,
+          "display_index": 101
+        },
+        {
+          "display_type": 0,
+          "display_index": 103
+        },
+        {
+          "display_type": 0,
+          "display_index": 107
+        },
+        {
+          "display_type": 0,
+          "display_index": 108
+        },
+        {
+          "display_type": 0,
+          "display_index": 109
+        },
+        {
+          "display_type": 0,
+          "display_index": 118
+        },
+        {
+          "display_type": 0,
+          "display_index": 119
+        },
+        {
+          "display_type": 0,
+          "display_index": 120
+        },
+        {
+          "display_type": 0,
+          "display_index": 122
+        }
+      ]
+    }
+  ],
+  "RigidBodies": null
+}
