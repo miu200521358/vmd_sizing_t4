@@ -196,7 +196,14 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 		ss.setOriginalModel(nil, nil)
 		return
 	}
-	if err := originalConfigModel.Bones.InsertShortageBones(); err != nil {
+
+	if err := originalModel.Bones.InsertShortageOverrideBones(); err != nil {
+		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+		ss.setOriginalModel(nil, nil)
+		return
+	}
+
+	if err := originalConfigModel.Bones.InsertShortageConfigBones(); err != nil {
 		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
 		ss.setOriginalModel(nil, nil)
 		return
@@ -257,7 +264,14 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		ss.setSizingModel(nil, nil)
 		return
 	}
-	if err := sizingConfigModel.Bones.InsertShortageBones(); err != nil {
+
+	if err := sizingModel.Bones.InsertShortageOverrideBones(); err != nil {
+		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+		ss.setOriginalModel(nil, nil)
+		return
+	}
+
+	if err := sizingConfigModel.Bones.InsertShortageConfigBones(); err != nil {
 		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
 		ss.setSizingModel(nil, nil)
 		return
