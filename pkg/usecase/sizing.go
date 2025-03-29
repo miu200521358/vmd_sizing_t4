@@ -27,6 +27,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
+	sizingState.SetSizingEnabled(false)
+
 	var completedProcessCount int32 = 1
 	totalProcessCount := 0
 	if sizingState.SizingLegCheck.Checked() {
@@ -151,6 +153,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		}
 	}
 
+	sizingState.SetSizingEnabled(true)
+
 	// 最初に戻す(読み直しとかでINDEXがズレた時用)
 	sizingState.ChangeCurrentAction(0)
 	controller.Beep()
@@ -229,6 +233,19 @@ func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
 	}
 
 	return scales
+}
+
+// getFrames 処理対象のフレームを取得する
+func getFrames(motion *vmd.VmdMotion, boneNames []string) []int {
+	frames := motion.BoneFrames.RegisteredIndexesByNames(boneNames)
+	// TODO
+	// rangeFrames := mmath.IntRangesByStep(0, int(motion.MaxFrame()), 5)
+	// frames = append(frames, rangeFrames...)
+
+	// frames = mmath.Unique(frames)
+	// mmath.Sort(frames)
+
+	return frames
 }
 
 // processLog 処理ログを出力する

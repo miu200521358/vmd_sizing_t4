@@ -208,6 +208,11 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.OutputMotionPicker.SetEnabled(enabled)
 	sizingState.OutputModelPicker.SetEnabled(enabled)
 
+	sizingState.AdoptSizingCheck.SetEnabled(enabled)
+	sizingState.AdoptAllCheck.SetEnabled(enabled)
+	sizingState.TerminateButton.SetEnabled(enabled)
+	sizingState.SaveButton.SetEnabled(enabled)
+
 	sizingState.SizingLegCheck.SetEnabled(enabled)
 	sizingState.SizingUpperCheck.SetEnabled(enabled)
 	sizingState.SizingShoulderCheck.SetEnabled(enabled)

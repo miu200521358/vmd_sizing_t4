@@ -476,6 +476,14 @@
         "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身系変形情報更新(2) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
     },
     {
+        "id": "足補正10",
+        "translation": "【No.{{.No}}】足補正 - 結果モーションへの出力(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}}]"
+    },
+    {
+        "id": "足補正11",
+        "translation": "【No.{{.No}}】足補正 - 結果モーションへの出力(2 - {{.Direction}} - {{.FramesIndex}}回目) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
         "id": "上半身補正開始",
         "translation": "【No.{{.No}}】上半身補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
     },

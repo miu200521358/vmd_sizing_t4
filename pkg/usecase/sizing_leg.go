@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"miu200521358/vmd_sizing_t4/pkg/domain"
 
 	"github.com/miu200521358/mlib_go/pkg/config/merr"
@@ -54,10 +55,7 @@ func SizingLeg(
 	sizingInitialGravityPos := computeInitialGravity(sizingModel, vmd.InitialMotion)
 	gravityRatio := sizingInitialGravityPos.Y / originalInitialGravityPos.Y
 
-	frames := sizingProcessMotion.BoneFrames.RegisteredIndexesByNames(all_lower_leg_bone_names)
-	if len(frames) == 0 {
-		return false, nil
-	}
+	frames := getFrames(sizingProcessMotion, all_lower_leg_bone_names)
 	blockSize, _ := miter.GetBlockSize(len(frames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
@@ -148,7 +146,16 @@ func SizingLeg(
 		outputMotion("足補正05_calculateAdjustedLegFK", sizingSet.OriginalMotionPath, sizingProcessMotion)
 	}
 
-	sizingSet.OutputMotion = sizingProcessMotion
+	// 足補正処理の結果をサイジング先モーションに反映
+	if err = updateLegResultMotion(
+		frames, blockSize, sizingSet, sizingProcessMotion, sizingCenterBone, sizingGrooveBone,
+		sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+		sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
+		totalProcessCount, getCompletedCount,
+	); err != nil {
+		return false, err
+	}
+
 	sizingSet.CompletedSizingLeg = true
 
 	if mlog.IsVerbose() {
@@ -158,6 +165,120 @@ func SizingLeg(
 	}
 
 	return true, nil
+}
+
+func updateLegResultMotion(
+	frames []int, blockSize int, sizingSet *domain.SizingSet, sizingProcessMotion *vmd.VmdMotion,
+	sizingCenterBone, sizingGrooveBone,
+	sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+	sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone *pmx.Bone,
+	totalProcessCount int, getCompletedCount func() int,
+) error {
+	// 足補正処理の結果をサイジング先モーションに反映
+	sizingModel := sizingSet.SizingConfigModel
+	outputMotion := sizingSet.OutputMotion
+
+	// TOE_IK キーフレームのリセット
+	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Left()))
+	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
+
+	for _, bone := range []*pmx.Bone{
+		sizingCenterBone, sizingGrooveBone,
+		sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+		sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
+	} {
+		outputMotion.BoneFrames.Get(bone.Name()).ForEach(func(frame float32, bf *vmd.BoneFrame) {
+			processBf := sizingProcessMotion.BoneFrames.Get(bone.Name()).Get(frame)
+			bf.Position = processBf.Position.Copy()
+			bf.Rotation = processBf.Rotation.Copy()
+			outputMotion.BoneFrames.Get(bone.Name()).Update(bf)
+		})
+	}
+
+	processLog("足補正10", sizingSet.Index, getCompletedCount(), totalProcessCount, 0, 1)
+
+	// 中間キーフレのズレをチェック
+	kneeThreshold := 0.3
+	ankleThreshold := 0.1
+
+	for fIndex, targetFrames := range [][]int{frames, mmath.IntRanges(int(outputMotion.MaxFrame()))} {
+		err := miter.IterParallelByList([]pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}, 1, 1,
+			func(dIndex int, direction pmx.BoneDirection) error {
+				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize, sizingModel, sizingProcessMotion, sizingSet, totalProcessCount, getCompletedCount, true)
+				if err != nil {
+					return err
+				}
+
+				for iIndex, iFrame := range targetFrames {
+					if sizingSet.IsTerminate {
+						return merr.TerminateError
+					}
+					frame := float32(iFrame)
+
+					// 現時点の結果
+					resultVmdDeltas := delta.NewVmdDeltas(frame, sizingModel.Bones, sizingModel.Hash(), outputMotion.Hash())
+					resultVmdDeltas.Morphs = deform.DeformMorph(sizingModel, outputMotion.MorphFrames, frame, nil)
+					resultVmdDeltas.Bones = deform.DeformBone(sizingModel, outputMotion, true, iFrame, leg_direction_bone_names[dIndex])
+
+					// ひざの位置をチェック
+					resultKneeDelta := resultVmdDeltas.Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
+					processKneeDelta := processAllDeltas[iIndex].Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
+
+					// つま先の位置をチェック
+					resultToeDelta := resultVmdDeltas.Bones.GetByName(pmx.TOE_T.StringFromDirection(direction))
+					processToeDelta := processAllDeltas[iIndex].Bones.GetByName(pmx.TOE_T.StringFromDirection(direction))
+
+					if resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold ||
+						resultToeDelta.FilledGlobalPosition().Distance(processToeDelta.FilledGlobalPosition()) > ankleThreshold {
+						// 閾値を超えている場合、足FKを登録する
+						for _, legBoneName := range []pmx.StandardBoneName{pmx.LEG, pmx.LEG_IK} {
+							boneName := legBoneName.StringFromDirection(direction)
+							processKneeBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
+							if processKneeBf.Position != nil {
+								resultBf.Position = processKneeBf.Position.Copy()
+							}
+							resultBf.Rotation = processKneeBf.Rotation.Copy()
+							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
+						}
+
+						if resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold {
+							boneName := pmx.KNEE.StringFromDirection(direction)
+							processKneeBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf.Rotation = processKneeBf.Rotation.Copy()
+							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
+						}
+
+						if resultToeDelta.FilledGlobalPosition().Distance(processToeDelta.FilledGlobalPosition()) > ankleThreshold {
+							boneName := pmx.ANKLE.StringFromDirection(direction)
+							processToeBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf.Rotation = processToeBf.Rotation.Copy()
+							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
+						}
+					}
+
+					if iIndex > 0 && iIndex%1000 == 0 {
+						mlog.I(mi18n.T("足補正11", map[string]interface{}{"No": sizingSet.Index + 1,
+							"CompletedProcessCount": fmt.Sprintf("%02d", getCompletedCount()),
+							"TotalProcessCount":     fmt.Sprintf("%02d", totalProcessCount),
+							"IterIndex":             fmt.Sprintf("%04d", iFrame),
+							"AllCount":              fmt.Sprintf("%02d", len(targetFrames)),
+							"Direction":             direction.String(),
+							"FramesIndex":           fIndex + 1}))
+					}
+				}
+
+				return nil
+			}, nil)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // computeInitialGravity は、対象モデルの初期重心位置を計算します。
