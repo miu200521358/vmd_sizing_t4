@@ -477,19 +477,35 @@
     },
     {
         "id": "上半身補正開始",
-        "translation": "【No.{{.No}}】上半身補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】上半身補正 開始 ---------------------------------"
+    },
+    {
+        "id": "上半身補正01",
+        "translation": "【No.{{.No}}】上半身補正 - デフォーム情報取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正02",
+        "translation": "【No.{{.No}}】上半身補正 - 上半身補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正03",
+        "translation": "【No.{{.No}}】上半身補正 - 上半身2登録 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "上半身補正04",
+        "translation": "【No.{{.No}}】上半身補正 - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "肩補正開始",
-        "translation": "【No.{{.No}} 肩補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}} 肩補正 開始 ---------------------------------"
     },
     {
         "id": "腕スタンス補正開始",
-        "translation": "【No.{{.No}}】腕スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】腕スタンス補正 開始 ---------------------------------"
     },
     {
         "id": "指スタンス補正開始",
-        "translation": "【No.{{.No}}】指スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】指スタンス補正 開始 ---------------------------------"
     },
     {
         "id": "ボーン不足エラー",
@@ -537,7 +553,7 @@
     },
     {
         "id": "腕指スタンス補正開始",
-        "translation": "【No.{{.No}}】腕・指スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】腕・指スタンス補正 開始 ---------------------------------"
     },
     {
         "id": "即時反映",
@@ -625,7 +641,7 @@
     },
     {
         "id": "全ての親最適化開始",
-        "translation": "【No.{{.No}}】全ての親統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】全ての親統合 開始 ---------------------------------"
     },
     {
         "id": "全ての親最適化01",
@@ -641,7 +657,7 @@
     },
     {
         "id": "センター最適化開始",
-        "translation": "【No.{{.No}}】センター・腰最適化 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】センター・腰最適化 開始 ---------------------------------"
     },
     {
         "id": "センター最適化01",
@@ -657,7 +673,7 @@
     },
     {
         "id": "足IK親最適化開始",
-        "translation": "【No.{{.No}}】足IK親統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】足IK親統合 開始 ---------------------------------"
     },
     {
         "id": "足IK親最適化01",
@@ -700,18 +716,6 @@
         "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足IK追加補正 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
-        "id": "上半身補正01",
-        "translation": "【No.{{.No}}】上半身補正 - 作成元モデルの上半身変形情報取得 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "上半身補正02",
-        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身補正 上半身スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "上半身補正03",
-        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身2補正 上半身2スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
         "id": "捩り補正ボーン不足",
         "translation": "【No.{{.No}}】捩り分散: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
     },
@@ -729,7 +733,7 @@
     },
     {
         "id": "握り最適化開始",
-        "translation": "【No.{{.No}}】握り拡散統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】握り拡散統合 開始 ---------------------------------"
     },
     {
         "id": "握り最適化01",
@@ -749,7 +753,7 @@
     },
     {
         "id": "捩り補正開始",
-        "translation": "【No.{{.No}}】捩り分散 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】捩り分散 開始 ---------------------------------"
     },
     {
         "id": "捩り補正01",
@@ -773,7 +777,7 @@
     },
     {
         "id": "肩P最適化開始",
-        "translation": "【No.{{.No}}】肩P統合 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】肩P統合 開始 ---------------------------------"
     },
     {
         "id": "肩P最適化01",
@@ -793,7 +797,7 @@
     },
     {
         "id": "不要キー間引き開始",
-        "translation": "【No.{{.No}}】不要キー間引き 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】不要キー間引き 開始 ---------------------------------"
     },
     {
         "id": "不要キー間引き01",

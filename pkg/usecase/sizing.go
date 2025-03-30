@@ -87,8 +87,9 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
 			}
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
-				sizingSetCount, totalProcessCount int, incrementCompletedCount func()) (bool, error){
+				sizingSetCount int, incrementCompletedCount func()) (bool, error){
 				SizingLeg,
+				SizingUpper,
 			} {
 				incrementCompletedCount := func() {
 					atomic.AddInt32(&completedProcessCount, 1)
@@ -96,7 +97,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				}
 
 				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					totalProcessCount, incrementCompletedCount); err != nil {
+					incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {
@@ -330,3 +331,9 @@ var gravity_bone_names = []string{
 
 // 下半身系 + 重力計算対象ボーン名
 var all_gravity_lower_leg_bone_names = append(all_lower_leg_bone_names, gravity_bone_names...)
+
+// 上半身系ボーン名
+var trunk_upper_bone_names = []string{
+	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
+	pmx.UPPER_ROOT.String(), pmx.UPPER.String(), pmx.UPPER2.String(), pmx.NECK_ROOT.String(),
+	pmx.SHOULDER.Left(), pmx.SHOULDER.Right(), pmx.NECK.String()}

@@ -49,7 +49,8 @@ type SizingSet struct {
 	CompletedSizingArmTwist     bool `json:"-"` // 腕捩補正完了フラグ
 	CompletedSizingReduction    bool `json:"-"` // 不要キー削除補正完了フラグ
 
-	originalCenterBone, originalGrooveBone, originalLowerBone,
+	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone,
+	originalUpperRootBone, originalUpperBone, originalUpper2Bone, originalNeckRootBone,
 	originalLeftLegIkParentBone, originalLeftLegIkBone,
 	originalLeftLegBone, originalLeftKneeBone, originalLeftAnkleBone,
 	originalLeftToeIkBone, originalLeftToeTailBone, originalLeftHeelBone, originalLeftToePBone,
@@ -57,13 +58,14 @@ type SizingSet struct {
 	originalRightLegBone, originalRightKneeBone, originalRightAnkleBone,
 	originalRightToeIkBone, originalRightToeTailBone, originalRightHeelBone, originalRightToePBone *pmx.Bone // 元モデルのボーン情報
 
-	sizingCenterBone, sizingGrooveBone, sizingLowerBone,
+	sizingCenterBone, sizingGrooveBone, sizingTrunkRootBone, sizingLowerBone,
+	sizingUpperRootBone, sizingUpperBone, sizingUpper2Bone, sizingNeckRootBone,
 	sizingLeftLegIkParentBone, sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
 	sizingLeftToeIkBone, sizingLeftToeTailBone, sizingLeftHeelBone, sizingLeftToePBone,
 	sizingRightLegIkParentBone, sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
 	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone *pmx.Bone // サイジング先モデルのボーン情報
 
-	sizingGrooveVanillaBone *pmx.Bone // サイジング先モデル(バニラ)のボーン情報
+	sizingUpperVanillaBone, sizingUpper2VanillaBone, sizingNeckRootVanillaBone, sizingGrooveVanillaBone *pmx.Bone // サイジング先モデル(バニラ)のボーン情報
 }
 
 func NewSizingSet(index int) *SizingSet {
@@ -133,9 +135,9 @@ func (ss *SizingSet) GetProcessCount() (processCount, completedCount int) {
 		}
 	}
 	if ss.IsSizingUpper {
-		processCount += 0
+		processCount += 7
 		if ss.CompletedSizingUpper {
-			completedCount += 0
+			completedCount += 7
 		}
 	}
 	if ss.IsSizingShoulder {
@@ -271,7 +273,7 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 		return
 	}
 
-	if err := originalConfigModel.Bones.InsertShortageConfigBones(); err != nil {
+	if err := originalConfigModel.Bones.InsertShortageSizingConfigBones(); err != nil {
 		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
 		ss.setOriginalModel(nil, nil)
 		return
@@ -339,7 +341,7 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		return
 	}
 
-	if err := sizingConfigModel.Bones.InsertShortageConfigBones(); err != nil {
+	if err := sizingConfigModel.Bones.InsertShortageSizingConfigBones(); err != nil {
 		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
 		ss.setSizingModel(nil, nil)
 		return

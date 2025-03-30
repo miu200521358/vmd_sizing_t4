@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/miu200521358/mlib_go/pkg/domain/pmx"
+import (
+	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
+)
 
 func (ss *SizingSet) OriginalCenterBone() *pmx.Bone {
 	if ss.OriginalConfigModel == nil {
@@ -24,6 +26,66 @@ func (ss *SizingSet) OriginalGrooveBone() *pmx.Bone {
 	}
 
 	return ss.originalGrooveBone
+}
+
+func (ss *SizingSet) OriginalTrunkRootBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalTrunkRootBone == nil {
+		ss.originalTrunkRootBone, _ = ss.OriginalConfigModel.Bones.GetTrunkRoot()
+	}
+
+	return ss.originalTrunkRootBone
+}
+
+func (ss *SizingSet) OriginalUpperRootBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalUpperRootBone == nil {
+		ss.originalUpperRootBone, _ = ss.OriginalConfigModel.Bones.GetUpperRoot()
+	}
+
+	return ss.originalUpperRootBone
+}
+
+func (ss *SizingSet) OriginalUpperBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalUpperBone == nil {
+		ss.originalUpperBone, _ = ss.OriginalConfigModel.Bones.GetUpper()
+	}
+
+	return ss.originalUpperBone
+}
+
+func (ss *SizingSet) OriginalUpper2Bone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalUpper2Bone == nil {
+		ss.originalUpper2Bone, _ = ss.OriginalConfigModel.Bones.GetUpper2()
+	}
+
+	return ss.originalUpper2Bone
+}
+
+func (ss *SizingSet) OriginalNeckRootBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalNeckRootBone == nil {
+		ss.originalNeckRootBone, _ = ss.OriginalConfigModel.Bones.GetNeckRoot()
+	}
+
+	return ss.originalNeckRootBone
 }
 
 func (ss *SizingSet) OriginalLowerBone() *pmx.Bone {
@@ -254,6 +316,8 @@ func (ss *SizingSet) OriginalRightToePBone() *pmx.Bone {
 	return ss.originalRightToePBone
 }
 
+// --------------------------------------------------------------------
+
 func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
 	if ss.SizingConfigModel == nil {
 		return nil
@@ -266,18 +330,6 @@ func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
 	return ss.sizingCenterBone
 }
 
-func (ss *SizingSet) SizingLowerBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLowerBone == nil {
-		ss.sizingLowerBone, _ = ss.SizingConfigModel.Bones.GetLower()
-	}
-
-	return ss.sizingLowerBone
-}
-
 func (ss *SizingSet) SizingGrooveBone() *pmx.Bone {
 	if ss.SizingConfigModel == nil {
 		return nil
@@ -288,6 +340,78 @@ func (ss *SizingSet) SizingGrooveBone() *pmx.Bone {
 	}
 
 	return ss.sizingGrooveBone
+}
+
+func (ss *SizingSet) SizingTrunkRootBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingTrunkRootBone == nil {
+		ss.sizingTrunkRootBone, _ = ss.SizingConfigModel.Bones.GetTrunkRoot()
+	}
+
+	return ss.sizingTrunkRootBone
+}
+
+func (ss *SizingSet) SizingUpperRootBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingUpperRootBone == nil {
+		ss.sizingUpperRootBone, _ = ss.SizingConfigModel.Bones.GetUpperRoot()
+	}
+
+	return ss.sizingUpperRootBone
+}
+
+func (ss *SizingSet) SizingUpperBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingUpperBone == nil {
+		ss.sizingUpperBone, _ = ss.SizingConfigModel.Bones.GetUpper()
+	}
+
+	return ss.sizingUpperBone
+}
+
+func (ss *SizingSet) SizingUpper2Bone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingUpper2Bone == nil {
+		ss.sizingUpper2Bone, _ = ss.SizingConfigModel.Bones.GetUpper2()
+	}
+
+	return ss.sizingUpper2Bone
+}
+
+func (ss *SizingSet) SizingNeckRootBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingNeckRootBone == nil {
+		ss.sizingNeckRootBone, _ = ss.SizingConfigModel.Bones.GetNeckRoot()
+	}
+
+	return ss.sizingNeckRootBone
+}
+
+func (ss *SizingSet) SizingLowerBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLowerBone == nil {
+		ss.sizingLowerBone, _ = ss.SizingConfigModel.Bones.GetLower()
+	}
+
+	return ss.sizingLowerBone
 }
 
 func (ss *SizingSet) SizingLeftLegIkParentBone() *pmx.Bone {
@@ -506,6 +630,8 @@ func (ss *SizingSet) SizingRightToePBone() *pmx.Bone {
 	return ss.sizingRightToePBone
 }
 
+// --------------------------------------------------------------------
+
 func (ss *SizingSet) SizingGrooveVanillaBone() *pmx.Bone {
 	if ss.SizingModel == nil {
 		return nil
@@ -516,4 +642,40 @@ func (ss *SizingSet) SizingGrooveVanillaBone() *pmx.Bone {
 	}
 
 	return ss.sizingGrooveVanillaBone
+}
+
+func (ss *SizingSet) SizingUpperVanillaBone() *pmx.Bone {
+	if ss.SizingModel == nil {
+		return nil
+	}
+
+	if ss.sizingUpperVanillaBone == nil {
+		ss.sizingUpperVanillaBone, _ = ss.SizingModel.Bones.GetUpper()
+	}
+
+	return ss.sizingUpperVanillaBone
+}
+
+func (ss *SizingSet) SizingUpper2VanillaBone() *pmx.Bone {
+	if ss.SizingModel == nil {
+		return nil
+	}
+
+	if ss.sizingUpper2VanillaBone == nil {
+		ss.sizingUpper2VanillaBone, _ = ss.SizingModel.Bones.GetUpper2()
+	}
+
+	return ss.sizingUpper2VanillaBone
+}
+
+func (ss *SizingSet) SizingNeckRootVanillaBone() *pmx.Bone {
+	if ss.SizingModel == nil {
+		return nil
+	}
+
+	if ss.sizingNeckRootVanillaBone == nil {
+		ss.sizingNeckRootVanillaBone, _ = ss.SizingModel.Bones.GetNeckRoot()
+	}
+
+	return ss.sizingNeckRootVanillaBone
 }
