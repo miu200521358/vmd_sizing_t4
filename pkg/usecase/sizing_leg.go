@@ -73,6 +73,7 @@ func SizingLeg(
 	sizingProcessMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Left()))
 	sizingProcessMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
 
+	// 先モデルのデフォーム結果を並列処理で取得
 	sizingAllDeltas, err := computeVmdDeltas(frames, blockSize, sizingModel, sizingProcessMotion, sizingSet, false, gravity_bone_names, "足補正01")
 	if err != nil {
 		return false, err
@@ -126,6 +127,7 @@ func SizingLeg(
 
 	incrementCompletedCount()
 
+	// 先モデルのデフォーム結果を並列処理で取得
 	sizingAllDeltas, err = computeVmdDeltas(frames, blockSize, sizingModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
 	if err != nil {
 		return false, err
@@ -163,12 +165,12 @@ func SizingLeg(
 		return false, err
 	}
 
-	sizingSet.CompletedSizingLeg = true
-
 	if mlog.IsVerbose() {
 		insertIKFrames(sizingSet, sizingProcessMotion, true)
 		outputMotion("足補正06_Finish", sizingSet.OriginalMotionPath, sizingProcessMotion)
 	}
+
+	sizingSet.CompletedSizingLeg = true
 
 	return true, nil
 }
