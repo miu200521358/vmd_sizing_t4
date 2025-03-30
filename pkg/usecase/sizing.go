@@ -87,19 +87,16 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
 			}
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
-				sizingSetCount, totalProcessCount int, getCompletedCount func() int, incrementCompletedCount func()) (bool, error){
+				sizingSetCount, totalProcessCount int, incrementCompletedCount func()) (bool, error){
 				SizingLeg,
 			} {
-				getCompletedCount := func() int {
-					return int(atomic.LoadInt32(&completedProcessCount))
-				}
 				incrementCompletedCount := func() {
 					atomic.AddInt32(&completedProcessCount, 1)
 					cw.ProgressBar().Increment()
 				}
 
 				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					totalProcessCount, getCompletedCount, incrementCompletedCount); err != nil {
+					totalProcessCount, incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {

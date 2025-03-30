@@ -15,10 +15,9 @@ import (
 )
 
 // SizingLeg は、足補正処理を行います。
-// 処理内容を機能ごとに分割することで、可読性と保守性を向上させています。
 func SizingLeg(
 	sizingSet *domain.SizingSet, moveScale *mmath.MVec3, sizingSetCount, totalProcessCount int,
-	getCompletedCount func() int, incrementCompletedCount func(),
+	incrementCompletedCount func(),
 ) (bool, error) {
 	// 対象外の場合は何もせず終了
 	if !sizingSet.IsSizingLeg || sizingSet.CompletedSizingLeg {
