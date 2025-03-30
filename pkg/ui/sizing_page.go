@@ -224,6 +224,18 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.AddAction()
 		sizingState.TerminateButton.SetEnabled(false)
 	})
+	mWidgets.SetOnChangePlaying(func(playing bool) {
+		sizingState.AdoptSizingCheck.SetEnabled(!playing)
+		sizingState.AdoptAllCheck.SetEnabled(!playing)
+		sizingState.TerminateButton.SetEnabled(!playing)
+
+		sizingState.SizingLegCheck.SetEnabled(!playing)
+		sizingState.SizingUpperCheck.SetEnabled(!playing)
+		sizingState.SizingShoulderCheck.SetEnabled(!playing)
+		sizingState.SizingArmStanceCheck.SetEnabled(!playing)
+		sizingState.SizingFingerStanceCheck.SetEnabled(!playing)
+		sizingState.SizingArmTwistCheck.SetEnabled(!playing)
+	})
 
 	return declarative.TabPage{
 		Title:    mi18n.T("サイジング"),
