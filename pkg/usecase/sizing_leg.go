@@ -152,8 +152,8 @@ func SizingLeg(
 	// 足補正処理の結果をサイジング先モーションに反映
 	if err = updateLegResultMotion(
 		frames, blockSize, sizingSet, sizingProcessMotion, sizingCenterBone, sizingGrooveBone,
-		sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone, sizingLeftToePBone,
-		sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone, sizingRightToePBone,
+		sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+		sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
 		totalProcessCount, getCompletedCount,
 	); err != nil {
 		return false, err
@@ -173,8 +173,8 @@ func SizingLeg(
 func updateLegResultMotion(
 	frames []int, blockSize int, sizingSet *domain.SizingSet, sizingProcessMotion *vmd.VmdMotion,
 	sizingCenterBone, sizingGrooveBone,
-	sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone, sizingLeftToePBone,
-	sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone, sizingRightToePBone *pmx.Bone,
+	sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+	sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone *pmx.Bone,
 	totalProcessCount int, getCompletedCount func() int,
 ) error {
 	// 足補正処理の結果をサイジング先モーションに反映
@@ -408,7 +408,11 @@ func calculateAdjustedCenter(
 			if sizingGrooveBone != nil {
 				// グルーブがある場合、グルーブ位置補正を追加
 				sizingGrooveBf := sizingProcessMotion.BoneFrames.Get(sizingGrooveBone.Name()).Get(frame)
-				groovePositions[index] = sizingGrooveBf.Position.Added(&mmath.MVec3{X: 0, Y: yDiff, Z: 0})
+				if sizingGrooveBf.Position == nil {
+					groovePositions[index] = &mmath.MVec3{X: 0, Y: yDiff, Z: 0}
+				} else {
+					groovePositions[index] = sizingGrooveBf.Position.Added(&mmath.MVec3{X: 0, Y: yDiff, Z: 0})
+				}
 			} else {
 				// グルーブがない場合、センター位置にを補正
 				centerPositions[index].Add(&mmath.MVec3{X: 0, Y: yDiff, Z: 0})
