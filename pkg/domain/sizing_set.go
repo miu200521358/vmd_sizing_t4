@@ -135,9 +135,9 @@ func (ss *SizingSet) GetProcessCount() (processCount, completedCount int) {
 		}
 	}
 	if ss.IsSizingUpper {
-		processCount += 7
+		processCount += 6
 		if ss.CompletedSizingUpper {
-			completedCount += 7
+			completedCount += 6
 		}
 	}
 	if ss.IsSizingShoulder {

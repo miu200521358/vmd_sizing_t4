@@ -30,11 +30,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
-	cw.Synchronize(func() {
-		sizingState.SetSizingEnabled(false)
-		sizingState.TerminateButton.SetEnabled(true)
-	})
-
 	var completedProcessCount int32 = 0
 	totalProcessCount := 0
 	for _, sizingSet := range sizingState.SizingSets {
@@ -43,8 +38,13 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		completedProcessCount += int32(completedCount)
 	}
 
-	cw.ProgressBar().SetMax(totalProcessCount)
-	cw.ProgressBar().SetValue(int(completedProcessCount))
+	cw.Synchronize(func() {
+		sizingState.SetSizingEnabled(false)
+		sizingState.TerminateButton.SetEnabled(true)
+
+		cw.ProgressBar().SetMax(totalProcessCount)
+		cw.ProgressBar().SetValue(int(completedProcessCount))
+	})
 
 	// 処理時間の計測開始
 	start := time.Now()
@@ -157,6 +157,9 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	cw.Synchronize(func() {
 		sizingState.SetSizingEnabled(true)
 		sizingState.TerminateButton.SetEnabled(false)
+
+		cw.ProgressBar().SetMax(0)
+		cw.ProgressBar().SetValue(0)
 	})
 
 	// 最初に戻す(読み直しとかでINDEXがズレた時用)
