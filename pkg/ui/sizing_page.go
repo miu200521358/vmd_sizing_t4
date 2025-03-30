@@ -269,15 +269,12 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			// セットごとのサイジング内容
 			declarative.ScrollView{
 				Layout:  declarative.VBox{},
-				MinSize: declarative.Size{Width: 126, Height: 450},
+				MinSize: declarative.Size{Width: 126, Height: 350},
 				MaxSize: declarative.Size{Width: 2560, Height: 5120},
 				Children: []declarative.Widget{
 					sizingState.OriginalMotionPicker.Widgets(),
 					sizingState.OriginalModelPicker.Widgets(),
 					sizingState.SizingModelPicker.Widgets(),
-					declarative.VSeparator{},
-					sizingState.OutputMotionPicker.Widgets(),
-					sizingState.OutputModelPicker.Widgets(),
 					declarative.VSeparator{},
 					declarative.TextLabel{
 						Text: mi18n.T("サイジングオプション"),
@@ -288,22 +285,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 					declarative.Composite{
 						Layout: declarative.Grid{Columns: 3},
 						Children: []declarative.Widget{
-							declarative.CheckBox{
-								AssignTo:    &sizingState.AdoptSizingCheck,
-								Text:        mi18n.T("即時反映"),
-								ToolTipText: mi18n.T("即時反映説明"),
-								Checked:     true,
-								OnCheckStateChanged: func() {
-									// go usecase.ExecSizing(mWidgets.Window(), sizingState)
-								},
-							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.AdoptAllCheck,
-								Text:        mi18n.T("全セット反映"),
-								ToolTipText: mi18n.T("全セット反映説明"),
-								Checked:     true,
-							},
-							sizingState.TerminateButton.Widgets(),
 							declarative.CheckBox{
 								AssignTo:    &sizingState.SizingLegCheck,
 								Text:        mi18n.T("足補正"),
@@ -333,7 +314,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("腕スタンス補正"),
 								ToolTipText: mi18n.T("腕スタンス補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM)
 								},
 							},
 							declarative.CheckBox{
@@ -352,8 +333,27 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM_TWIST)
 								},
 							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptSizingCheck,
+								Text:        mi18n.T("即時反映"),
+								ToolTipText: mi18n.T("即時反映説明"),
+								Checked:     true,
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ROOT)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptAllCheck,
+								Text:        mi18n.T("全セット反映"),
+								ToolTipText: mi18n.T("全セット反映説明"),
+								Checked:     true,
+							},
+							sizingState.TerminateButton.Widgets(),
 						},
 					},
+					declarative.VSeparator{},
+					sizingState.OutputMotionPicker.Widgets(),
+					sizingState.OutputModelPicker.Widgets(),
 				},
 			},
 			sizingState.SaveButton.Widgets(),
@@ -368,7 +368,7 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 	if !sizingState.AdoptAllCheck.Checked() {
 		// 現在のインデックスのみ
 		startIndex = sizingState.CurrentIndex()
-		endIndex = startIndex + 1
+		endIndex = min(len(sizingState.SizingSets), startIndex+1)
 	}
 
 	for _, sizingSet := range sizingState.SizingSets[startIndex:endIndex] {
@@ -394,6 +394,11 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 				sizingState.OutputMotionPicker.SetPath(outputPath)
 			}
 		}
+	}
+
+	if !sizingState.AdoptSizingCheck.Checked() {
+		// 即時反映がOFFの場合は、サイジングを実行しない
+		return
 	}
 
 	go usecase.ExecSizing(cw, sizingState)

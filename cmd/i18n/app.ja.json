@@ -437,51 +437,43 @@
     },
     {
         "id": "足補正開始",
-        "translation": "【No.{{.No}}】足補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
+        "translation": "【No.{{.No}}】足補正 開始 ---------------------------------"
     },
     {
         "id": "足補正01",
-        "translation": "【No.{{.No}}】足補正 - 作成元モデルの下半身系変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - デフォーム情報取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正02",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足FK登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正03",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの足補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - センター補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正04",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのひざ補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - センター登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正05",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの足首補正 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足IK補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正06",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身系変形情報更新(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足IK登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正07",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのセンター補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足FK再計算 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正08",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルのつま先補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 再計算足FK登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正09",
-        "translation": "【No.{{.No}}】足補正 - サイジング先モデルの下半身系変形情報更新(2) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "足補正10",
-        "translation": "【No.{{.No}}】足補正 - 結果モーションへの出力(1) [{{.CompletedProcessCount}}/{{.TotalProcessCount}}]"
-    },
-    {
-        "id": "足補正11",
-        "translation": "【No.{{.No}}】足補正 - 結果モーションへの出力(2 - {{.Direction}} - {{.FramesIndex}}回目) [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - {{.Direction}}足 - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正開始",
@@ -645,11 +637,11 @@
     },
     {
         "id": "全ての親最適化01",
-        "translation": "【No.{{.No}}】全ての親統合 - 全ての親キーフレームの統合 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】全ての親統合 - 全ての親キーフレームの統合 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "全ての親最適化02",
-        "translation": "【No.{{.No}}】全ての親統合 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】全ての親統合 - 中間キーフレームのズレチェック [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "センター最適化ボーン不足",
@@ -661,11 +653,11 @@
     },
     {
         "id": "センター最適化01",
-        "translation": "【No.{{.No}}】センター・腰最適化 - センターキーフレームの分離 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】センター・腰最適化 - センターキーフレームの分離 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "センター最適化02",
-        "translation": "【No.{{.No}}】センター・腰最適化 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】センター・腰最適化 - 中間キーフレームのズレチェック [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足IK親最適化ボーン不足",
@@ -677,11 +669,11 @@
     },
     {
         "id": "足IK親最適化01",
-        "translation": "【No.{{.No}}】足IK親統合 - 足IK親キーフレームの統合 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足IK親統合 - 足IK親キーフレームの統合 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足IK親最適化02",
-        "translation": "【No.{{.No}}】足IK親統合 - 中間キーフレームのズレチェック [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足IK親統合 - 中間キーフレームのズレチェック [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "腕IK親最適化ボーン不足",
@@ -693,11 +685,11 @@
     },
     {
         "id": "腕IK最適化01",
-        "translation": "【No.{{.No}}】腕IK統合 - 腕IKキーフレームの統合 【{{.BoneName}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】腕IK統合 - 腕IKキーフレームの統合 【{{.BoneName}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "腕IK最適化02",
-        "translation": "【No.{{.No}}】腕IK統合 - 中間キーフレームのズレチェック 【{{.BoneName}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】腕IK統合 - 中間キーフレームのズレチェック 【{{.BoneName}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "下半身補正01",
@@ -709,23 +701,23 @@
     },
     {
         "id": "下半身補正03",
-        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足追加補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足追加補正 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "下半身補正04",
-        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足IK追加補正 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足IK追加補正 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正01",
-        "translation": "【No.{{.No}}】上半身補正 - 作成元モデルの上半身変形情報取得 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】上半身補正 - 作成元モデルの上半身変形情報取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正02",
-        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身補正 上半身スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身補正 上半身スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正03",
-        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身2補正 上半身2スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】上半身補正 - サイジング先モデルの上半身2補正 上半身2スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正ボーン不足",
@@ -749,19 +741,19 @@
     },
     {
         "id": "握り最適化01",
-        "translation": "【No.{{.No}}】握り拡散統合 - 握りキーフレームの統合 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】握り拡散統合 - 握りキーフレームの統合 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "握り最適化02",
-        "translation": "【No.{{.No}}】握り拡散統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】握り拡散統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "肩補正01",
-        "translation": "【No.{{.No}}】肩補正 - 作成元モデルの肩変形情報取得 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】肩補正 - 作成元モデルの肩変形情報取得 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "肩補正02",
-        "translation": "【No.{{.No}}】肩補正 - サイジング先モデルの肩補正 【{{.Direction}}】 スケール 【{{.Scale}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】肩補正 - サイジング先モデルの肩補正 【{{.Direction}}】 スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正開始",
@@ -769,23 +761,23 @@
     },
     {
         "id": "捩り補正01",
-        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕変形情報取得 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕変形情報取得 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正02",
-        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕補正 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正03",
-        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕捩補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの腕捩補正 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正04",
-        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの手捩補正 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】捩り分散 - サイジング先モデルの手捩補正 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正05",
-        "translation": "【No.{{.No}}】捩り分散 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】捩り分散 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "肩P最適化開始",
@@ -793,11 +785,11 @@
     },
     {
         "id": "肩P最適化01",
-        "translation": "【No.{{.No}}】肩P統合 - 肩Pキーフレームの統合 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】肩P統合 - 肩Pキーフレームの統合 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "肩P最適化02",
-        "translation": "【No.{{.No}}】肩P統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】肩P統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "不要キー間引き",
@@ -813,7 +805,7 @@
     },
     {
         "id": "不要キー間引き01",
-        "translation": "【No.{{.No}}】不要キー間引き 【{{.Name}}】 [{{.CompletedProcessCount}}/{{.TotalProcessCount}} - {{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】不要キー間引き 【{{.Name}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "処理停止",
@@ -829,6 +821,6 @@
     },
     {
         "id": "サイジングエラー",
-        "translation": "サイジング実行時にエラーが発生しました\n\n{{.Error}}"
+        "translation": "サイジング実行時にエラーが発生しました\n再発する場合、コミュニティよりご連絡ください\n    アプリ名: {{.AppName}}, アプリバージョン {{.AppVersion}}\n\n{{.Error}}"
     }
 ]

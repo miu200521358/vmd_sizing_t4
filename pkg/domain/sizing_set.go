@@ -104,6 +104,58 @@ func (ss *SizingSet) CreateOutputMotionPath() string {
 		ss.OriginalMotionPath, fmt.Sprintf("%s%s", fileName, suffix))
 }
 
+func (ss *SizingSet) GetProcessCount() (processCount, completedCount int) {
+	if ss.OriginalConfigModel == nil || ss.SizingConfigModel == nil ||
+		ss.OutputMotion == nil {
+		return 0, 0
+	}
+
+	if ss.IsSizingLeg {
+		processCount += 12
+		if ss.CompletedSizingLeg {
+			completedCount += 12
+		}
+	}
+	if ss.IsSizingUpper {
+		processCount += 0
+		if ss.CompletedSizingUpper {
+			completedCount += 0
+		}
+	}
+	if ss.IsSizingShoulder {
+		processCount += 0
+		if ss.CompletedSizingShoulder {
+			completedCount += 0
+		}
+	}
+	if ss.IsSizingArmStance {
+		processCount += 0
+		if ss.CompletedSizingArmStance {
+			completedCount += 0
+		}
+	}
+	if ss.IsSizingFingerStance {
+		processCount += 0
+		if ss.CompletedSizingFingerStance {
+			completedCount += 0
+		}
+	}
+	if ss.IsSizingArmTwist {
+		processCount += 0
+		if ss.CompletedSizingArmTwist {
+			completedCount += 0
+		}
+	}
+	if ss.IsSizingReduction {
+		processCount += 0
+		if ss.CompletedSizingReduction {
+			completedCount += 0
+		}
+	}
+
+	return processCount, completedCount
+}
+
 func (ss *SizingSet) setMotion(originalMotion, outputMotion *vmd.VmdMotion) {
 	if originalMotion == nil || outputMotion == nil {
 		ss.OriginalMotionPath = ""

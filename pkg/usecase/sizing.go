@@ -35,26 +35,16 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		sizingState.TerminateButton.SetEnabled(true)
 	})
 
-	var completedProcessCount int32 = 1
+	var completedProcessCount int32 = 0
 	totalProcessCount := 0
-	if sizingState.SizingLegCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
+	for _, sizingSet := range sizingState.SizingSets {
+		processCount, completedCount := sizingSet.GetProcessCount()
+		totalProcessCount += processCount
+		completedProcessCount += int32(completedCount)
 	}
-	if sizingState.SizingUpperCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
-	}
-	if sizingState.SizingShoulderCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
-	}
-	if sizingState.SizingArmStanceCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
-	}
-	if sizingState.SizingFingerStanceCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
-	}
-	if sizingState.SizingArmTwistCheck.Checked() {
-		totalProcessCount += len(sizingState.SizingSets)
-	}
+
+	cw.ProgressBar().SetMax(totalProcessCount)
+	cw.ProgressBar().SetValue(int(completedProcessCount))
 
 	// 処理時間の計測開始
 	start := time.Now()
@@ -68,7 +58,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 	var wg sync.WaitGroup
 	for _, sizingSet := range sizingState.SizingSets {
-		if sizingSet.OriginalModel == nil || sizingSet.SizingConfigModel == nil ||
+		if sizingSet.OriginalConfigModel == nil || sizingSet.SizingConfigModel == nil ||
 			sizingSet.OutputMotion == nil {
 			continue
 		}
@@ -97,20 +87,22 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
 			}
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
-				sizingSetCount, totalProcessCount int, getCompletedCount func() int) (bool, error){
+				sizingSetCount, totalProcessCount int, getCompletedCount func() int, incrementCompletedCount func()) (bool, error){
 				SizingLeg,
 			} {
 				getCompletedCount := func() int {
 					return int(atomic.LoadInt32(&completedProcessCount))
 				}
+				incrementCompletedCount := func() {
+					atomic.AddInt32(&completedProcessCount, 1)
+					cw.ProgressBar().Increment()
+				}
+
 				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					totalProcessCount, getCompletedCount); err != nil {
+					totalProcessCount, getCompletedCount, incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {
-					// 完了した処理毎にatomicに更新
-					atomic.AddInt32(&completedProcessCount, 1)
-
 					if sizingSet.IsTerminate {
 						isExec = false
 						return
@@ -136,7 +128,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				mlog.I(mi18n.T("サイジング中断"))
 				break
 			} else {
-				mlog.E(mi18n.T("サイジングエラー", map[string]interface{}{"Error": err.Error()}))
+				mlog.E(mi18n.T("サイジングエラー", map[string]interface{}{
+					"Error": err.Error(), "AppName": cw.AppConfig().Name, "AppVersion": cw.AppConfig().Version}))
 			}
 		}
 	}
@@ -262,8 +255,12 @@ func getFrames(motion *vmd.VmdMotion, boneNames []string) []int {
 }
 
 // processLog 処理ログを出力する
-func processLog(key string, index, completedProcessCount, totalProcessCount, iterIndex, allCount int) {
-	mlog.I(mi18n.T(key, map[string]interface{}{"No": index + 1, "CompletedProcessCount": fmt.Sprintf("%02d", completedProcessCount), "TotalProcessCount": fmt.Sprintf("%02d", totalProcessCount), "IterIndex": fmt.Sprintf("%04d", iterIndex), "AllCount": fmt.Sprintf("%02d", allCount)}))
+func processLog(key string, index, iterIndex, allCount int) {
+	mlog.I(mi18n.T(key, map[string]interface{}{
+		"No":        index + 1,
+		"IterIndex": fmt.Sprintf("%04d", iterIndex),
+		"AllCount":  fmt.Sprintf("%02d", allCount),
+	}))
 }
 
 func outputMotion(title string, originalMotionPath string, motion *vmd.VmdMotion) {
@@ -277,7 +274,7 @@ func computeVmdDeltas(
 	frames []int, blockSize int,
 	model *pmx.PmxModel, motion *vmd.VmdMotion,
 	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
-	isCalc bool, target_bone_names []string,
+	isCalc bool, target_bone_names []string, logKey string,
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
@@ -294,7 +291,9 @@ func computeVmdDeltas(
 			return nil
 		},
 		func(iterIndex, allCount int) {
-			processLog("足補正01", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
+			if logKey != "" {
+				processLog(logKey, sizingSet.Index, iterIndex, allCount)
+			}
 		})
 	return allDeltas, err
 }
