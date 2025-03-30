@@ -222,6 +222,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	mWidgets.SetOnLoaded(func() {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
+		sizingState.TerminateButton.SetEnabled(false)
 	})
 
 	return declarative.TabPage{
@@ -392,9 +393,5 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		}
 	}
 
-	sizingState.SetSizingEnabled(false)
-
 	go usecase.ExecSizing(cw, sizingState)
-
-	sizingState.SetSizingEnabled(true)
 }

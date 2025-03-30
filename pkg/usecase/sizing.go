@@ -27,6 +27,11 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
+	cw.Synchronize(func() {
+		sizingState.SetSizingEnabled(false)
+		sizingState.TerminateButton.SetEnabled(true)
+	})
+
 	var completedProcessCount int32 = 1
 	totalProcessCount := 0
 	if sizingState.SizingLegCheck.Checked() {
@@ -150,6 +155,11 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			sizingSet.IsTerminate = false
 		}
 	}
+
+	cw.Synchronize(func() {
+		sizingState.SetSizingEnabled(true)
+		sizingState.TerminateButton.SetEnabled(false)
+	})
 
 	// 最初に戻す(読み直しとかでINDEXがズレた時用)
 	sizingState.ChangeCurrentAction(0)

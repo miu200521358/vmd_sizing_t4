@@ -212,6 +212,7 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.AdoptAllCheck.SetEnabled(enabled)
 	sizingState.TerminateButton.SetEnabled(enabled)
 	sizingState.SaveButton.SetEnabled(enabled)
+	sizingState.Player.SetEnabled(enabled)
 
 	sizingState.SizingLegCheck.SetEnabled(enabled)
 	sizingState.SizingUpperCheck.SetEnabled(enabled)
