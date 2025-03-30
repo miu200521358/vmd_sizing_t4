@@ -56,7 +56,7 @@ func main() {
 
 	go func() {
 		// 操作ウィンドウは別スレッドで起動
-		defer app.SafeExecute(appConfig.IsSetEnv(), func() {
+		defer app.SafeExecute(appConfig, func() {
 			widgets := &controller.MWidgets{
 				Position: &walk.Point{X: positionXs[0], Y: positionYs[0]},
 			}
@@ -65,7 +65,7 @@ func main() {
 				ui.NewMenuItems(), []declarative.TabPage{ui.NewSizingPage(widgets)}, widgets.SetEnabledInPlaying,
 				widths[0], heights[0], positionXs[0], positionYs[0])
 			if err != nil {
-				app.ShowErrorDialog(appConfig.IsSetEnv(), err)
+				app.ShowErrorDialog(appConfig, err)
 				return
 			}
 
@@ -78,17 +78,17 @@ func main() {
 
 	// GL初期化
 	if err := glfw.Init(); err != nil {
-		app.ShowErrorDialog(appConfig.IsSetEnv(), fmt.Errorf("failed to initialize GLFW: %v", err))
+		app.ShowErrorDialog(appConfig, fmt.Errorf("failed to initialize GLFW: %v", err))
 		return
 	}
 
 	// 描画ウィンドウはメインスレッドで起動
-	defer app.SafeExecute(appConfig.IsSetEnv(), func() {
+	defer app.SafeExecute(appConfig, func() {
 		for n := range viewerCount {
 			nIdx := n + 1
 			if err := viewerWindowList.Add("Viewer",
 				widths[nIdx], heights[nIdx], positionXs[nIdx], positionYs[nIdx]); err != nil {
-				app.ShowErrorDialog(appConfig.IsSetEnv(), err)
+				app.ShowErrorDialog(appConfig, err)
 				return
 			}
 		}
