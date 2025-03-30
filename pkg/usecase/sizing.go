@@ -273,7 +273,7 @@ func outputMotion(title string, originalMotionPath string, motion *vmd.VmdMotion
 func computeVmdDeltas(
 	frames []int, blockSize int,
 	model *pmx.PmxModel, motion *vmd.VmdMotion,
-	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
+	sizingSet *domain.SizingSet,
 	isCalc bool, target_bone_names []string, logKey string,
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))

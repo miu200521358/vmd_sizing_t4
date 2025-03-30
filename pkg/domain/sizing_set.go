@@ -48,6 +48,22 @@ type SizingSet struct {
 	CompletedSizingFingerStance bool `json:"-"` // 指補正完了フラグ
 	CompletedSizingArmTwist     bool `json:"-"` // 腕捩補正完了フラグ
 	CompletedSizingReduction    bool `json:"-"` // 不要キー削除補正完了フラグ
+
+	originalCenterBone, originalGrooveBone, originalLowerBone,
+	originalLeftLegIkParentBone, originalLeftLegIkBone,
+	originalLeftLegBone, originalLeftKneeBone, originalLeftAnkleBone,
+	originalLeftToeIkBone, originalLeftToeTailBone, originalLeftHeelBone, originalLeftToePBone,
+	originalRightLegIkParentBone, originalRightLegIkBone,
+	originalRightLegBone, originalRightKneeBone, originalRightAnkleBone,
+	originalRightToeIkBone, originalRightToeTailBone, originalRightHeelBone, originalRightToePBone *pmx.Bone // 元モデルのボーン情報
+
+	sizingCenterBone, sizingGrooveBone, sizingLowerBone,
+	sizingLeftLegIkParentBone, sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+	sizingLeftToeIkBone, sizingLeftToeTailBone, sizingLeftHeelBone, sizingLeftToePBone,
+	sizingRightLegIkParentBone, sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
+	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone *pmx.Bone // サイジング先モデルのボーン情報
+
+	sizingGrooveVanillaBone *pmx.Bone // サイジング先モデル(バニラ)のボーン情報
 }
 
 func NewSizingSet(index int) *SizingSet {

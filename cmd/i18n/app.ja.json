@@ -492,20 +492,12 @@
         "translation": "【No.{{.No}}】指スタンス補正 開始 [{{.CompletedProcessCount}}/{{.TotalProcessCount}}] ---------------------------------"
     },
     {
-        "id": "足補正ボーン不足",
-        "translation": "【No.{{.No}}】足補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+        "id": "ボーン不足エラー",
+        "translation": "【No.{{.No}}】{{.ModelType}}に{{.BoneName}}が見つからないため、{{.Process}}処理をスキップします"
     },
     {
-        "id": "足補正検証ボーン不足",
-        "translation": "【No.{{.No}}】足補正: {{.ModelType}}に{{.BoneName}}(検証用ボーン)が正常に生成できなかったため、処理をスキップします"
-    },
-    {
-        "id": "上半身補正ボーン不足",
-        "translation": "【No.{{.No}}】上半身補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
-    },
-    {
-        "id": "肩補正ボーン不足",
-        "translation": "【No.{{.No}}】肩補正: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
+        "id": "検証ボーン不足エラー",
+        "translation": "【No.{{.No}}】足補正: {{.ModelType}}に{{.BoneName}}(検証用ボーン)が正常に生成できなかったため、{{.Process}}処理をスキップします"
     },
     {
         "id": "ボーン不足",
