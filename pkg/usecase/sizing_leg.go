@@ -64,7 +64,7 @@ func SizingLeg(
 	// 詳細出力（IK フレームの挿入）
 	if mlog.IsVerbose() {
 		insertIKFrames(sizingSet, sizingProcessMotion, false)
-		outputMotion("足補正02", sizingSet.OriginalMotionPath, sizingProcessMotion)
+		outputMotion("足補正02_updateLegFK", sizingSet.OriginalMotionPath, sizingProcessMotion)
 	}
 
 	// TOE_IK キーフレームのリセット
@@ -91,7 +91,7 @@ func SizingLeg(
 	updateCenter(sizingSet, allFrames, sizingProcessMotion, centerPositions, groovePositions)
 
 	if mlog.IsVerbose() {
-		outputMotion("足補正04", sizingSet.OriginalMotionPath, sizingProcessMotion)
+		outputMotion("足補正03_updateCenter", sizingSet.OriginalMotionPath, sizingProcessMotion)
 	}
 
 	incrementCompletedCount()

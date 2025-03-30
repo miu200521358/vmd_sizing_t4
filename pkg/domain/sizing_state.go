@@ -175,7 +175,7 @@ func (sizingState *SizingState) LoadSizingModel(
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
-	sizingState.OutputModelPicker.SetPath(sizingState.CurrentSet().OriginalModelPath)
+	sizingState.OutputModelPicker.SetPath(sizingState.CurrentSet().OutputModelPath)
 }
 
 // LoadSizingMotion サイジングモーションを読み込む
