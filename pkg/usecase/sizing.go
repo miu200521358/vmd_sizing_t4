@@ -11,12 +11,15 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/config/merr"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
+	"github.com/miu200521358/mlib_go/pkg/domain/delta"
 	"github.com/miu200521358/mlib_go/pkg/domain/mmath"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/mfile"
+	"github.com/miu200521358/mlib_go/pkg/infrastructure/miter"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
+	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
 func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
@@ -263,6 +266,39 @@ func outputMotion(title string, originalMotionPath string, motion *vmd.VmdMotion
 	outputPath := mfile.CreateOutputPath(originalMotionPath, title)
 	repository.NewVmdRepository(true).Save(outputPath, motion, true)
 	mlog.V("%s: %s", title, outputPath)
+}
+
+// computeVmdDeltas は、各フレームごとのデフォーム結果を並列処理で取得します。
+func computeVmdDeltas(
+	frames []int, blockSize int,
+	model *pmx.PmxModel, motion *vmd.VmdMotion,
+	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
+	isCalc bool, target_bone_names []string,
+) ([]*delta.VmdDeltas, error) {
+	// 存在しないボーンキーフレがあったら事前に登録しておく
+	for _, boneName := range target_bone_names {
+		motion.BoneFrames.Get(boneName)
+	}
+
+	allDeltas := make([]*delta.VmdDeltas, len(frames))
+	err := miter.IterParallelByList(frames, blockSize, log_block_size,
+		func(index, data int) error {
+			if sizingSet.IsTerminate {
+				return merr.TerminateError
+			}
+
+			frame := float32(data)
+			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
+			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
+			// 足補正で必要なボーン群（重心および下半身・足）を対象とする
+			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalc, data, target_bone_names)
+			allDeltas[index] = vmdDeltas
+			return nil
+		},
+		func(iterIndex, allCount int) {
+			processLog("足補正01", sizingSet.Index, getCompletedCount(), totalProcessCount, iterIndex, allCount)
+		})
+	return allDeltas, err
 }
 
 // ログはCPUのサイズに応じて可変でブロッキングして出力する
