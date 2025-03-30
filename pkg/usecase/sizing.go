@@ -131,9 +131,13 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 	// チャネルからエラーを受け取る
 	for err := range errorChan {
-		if err != nil && err == merr.TerminateError {
-			mlog.I(mi18n.T("サイジング中断"))
-			break
+		if err != nil {
+			if err == merr.TerminateError {
+				mlog.I(mi18n.T("サイジング中断"))
+				break
+			} else {
+				mlog.E(mi18n.T("サイジングエラー", map[string]interface{}{"Error": err.Error()}))
+			}
 		}
 	}
 
@@ -275,11 +279,6 @@ func computeVmdDeltas(
 	sizingSet *domain.SizingSet, totalProcessCount int, getCompletedCount func() int,
 	isCalc bool, target_bone_names []string,
 ) ([]*delta.VmdDeltas, error) {
-	// 存在しないボーンキーフレがあったら事前に登録しておく
-	for _, boneName := range target_bone_names {
-		motion.BoneFrames.Get(boneName)
-	}
-
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
 		func(index, data int) error {
@@ -289,8 +288,7 @@ func computeVmdDeltas(
 
 			frame := float32(data)
 			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
-			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil) // FIXME ボーンモーフを加味するか
-			// 足補正で必要なボーン群（重心および下半身・足）を対象とする
+			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
 			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalc, data, target_bone_names)
 			allDeltas[index] = vmdDeltas
 			return nil
