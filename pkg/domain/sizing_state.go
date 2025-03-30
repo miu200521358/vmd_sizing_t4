@@ -208,11 +208,16 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.OutputMotionPicker.SetEnabled(enabled)
 	sizingState.OutputModelPicker.SetEnabled(enabled)
 
+	sizingState.Player.SetEnabled(enabled)
+
+	sizingState.SetSizingOptionEnabled(enabled)
+}
+
+func (sizingState *SizingState) SetSizingOptionEnabled(enabled bool) {
 	sizingState.AdoptSizingCheck.SetEnabled(enabled)
 	sizingState.AdoptAllCheck.SetEnabled(enabled)
 	sizingState.TerminateButton.SetEnabled(enabled)
 	sizingState.SaveButton.SetEnabled(enabled)
-	sizingState.Player.SetEnabled(enabled)
 
 	sizingState.SizingLegCheck.SetEnabled(enabled)
 	sizingState.SizingUpperCheck.SetEnabled(enabled)
@@ -220,5 +225,4 @@ func (sizingState *SizingState) SetSizingEnabled(enabled bool) {
 	sizingState.SizingArmStanceCheck.SetEnabled(enabled)
 	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
 	sizingState.SizingArmTwistCheck.SetEnabled(enabled)
-	// sizingState.SizingReductionCheck.SetEnabled(enabled)
 }

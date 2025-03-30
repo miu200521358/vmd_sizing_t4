@@ -128,7 +128,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		if ok, err := dlg.ShowOpen(nil); err != nil {
 			walk.MsgBox(nil, mi18n.T("ファイル選択ダイアログ選択エラー"), err.Error(), walk.MsgBoxIconError)
 		} else if ok {
-			mWidgets.Window().SetEnabled(false)
+			sizingState.SetSizingEnabled(false)
 			mconfig.SaveUserConfig("sizing_set_path", dlg.FilePath, 1)
 
 			for n := range 2 {
@@ -153,7 +153,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			}
 
 			sizingState.SetCurrentIndex(0)
-			mWidgets.Window().SetEnabled(true)
+			sizingState.SetSizingEnabled(true)
 		}
 	})
 
@@ -225,16 +225,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.TerminateButton.SetEnabled(false)
 	})
 	mWidgets.SetOnChangePlaying(func(playing bool) {
-		sizingState.AdoptSizingCheck.SetEnabled(!playing)
-		sizingState.AdoptAllCheck.SetEnabled(!playing)
-		sizingState.TerminateButton.SetEnabled(!playing)
-
-		sizingState.SizingLegCheck.SetEnabled(!playing)
-		sizingState.SizingUpperCheck.SetEnabled(!playing)
-		sizingState.SizingShoulderCheck.SetEnabled(!playing)
-		sizingState.SizingArmStanceCheck.SetEnabled(!playing)
-		sizingState.SizingFingerStanceCheck.SetEnabled(!playing)
-		sizingState.SizingArmTwistCheck.SetEnabled(!playing)
+		sizingState.SetSizingOptionEnabled(!playing)
 	})
 
 	return declarative.TabPage{
