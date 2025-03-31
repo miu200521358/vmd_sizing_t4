@@ -223,9 +223,9 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
 		sizingState.TerminateButton.SetEnabled(false)
-		// sizingState.AdoptSizingCheck.CheckStateChanged().Attach(func() {
-		// 	changeSizingCheck(mWidgets.Window(), sizingState, pmx.ROOT)
-		// })
+		sizingState.AdoptSizingCheck.CheckStateChanged().Attach(func() {
+			changeSizingCheck(mWidgets.Window(), sizingState, pmx.ROOT)
+		})
 	})
 	mWidgets.SetOnChangePlaying(func(playing bool) {
 		sizingState.SetSizingOptionEnabled(!playing)
