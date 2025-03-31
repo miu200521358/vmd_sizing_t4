@@ -55,16 +55,10 @@ func SizingUpper(
 
 	incrementCompletedCount()
 
-	var upperDistance float64
-	upperDistance, err = calculateUpperDistance(sizingSet)
-	if err != nil {
-		return false, err
-	}
-
 	// サイジング先の上半身回転情報を取得(全フレーム処理してズレ検知用)
 	var upperRotations, upper2Rotations []*mmath.MQuaternion
 	upperRotations, upper2Rotations, err = calculateAdjustedUpper(
-		sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas, sizingProcessMotion, upperDistance)
+		sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas, sizingProcessMotion)
 	if err != nil {
 		return false, err
 	}
@@ -183,6 +177,10 @@ func updateUpperResultMotion(
 		incrementCompletedCount()
 	}
 
+	if mlog.IsDebug() {
+		outputVerboseMotion("上半身03", sizingSet.OutputMotionPath, outputMotion)
+	}
+
 	return nil
 }
 
@@ -205,6 +203,10 @@ func updateUpper(
 		if i > 0 && i%1000 == 0 {
 			processLog("上半身補正03", sizingSet.Index, i, len(allFrames))
 		}
+	}
+
+	if mlog.IsDebug() {
+		outputVerboseMotion("上半身02", sizingSet.OutputMotionPath, sizingProcessMotion)
 	}
 }
 
@@ -287,12 +289,23 @@ func createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 
 func calculateAdjustedUpper(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
-	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion, upperDistance float64,
+	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
 ) (upperRotations, upper2Rotations []*mmath.MQuaternion, err error) {
+
+	var upperDistance float64
+	upperDistance, err = calculateUpperDistance(sizingSet)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	upperRotations = make([]*mmath.MQuaternion, len(allFrames))
 	upper2Rotations = make([]*mmath.MQuaternion, len(allFrames))
 
 	upperIkVanillaBone := createUpperIkBone(sizingSet)
+
+	actualUpperRootPositions := make([]*mmath.MVec3, len(allFrames))
+	actualNeckRootPositions := make([]*mmath.MVec3, len(allFrames))
+	idealNeckRootPositions := make([]*mmath.MVec3, len(allFrames))
 
 	err = miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
@@ -312,6 +325,12 @@ func calculateAdjustedUpper(
 			// sizingGlobalUpperPosition := sizingUpperRootDelta.FilledGlobalPosition().Added(sizingLocalUpper)
 			sizingGlobalUpperPosition := sizingUpperRootDelta.FilledGlobalMatrix().MulVec3(sizingLocalUpper)
 
+			if mlog.IsDebug() {
+				idealNeckRootPositions[index] = sizingGlobalUpperPosition
+				actualUpperRootPositions[index] = sizingAllDeltas[index].Bones.GetByName(pmx.UPPER_ROOT.String()).FilledGlobalPosition()
+				actualNeckRootPositions[index] = sizingAllDeltas[index].Bones.GetByName(pmx.NECK_ROOT.String()).FilledGlobalPosition()
+			}
+
 			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkVanillaBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false)
 
 			upperRotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER.String()).FilledFrameRotation()
@@ -324,6 +343,31 @@ func calculateAdjustedUpper(
 		func(iterIndex, allCount int) {
 			processLog("上半身補正02", sizingSet.Index, iterIndex, allCount)
 		})
+
+	if mlog.IsDebug() {
+		motion := vmd.NewVmdMotion("")
+
+		for i, iFrame := range allFrames {
+			frame := float32(iFrame)
+			{
+				bf := vmd.NewBoneFrame(frame)
+				bf.Position = idealNeckRootPositions[i]
+				motion.InsertRegisteredBoneFrame("上半身IK", bf)
+			}
+			{
+				bf := vmd.NewBoneFrame(frame)
+				bf.Position = actualUpperRootPositions[i]
+				motion.InsertRegisteredBoneFrame("上半身Root", bf)
+			}
+			{
+				bf := vmd.NewBoneFrame(frame)
+				bf.Position = actualNeckRootPositions[i]
+				motion.InsertRegisteredBoneFrame("上半身Tgt", bf)
+			}
+		}
+
+		outputVerboseMotion("上半身01", sizingSet.OutputMotionPath, motion)
+	}
 
 	return
 }

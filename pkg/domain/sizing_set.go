@@ -2,10 +2,13 @@ package domain
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
+	"github.com/miu200521358/mlib_go/pkg/config/merr"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
+	"github.com/miu200521358/mlib_go/pkg/domain/mmath"
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/mfile"
@@ -243,6 +246,10 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 		pmxRep := repository.NewPmxRepository(true)
 		if data, err := pmxRep.Load(path); err == nil {
 			originalModel = data.(*pmx.PmxModel)
+
+			if err := originalModel.Bones.InsertShortageOverrideBones(); err != nil {
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
@@ -255,6 +262,12 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 		pmxRep := repository.NewPmxRepository(false)
 		if data, err := pmxRep.Load(path); err == nil {
 			originalConfigModel = data.(*pmx.PmxModel)
+			if err := pmxRep.CreateSticky(
+				originalConfigModel,
+				ss.insertShortageConfigBones,
+				nil); err != nil {
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
@@ -267,31 +280,11 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 		return
 	}
 
-	if err := originalModel.Bones.InsertShortageOverrideBones(); err != nil {
-		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-		ss.setOriginalModel(nil, nil)
-		return
-	}
-
-	if err := originalConfigModel.Bones.InsertShortageSizingConfigBones(); err != nil {
-		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-		ss.setOriginalModel(nil, nil)
-		return
-	}
-
 	// 元モデル設定
 	ss.setOriginalModel(originalModel, originalConfigModel)
 
 	// 出力パスを設定
-	outputPath := ss.CreateOutputModelPath()
-	ss.OutputModelPath = outputPath
-
-	if mlog.IsVerbose() {
-		pmxRep := repository.NewPmxRepository(true)
-		if err := pmxRep.Save(outputPath, originalConfigModel, true); err != nil {
-			mlog.ET(mi18n.T("保存失敗"), err.Error())
-		}
-	}
+	ss.OutputModelPath = ss.CreateOutputModelPath()
 }
 
 // LoadSizingModel サイジング先モデルを読み込む
@@ -311,6 +304,9 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		pmxRep := repository.NewPmxRepository(true)
 		if data, err := pmxRep.Load(path); err == nil {
 			sizingModel = data.(*pmx.PmxModel)
+			if err := sizingModel.Bones.InsertShortageOverrideBones(); err != nil {
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
@@ -323,6 +319,23 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		pmxRep := repository.NewPmxRepository(false)
 		if data, err := pmxRep.Load(path); err == nil {
 			sizingConfigModel = data.(*pmx.PmxModel)
+			var insertDebugBones func(bones *pmx.Bones, displaySlots *pmx.DisplaySlots) error
+			if mlog.IsDebug() {
+				insertDebugBones = ss.insertDebugBones
+			}
+
+			if err := pmxRep.CreateSticky(
+				sizingConfigModel,
+				ss.insertShortageConfigBones,
+				insertDebugBones); err != nil {
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+			} else {
+				if mlog.IsDebug() {
+					// デバッグモードの時は、サイジング用モデルを出力
+					rep := repository.NewPmxRepository(false)
+					rep.Save(mfile.CreateOutputPath(path, "Sizing"), sizingConfigModel, true)
+				}
+			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
@@ -335,31 +348,206 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		return
 	}
 
-	if err := sizingModel.Bones.InsertShortageOverrideBones(); err != nil {
-		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-		ss.setOriginalModel(nil, nil)
-		return
-	}
-
-	if err := sizingConfigModel.Bones.InsertShortageSizingConfigBones(); err != nil {
-		mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
-		ss.setSizingModel(nil, nil)
-		return
-	}
-
 	// サイジングモデル設定
 	ss.setSizingModel(sizingModel, sizingConfigModel)
 
 	// 出力パスを設定
-	outputPath := ss.CreateOutputModelPath()
-	ss.OutputModelPath = outputPath
+	ss.OutputModelPath = ss.CreateOutputModelPath()
+}
 
-	if mlog.IsVerbose() {
-		pmxRep := repository.NewPmxRepository(true)
-		if err := pmxRep.Save(outputPath, sizingConfigModel, true); err != nil {
-			mlog.ET(mi18n.T("保存失敗"), err.Error())
+func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.DisplaySlots) error {
+	rootBone, _ := bones.GetRoot()
+	centerBone, _ := bones.GetCenter()
+	rightLegIkBone, _ := bones.GetLegIk(pmx.BONE_DIRECTION_RIGHT)
+	leftLegIkBone, _ := bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
+
+	for _, v := range [][]any{
+		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正02"},
+		{"左足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_Y補正"},
+		{"左足Y補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正04_Y補正"},
+		{"右足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_Y補正"},
+		{"右足Y補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正04_Y補正"},
+		{"左つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
+		{"左つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
+		{"右つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
+		{"右つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
+		{"左かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
+		{"左かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
+		{"右かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
+		{"右かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
+		{"左足継承X", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
+		{"左足継承Y", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
+		{"左足継承Z", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
+		{"右足継承X", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
+		{"右足継承Y", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
+		{"右足継承Z", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
+		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},
+		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},
+		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},
+	} {
+		boneName := v[0].(string)
+		parentBoneIndex := v[1].(int)
+		position := v[2].(*mmath.MVec3)
+		displaySlotName := v[3].(string)
+
+		bone := pmx.NewBone()
+		bone.SetName(boneName)
+		bone.SetEnglishName(boneName)
+		bone.BoneFlag = pmx.BONE_FLAG_IS_VISIBLE | pmx.BONE_FLAG_CAN_MANIPULATE | pmx.BONE_FLAG_CAN_ROTATE | pmx.BONE_FLAG_CAN_TRANSLATE
+		bone.Position = position
+		bone.IsSystem = true
+
+		if parentBone, _ := bones.Get(parentBoneIndex); parentBone != nil {
+			bone.ParentIndex = parentBone.Index()
+		}
+
+		if err := bones.Insert(bone); err != nil {
+			return err
+		}
+
+		if !displaySlots.ContainsByName(displaySlotName) {
+			displaySlot := pmx.NewDisplaySlot()
+			displaySlot.SetName(displaySlotName)
+			displaySlot.SetEnglishName(displaySlotName)
+			displaySlots.Append(displaySlot)
+		}
+
+		displaySlot, _ := displaySlots.GetByName(displaySlotName)
+		if displaySlot != nil {
+			displaySlot.References = append(displaySlot.References,
+				pmx.NewDisplaySlotReferenceByValues(pmx.DISPLAY_TYPE_BONE, bone.Index()))
 		}
 	}
+
+	return nil
+}
+
+// InsertShortageSizingConfigBones サイジング用不足ボーン作成
+func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
+
+	// 体幹系
+	for _, funcs := range [][]func() (*pmx.Bone, error){
+		{bones.GetRoot, bones.CreateRoot},
+		{bones.GetTrunkRoot, bones.CreateTrunkRoot},
+		{bones.GetLowerRoot, bones.CreateLowerRoot},
+		{bones.GetLegCenter, bones.CreateLegCenter},
+		{bones.GetUpperRoot, bones.CreateUpperRoot},
+		{bones.GetNeckRoot, bones.CreateNeckRoot},
+		{bones.GetHeadTail, bones.CreateHeadTail},
+	} {
+		getFunc := funcs[0]
+		createFunc := funcs[1]
+
+		if bone, err := getFunc(); err != nil && err == merr.NameNotFoundError && bone == nil {
+			if bone, err := createFunc(); err == nil && bone != nil {
+				bone.IsSystem = true
+
+				if err := bones.Insert(bone); err != nil {
+					return err
+				} else {
+					// 追加したボーンの親ボーンを、同じく親ボーンに設定しているボーンの親ボーンを追加ボーンに置き換える
+					bones.ForEach(func(i int, b *pmx.Bone) {
+						if b.ParentIndex == bone.ParentIndex && b.Index() != bone.Index() &&
+							b.EffectIndex != bone.Index() && bone.EffectIndex != b.Index() &&
+							((strings.Contains(bone.Name(), "上") && !strings.Contains(b.Name(), "下") &&
+								!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右")) ||
+								(strings.Contains(bone.Name(), "下") && !strings.Contains(b.Name(), "上") &&
+									!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右"))) {
+							b.ParentIndex = bone.Index()
+						}
+					})
+					// セットアップしなおし
+					bones.Setup()
+				}
+			} else {
+				return err
+			}
+		} else if err != nil {
+			return err
+		} else {
+			switch bone.Name() {
+			case pmx.NECK.String():
+				if neckRoot, err := bones.GetNeckRoot(); err == nil {
+					bone.ParentIndex = neckRoot.Index()
+				}
+			}
+		}
+	}
+
+	// 左右系
+	for _, direction := range []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT} {
+		for _, funcs := range [][]func(direction pmx.BoneDirection) (*pmx.Bone, error){
+			{bones.GetShoulderRoot, bones.CreateShoulderRoot},
+			{bones.GetWristTail, bones.CreateWristTail},
+			{bones.GetThumbTail, bones.CreateThumbTail},
+			{bones.GetIndexTail, bones.CreateIndexTail},
+			{bones.GetMiddleTail, bones.CreateMiddleTail},
+			{bones.GetRingTail, bones.CreateRingTail},
+			{bones.GetPinkyTail, bones.CreatePinkyTail},
+			{bones.GetLegRoot, bones.CreateLegRoot},
+			{bones.GetToeT, bones.CreateToeT},
+			{bones.GetToeP, bones.CreateToeP},
+			{bones.GetToeC, bones.CreateToeC},
+			{bones.GetLegD, bones.CreateLegD},
+			{bones.GetKneeD, bones.CreateKneeD},
+			{bones.GetAnkleD, bones.CreateAnkleD},
+			{bones.GetToeEx, bones.CreateToeEx},
+			{bones.GetToeTD, bones.CreateToeTD},
+			{bones.GetToePD, bones.CreateToePD},
+			{bones.GetToeCD, bones.CreateToeCD},
+			{bones.GetHeel, bones.CreateHeel},
+			{bones.GetHeelD, bones.CreateHeelD},
+		} {
+			getFunc := funcs[0]
+			createFunc := funcs[1]
+
+			if bone, err := getFunc(direction); err != nil && err == merr.NameNotFoundError && bone == nil {
+				if bone, err := createFunc(direction); err == nil && bone != nil {
+					bone.IsSystem = true
+
+					if err := bones.Insert(bone); err != nil {
+						return err
+					} else {
+						// 追加したボーンの親ボーンを、同じく親ボーンに設定しているボーンの親ボーンを追加ボーンに置き換える
+						bones.ForEach(func(i int, b *pmx.Bone) {
+							if b.ParentIndex == bone.ParentIndex && b.Index() != bone.Index() &&
+								b.EffectIndex != bone.Index() && bone.EffectIndex != b.Index() &&
+								((strings.Contains(bone.Name(), "左") && strings.Contains(b.Name(), "左")) ||
+									(strings.Contains(bone.Name(), "右") && strings.Contains(b.Name(), "右"))) {
+								b.ParentIndex = bone.Index()
+							}
+						})
+						// セットアップしなおし
+						bones.Setup()
+					}
+				} else {
+					return err
+				}
+			} else if err != nil {
+				return err
+			}
+		}
+
+		{
+			// 親指0
+			if bone, err := bones.GetThumb(direction, 0); err != nil && err == merr.NameNotFoundError && bone == nil {
+				if bone, err := bones.CreateThumb0(direction); err == nil && bone != nil {
+					if err := bones.Insert(bone); err != nil {
+						return err
+					}
+				} else {
+					return err
+				}
+			} else if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 // LoadMotion サイジング対象モーションを読み込む

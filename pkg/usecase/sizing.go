@@ -264,8 +264,8 @@ func processLog(key string, index, iterIndex, allCount int) {
 	}))
 }
 
-func outputMotion(title string, originalMotionPath string, motion *vmd.VmdMotion) {
-	outputPath := mfile.CreateOutputPath(originalMotionPath, title)
+func outputVerboseMotion(title string, motionPath string, motion *vmd.VmdMotion) {
+	outputPath := mfile.CreateOutputPath(motionPath, title)
 	repository.NewVmdRepository(true).Save(outputPath, motion, true)
 	mlog.V("%s: %s", title, outputPath)
 }
