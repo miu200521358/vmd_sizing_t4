@@ -362,7 +362,7 @@ func calculateAdjustedCenter(
 			originalGravityPos := calcGravity(originalAllDeltas[index])
 			sizingGravityPos := calcGravity(sizingAllDeltas[index])
 			sizingFixCenterTargetY := originalGravityPos.Y * gravityRatio
-			yDiff := sizingFixCenterTargetY - sizingGravityPos.Y
+			yDiff := sizingGravityPos.Y - sizingFixCenterTargetY
 
 			// mlog.V("足補正07[%04.0f] originalY[%.4f], sizingY[%.4f], sizingFixY[%.4f], diff[%.4f]",
 			// 	frame, originalGravityPos.Y, sizingGravityPos.Y, sizingFixCenterTargetY, yDiff)
