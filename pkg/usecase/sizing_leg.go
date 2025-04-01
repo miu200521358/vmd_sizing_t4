@@ -165,11 +165,12 @@ func updateLegResultMotion(
 		sizingSet.SizingLeftLegIkBone(), sizingSet.SizingLeftLegBone(), sizingSet.SizingLeftKneeBone(), sizingSet.SizingLeftAnkleBone(),
 		sizingSet.SizingRightLegIkBone(), sizingSet.SizingRightLegBone(), sizingSet.SizingRightKneeBone(), sizingSet.SizingRightAnkleBone(),
 	} {
-		outputMotion.BoneFrames.Get(bone.Name()).ForEach(func(frame float32, bf *vmd.BoneFrame) {
+		outputMotion.BoneFrames.Get(bone.Name()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			processBf := sizingProcessMotion.BoneFrames.Get(bone.Name()).Get(frame)
-			bf.Position = processBf.Position.Copy()
-			bf.Rotation = processBf.Rotation.Copy()
+			bf.Position = processBf.FilledPosition().Copy()
+			bf.Rotation = processBf.FilledRotation().Copy()
 			outputMotion.BoneFrames.Get(bone.Name()).Update(bf)
+			return true
 		})
 	}
 
@@ -220,10 +221,8 @@ func updateLegResultMotion(
 							boneName := legBoneName.StringFromDirection(direction)
 							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
-							if processBf.Position != nil {
-								resultBf.Position = processBf.Position.Copy()
-							}
-							resultBf.Rotation = processBf.Rotation.Copy()
+							resultBf.Position = processBf.FilledPosition().Copy()
+							resultBf.Rotation = processBf.FilledRotation().Copy()
 							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
 						}
 					}
@@ -341,6 +340,15 @@ func calculateAdjustedCenter(
 	sizingInitialGravityPos := computeInitialGravity(sizingSet, sizingSet.SizingConfigModel, vmd.InitialMotion)
 	gravityRatio := sizingInitialGravityPos.Y / originalInitialGravityPos.Y
 
+	isActiveGroove := false
+	sizingProcessMotion.BoneFrames.Get(pmx.GROOVE.String()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+		if !mmath.NearEquals(bf.FilledPosition().Y, 0.0, 1e-3) {
+			isActiveGroove = true
+			return false
+		}
+		return true
+	})
+
 	err := miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
 			if sizingSet.IsTerminate {
@@ -350,7 +358,6 @@ func calculateAdjustedCenter(
 			originalGravityPos := calcGravity(originalAllDeltas[index])
 			sizingGravityPos := calcGravity(sizingAllDeltas[index])
 			sizingFixCenterTargetY := originalGravityPos.Y * gravityRatio
-			yDiff := sizingGravityPos.Y - sizingFixCenterTargetY
 
 			if mlog.IsDebug() {
 				originalGravities[index] = originalGravityPos
@@ -360,21 +367,14 @@ func calculateAdjustedCenter(
 				centerIdealPositions[index].Y = sizingFixCenterTargetY
 			}
 
-			frame := float32(data)
-			sizingCenterBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingCenterBone().Name()).Get(frame)
-			centerPositions[index] = sizingCenterBf.Position.Muled(moveScale)
+			centerBf := sizingProcessMotion.BoneFrames.Get(pmx.CENTER.String()).Get(float32(data))
+			centerPositions[index] = centerBf.Position.Muled(moveScale)
+			centerPositions[index].Y = centerBf.FilledPosition().Added(centerIdealPositions[index].Subed(sizingGravityPos)).Y
 
-			if sizingSet.SizingGrooveVanillaBone() != nil {
-				// グルーブがある場合、グルーブ位置補正を追加
-				sizingGrooveBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingGrooveVanillaBone().Name()).Get(frame)
-				if sizingGrooveBf.Position == nil {
-					groovePositions[index] = &mmath.MVec3{X: 0, Y: yDiff, Z: 0}
-				} else {
-					groovePositions[index] = sizingGrooveBf.Position.Added(&mmath.MVec3{X: 0, Y: yDiff, Z: 0})
-				}
-			} else {
-				// グルーブがない場合、センター位置にを補正
-				centerPositions[index].Add(&mmath.MVec3{X: 0, Y: yDiff, Z: 0})
+			if isActiveGroove {
+				// グルーブがある場合、Yをグルーブ位置に移動
+				groovePositions[index] = &mmath.MVec3{X: 0, Y: centerPositions[index].Y, Z: 0}
+				centerPositions[index].Y = 0
 			}
 
 			return nil

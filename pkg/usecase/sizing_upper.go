@@ -90,7 +90,7 @@ func updateUpperResultMotion(
 
 	// 先に差分を腕ボーンに適用
 	for _, armBoneName := range []string{pmx.ARM.Left(), pmx.ARM.Right()} {
-		outputMotion.BoneFrames.Get(armBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) {
+		outputMotion.BoneFrames.Get(armBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			processUpperBf := sizingProcessMotion.BoneFrames.Get(pmx.UPPER.String()).Get(frame)
 			outputUpperBf := outputMotion.BoneFrames.Get(pmx.UPPER.String()).Get(frame)
 
@@ -106,6 +106,8 @@ func updateUpperResultMotion(
 			armBf := outputMotion.BoneFrames.Get(armBoneName).Get(frame)
 			armBf.Rotation = armBf.Rotation.Muled(diffQuat)
 			outputMotion.BoneFrames.Get(armBoneName).Update(armBf)
+
+			return true
 		})
 	}
 
@@ -115,10 +117,12 @@ func updateUpperResultMotion(
 			continue
 		}
 
-		outputMotion.BoneFrames.Get(upperBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) {
+		outputMotion.BoneFrames.Get(upperBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			processBf := sizingProcessMotion.BoneFrames.Get(upperBoneName).Get(frame)
 			bf.Rotation = processBf.Rotation.Copy()
 			outputMotion.BoneFrames.Get(upperBoneName).Update(bf)
+
+			return true
 		})
 	}
 

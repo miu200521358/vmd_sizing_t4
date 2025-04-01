@@ -449,7 +449,7 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 					return err
 				} else {
 					// 追加したボーンの親ボーンを、同じく親ボーンに設定しているボーンの親ボーンを追加ボーンに置き換える
-					bones.ForEach(func(i int, b *pmx.Bone) {
+					bones.ForEach(func(i int, b *pmx.Bone) bool {
 						if b.ParentIndex == bone.ParentIndex && b.Index() != bone.Index() &&
 							b.EffectIndex != bone.Index() && bone.EffectIndex != b.Index() &&
 							((strings.Contains(bone.Name(), "上") && !strings.Contains(b.Name(), "下") &&
@@ -457,7 +457,9 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 								(strings.Contains(bone.Name(), "下") && !strings.Contains(b.Name(), "上") &&
 									!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右"))) {
 							b.ParentIndex = bone.Index()
+							return false
 						}
+						return true
 					})
 					// セットアップしなおし
 					bones.Setup()
@@ -512,13 +514,15 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 						return err
 					} else {
 						// 追加したボーンの親ボーンを、同じく親ボーンに設定しているボーンの親ボーンを追加ボーンに置き換える
-						bones.ForEach(func(i int, b *pmx.Bone) {
+						bones.ForEach(func(i int, b *pmx.Bone) bool {
 							if b.ParentIndex == bone.ParentIndex && b.Index() != bone.Index() &&
 								b.EffectIndex != bone.Index() && bone.EffectIndex != b.Index() &&
 								((strings.Contains(bone.Name(), "左") && strings.Contains(b.Name(), "左")) ||
 									(strings.Contains(bone.Name(), "右") && strings.Contains(b.Name(), "右"))) {
 								b.ParentIndex = bone.Index()
+								return false
 							}
+							return true
 						})
 						// セットアップしなおし
 						bones.Setup()
@@ -601,14 +605,16 @@ func (ss *SizingSet) LoadMotion(path string) {
 // PrepareBoneNameFrames モーションのボーンフレームを準備する(並列対策)
 func (ss *SizingSet) PrepareBoneNameFrames() {
 	if ss.OriginalMotion != nil && ss.OriginalConfigModel != nil {
-		ss.OriginalConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) {
+		ss.OriginalConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
 			ss.OriginalMotion.BoneFrames.Get(bone.Name())
+			return true
 		})
 	}
 
 	if ss.OutputMotion != nil && ss.SizingConfigModel != nil {
-		ss.SizingConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) {
+		ss.SizingConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
 			ss.OutputMotion.BoneFrames.Get(bone.Name())
+			return true
 		})
 	}
 }
