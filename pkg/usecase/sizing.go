@@ -49,7 +49,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	// 処理時間の計測開始
 	start := time.Now()
 
-	allScales := generateSizingScales(sizingState.SizingSets)
+	scales := generateSizingScales(sizingState.SizingSets)
 	isExec := false
 
 	errorChan := make(chan error, len(sizingState.SizingSets))
@@ -86,18 +86,33 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				sizingState.SetCurrentIndex(sizingSet.Index)
 				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
 			}
-			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, scale *mmath.MVec3,
-				sizingSetCount int, incrementCompletedCount func()) (bool, error){
-				SizingLeg,
-				SizingUpper,
-			} {
-				incrementCompletedCount := func() {
-					atomic.AddInt32(&completedProcessCount, 1)
-					cw.ProgressBar().Increment()
+
+			incrementCompletedCount := func() {
+				atomic.AddInt32(&completedProcessCount, 1)
+				cw.ProgressBar().Increment()
+			}
+
+			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+				errorChan <- err
+				return
+			} else {
+				if sizingSet.IsTerminate {
+					isExec = false
+					return
 				}
 
-				if execResult, err := funcUsecase(sizingSet, allScales[sizingSet.Index], len(sizingState.SizingSets),
-					incrementCompletedCount); err != nil {
+				isExec = execResult || isExec
+
+				outputMotion := sizingSet.OutputMotion
+				outputMotion.SetRandHash()
+				cw.StoreMotion(0, sizingSet.Index, outputMotion)
+			}
+
+			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
+				SizingUpper,
+			} {
+
+				if execResult, err := funcUsecase(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {
@@ -167,8 +182,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	controller.Beep()
 }
 
-func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
-	scales := make([]*mmath.MVec3, len(sizingSets))
+func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3) {
+	scales = make([]*mmath.MVec3, len(sizingSets))
 
 	// 複数人居るときはXZは共通のスケールを使用する
 	meanXZScale := 0.0
@@ -198,8 +213,7 @@ func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
 			originalLeftLeg == nil || originalLeftKnee == nil || originalLeftAnkle == nil || originalLeftLegIK == nil {
 			if sizingNeckRoot != nil && originalNeckRoot != nil {
 				// 首根元までの長さ比率
-				neckLengthRatio := sizingNeckRoot.Position.Y /
-					originalNeckRoot.Position.Y
+				neckLengthRatio := sizingNeckRoot.Position.Y / originalNeckRoot.Position.Y
 				scales[i] = &mmath.MVec3{X: neckLengthRatio, Y: neckLengthRatio, Z: neckLengthRatio}
 				meanXZScale += neckLengthRatio
 			} else {
@@ -212,11 +226,14 @@ func generateSizingScales(sizingSets []*domain.SizingSet) []*mmath.MVec3 {
 				sizingLeftKnee.Position.Distance(sizingLeftAnkle.Position)) /
 				(originalLeftLeg.Position.Distance(originalLeftKnee.Position) +
 					originalLeftKnee.Position.Distance(originalLeftAnkle.Position))
-			// 足の長さ比率(Y)
-			legHeightRatio := sizingLeftLeg.Position.Distance(sizingLeftAnkle.Position) /
-				originalLeftLeg.Position.Distance(originalLeftAnkle.Position)
+			// 首根元までの長さ比率
+			neckLengthRatio := sizingNeckRoot.Position.Y / originalNeckRoot.Position.Y
 
-			scales[i] = &mmath.MVec3{X: legLengthRatio, Y: legHeightRatio, Z: legLengthRatio}
+			// // 足の長さ比率(Y)
+			// legHeightRatio := sizingLeftLeg.Position.Distance(sizingLeftAnkle.Position) /
+			// 	originalLeftLeg.Position.Distance(originalLeftAnkle.Position)
+
+			scales[i] = &mmath.MVec3{X: legLengthRatio, Y: neckLengthRatio, Z: legLengthRatio}
 			meanXZScale += legLengthRatio
 		}
 	}

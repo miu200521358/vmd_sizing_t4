@@ -16,7 +16,7 @@ import (
 )
 
 func SizingUpper(
-	sizingSet *domain.SizingSet, moveScale *mmath.MVec3, sizingSetCount int, incrementCompletedCount func(),
+	sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func(),
 ) (bool, error) {
 	// 対象外の場合は何もせず終了
 	if !sizingSet.IsSizingUpper || sizingSet.CompletedSizingUpper {

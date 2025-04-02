@@ -100,6 +100,18 @@ func (ss *SizingSet) OriginalLowerBone() *pmx.Bone {
 	return ss.originalLowerBone
 }
 
+func (ss *SizingSet) OriginalLegCenterBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLegCenterBone == nil {
+		ss.originalLegCenterBone, _ = ss.OriginalConfigModel.Bones.GetLegCenter()
+	}
+
+	return ss.originalLegCenterBone
+}
+
 func (ss *SizingSet) OriginalLeftLegIkParentBone() *pmx.Bone {
 	if ss.OriginalConfigModel == nil {
 		return nil
@@ -412,6 +424,18 @@ func (ss *SizingSet) SizingLowerBone() *pmx.Bone {
 	}
 
 	return ss.sizingLowerBone
+}
+
+func (ss *SizingSet) SizingLegCenterBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLegCenterBone == nil {
+		ss.sizingLegCenterBone, _ = ss.SizingConfigModel.Bones.GetLegCenter()
+	}
+
+	return ss.sizingLegCenterBone
 }
 
 func (ss *SizingSet) SizingLeftLegIkParentBone() *pmx.Bone {

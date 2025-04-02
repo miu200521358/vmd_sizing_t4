@@ -23,9 +23,7 @@ func SizingLeg(
 		return false, nil
 	}
 
-	originalModel := sizingSet.OriginalConfigModel
 	originalMotion := sizingSet.OriginalMotion
-	sizingModel := sizingSet.SizingConfigModel
 	sizingProcessMotion, err := sizingSet.OutputMotion.Copy()
 	if err != nil {
 		return false, err
@@ -42,7 +40,7 @@ func SizingLeg(
 	blockSize, _ := miter.GetBlockSize(len(allFrames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
-	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, originalModel, originalMotion, sizingSet, true, all_gravity_lower_leg_bone_names, "足補正01")
+	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, sizingSet.OriginalConfigModel.Bones.GetStandardBoneNames(), "足補正01")
 	if err != nil {
 		return false, err
 	}
@@ -61,7 +59,7 @@ func SizingLeg(
 	sizingProcessMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
 
 	// 先モデルのデフォーム結果を並列処理で取得
-	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingModel, sizingProcessMotion, sizingSet, false, gravity_bone_names, "足補正01")
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, false, sizingSet.SizingConfigModel.Bones.GetStandardBoneNames(), "足補正01")
 	if err != nil {
 		return false, err
 	}
@@ -69,7 +67,8 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// センター・グルーブ補正を実施
-	centerPositions, groovePositions, err := calculateAdjustedCenter(sizingSet, allFrames, blockSize, moveScale, originalAllDeltas, sizingAllDeltas, sizingProcessMotion)
+	centerPositions, groovePositions, err := calculateAdjustedCenter(sizingSet, allFrames, blockSize, moveScale,
+		originalAllDeltas, sizingAllDeltas, sizingProcessMotion)
 	if err != nil {
 		return false, err
 	}
@@ -82,7 +81,7 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// 先モデルのデフォーム結果を並列処理で取得
-	sizingOffAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingModel, sizingProcessMotion, sizingSet, false, all_lower_leg_bone_names, "足補正01")
+	sizingOffAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, false, all_lower_leg_bone_names, "足補正01")
 	if err != nil {
 		return false, err
 	}
@@ -107,7 +106,7 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// 先モデルのデフォーム結果を並列処理で取得
-	sizingAllDeltas, err = computeVmdDeltas(allFrames, blockSize, sizingModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
+	sizingAllDeltas, err = computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
 	if err != nil {
 		return false, err
 	}
@@ -177,7 +176,7 @@ func updateLegResultMotion(
 	// 中間キーフレのズレをチェック
 	kneeThreshold := 0.3
 	ankleThreshold := 0.2
-	toeThreshold := 0.15
+	toeThreshold := 0.1
 
 	err := miter.IterParallelByList([]pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}, 1, 1,
 		func(dIndex int, direction pmx.BoneDirection) error {
@@ -322,6 +321,33 @@ func newIkEnableFrameWithBone(boneName string, enabled bool) *vmd.IkEnabledFrame
 	return frame
 }
 
+func computeInitialAllDeltas(
+	sizingSet *domain.SizingSet, allFrames []int, blockSize int, model *pmx.PmxModel, motion *vmd.VmdMotion,
+) (initialAllDeltas []*delta.VmdDeltas, err error) {
+	initialMotion := vmd.NewVmdMotion("")
+	centerBone, err := model.Bones.GetCenter()
+	if err != nil {
+		return nil, err
+	}
+
+	model.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
+		initialMotion.BoneFrames.Update(vmd.NewBoneNameFrames(bone.Name()))
+		return true
+	})
+
+	for _, boneIndex := range centerBone.ParentBoneIndexes {
+		bone, _ := model.Bones.Get(boneIndex)
+		initialMotion.BoneFrames.Update(motion.BoneFrames.Get(bone.Name()))
+	}
+
+	if initialAllDeltas, err = computeVmdDeltas(allFrames, blockSize, model,
+		initialMotion, sizingSet, false, gravity_bone_names, "足補正01"); err != nil {
+		return nil, err
+	}
+
+	return initialAllDeltas, nil
+}
+
 // calculateAdjustedCenter は、センターおよびグルーブの位置補正を並列処理で計算します。
 func calculateAdjustedCenter(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, moveScale *mmath.MVec3,
@@ -333,13 +359,54 @@ func calculateAdjustedCenter(
 
 	originalGravities := make([]*mmath.MVec3, len(allFrames))
 	sizingGravities := make([]*mmath.MVec3, len(allFrames))
-	centerIdealPositions := make([]*mmath.MVec3, len(allFrames))
+	// originalLowestPositions := make([]*mmath.MVec3, len(allFrames))
+	// sizingLowestPositions := make([]*mmath.MVec3, len(allFrames))
+	gravityIdealPositions := make([]*mmath.MVec3, len(allFrames))
+	// trunkRootIdealPositions := make([]*mmath.MVec3, len(allFrames))
+
+	// // 先モデルの初期重心位置を計算
+	// originalInitialVmdDeltas, _ := computeVmdDeltas([]int{0}, 1, sizingSet.OriginalConfigModel, vmd.InitialMotion, sizingSet, true, gravity_bone_names, "")
+	// originalInitialGravityPos := calcGravity(originalInitialVmdDeltas[0])
+
+	// // 元の足中心Yと重心Yの比率差を計算
+	// gravityOriginalScaleDiff := originalInitialGravityPos.Dived(sizingSet.OriginalLegCenterBone().Position).Effective().One()
+
+	// // 先モデルの初期重心位置を計算
+	// sizingInitialVmdDeltas, _ := computeVmdDeltas([]int{0}, 1, sizingSet.SizingConfigModel, vmd.InitialMotion, sizingSet, true, gravity_bone_names, "")
+	// sizingInitialGravityPos := calcGravity(sizingInitialVmdDeltas[0])
+
+	// // 元と先の重心比率差を計算
+	// gravityScale := sizingInitialGravityPos.Dived(originalInitialGravityPos).Effective().One()
+
+	// // // 先の足中心Yと重心Yの比率差を計算
+	// // gravitySizingScaleDiff := sizingInitialGravityPos.Dived(sizingSet.SizingLegCenterBone().Position).Effective().One()
+
+	// // 元と先の足の全体の長さ比率差を計算
+	// legScale := (sizingSet.SizingLegCenterBone().Position.Y - sizingSet.SizingLeftAnkleBone().Position.Y) /
+	// 	(sizingSet.OriginalLegCenterBone().Position.Y - sizingSet.OriginalLeftAnkleBone().Position.Y)
+	// ankleScale := sizingSet.SizingLeftAnkleBone().Position.Y / sizingSet.OriginalLeftAnkleBone().Position.Y
+	// // 元の足中心Yのうち、足首が占める割合
+	// originalAnkleRatio := sizingSet.OriginalLeftAnkleBone().Position.Y / sizingSet.OriginalLegCenterBone().Position.Y
+	// // 先の足中心Yのうち、足-足首が占める割合
+	// originalLegRatio := 1 - originalAnkleRatio
+	// // 先の足中心Yのうち、足首が占める割合
+	// sizingAnkleRatio := sizingSet.SizingLeftAnkleBone().Position.Y / sizingSet.SizingLegCenterBone().Position.Y
+	// sizingLegRatio := 1 - sizingAnkleRatio
+
+	// // 元と先の初期重心位置比率差を計算
+	// gravityInitialScaleDiff := sizingInitialGravityPos.Dived(originalInitialGravityPos).Effective().One()
+
+	// // 初期重心位置と体幹根元までの差分を計算
+	// sizingInitialTrunkRootDiff := sizingSet.SizingTrunkRootBone().Position.Subed(sizingInitialGravityPos)
+
+	// // センターの親ボーンまでの変形情報を保持したモーションを作成
+	// originalInitialVmdDeltas, err := computeInitialAllDeltas(sizingSet, allFrames, blockSize, sizingSet.OriginalConfigModel, sizingProcessMotion)
+	// sizingInitialAllDeltas, err := computeInitialAllDeltas(sizingSet, allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion)
 
 	// 元モデルと先モデルの初期重心を計算
 	originalInitialGravityPos := computeInitialGravity(sizingSet, sizingSet.OriginalConfigModel, vmd.InitialMotion)
 	sizingInitialGravityPos := computeInitialGravity(sizingSet, sizingSet.SizingConfigModel, vmd.InitialMotion)
 	gravityRatio := sizingInitialGravityPos.Y / originalInitialGravityPos.Y
-
 	isActiveGroove := false
 	sizingProcessMotion.BoneFrames.Get(pmx.GROOVE.String()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 		if !mmath.NearEquals(bf.FilledPosition().Y, 0.0, 1e-3) {
@@ -355,21 +422,88 @@ func calculateAdjustedCenter(
 				return merr.TerminateError
 			}
 
+			// // 元の最も地面に近い（Y=0に近い）ボーンを取得
+			// originalLowestBonePosition := mmath.MVec3MaxVal
+			// var originalLowestBone *pmx.Bone
+			// sizingSet.OriginalConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
+			// 	if originalAllDeltas[index].Bones.Contains(bone.Index()) &&
+			// 		sizingAllDeltas[index].Bones.ContainsByName(bone.Name()) &&
+			// 		originalLowestBonePosition.Y >= originalAllDeltas[index].Bones.Get(bone.Index()).FilledGlobalPosition().Y {
+			// 		originalLowestBonePosition = originalAllDeltas[index].Bones.Get(bone.Index()).FilledGlobalPosition()
+			// 		originalLowestBone = bone
+			// 	}
+			// 	return true
+			// })
+
+			// sizingLowestBone := sizingAllDeltas[index].Bones.GetByName(originalLowestBone.Name())
+			// sizingLowestBonePosition := sizingLowestBone.FilledGlobalPosition()
+
+			// // 元の最も地面に近い（Y=0に近い）ボーンの高さを元に、先のボーンの高さを計算
+			// sizingOffsetY := (originalLowestBonePosition.Y * moveScale.Y) - sizingLowestBonePosition.Y
+
 			originalGravityPos := calcGravity(originalAllDeltas[index])
 			sizingGravityPos := calcGravity(sizingAllDeltas[index])
 			sizingFixCenterTargetY := originalGravityPos.Y * gravityRatio
 
-			if mlog.IsDebug() {
-				originalGravities[index] = originalGravityPos
-				sizingGravities[index] = sizingGravityPos
+			gravityIdealPosition := sizingGravityPos.Copy()
+			gravityIdealPosition.Y = sizingFixCenterTargetY
 
-				centerIdealPositions[index] = sizingGravityPos.Copy()
-				centerIdealPositions[index].Y = sizingFixCenterTargetY
-			}
+			// if mlog.IsDebug() {
+			// 	originalGravities[index] = originalGravityPos
+			// 	sizingGravities[index] = sizingGravityPos
+
+			// 	centerIdealPositions[index] = gravityIdealPosition
+			// }
+
+			// centerBf := sizingProcessMotion.BoneFrames.Get(pmx.CENTER.String()).Get(float32(data))
+			// centerPositions[index] = centerBf.Position.Muled(moveScale)
+			// centerPositions[index].Y = centerBf.FilledPosition().Added(centerIdealPositions[index].Subed(sizingGravityPos)).Y
+			// // 元と先の重心比率差を計算
+			// gravityScaleDiff := sizingGravityPos.Dived(originalGravityPos).Effective()
+
+			// // 元モデルと先モデルの初期重心を計算
+			// originalInitialGravityPos := calcGravity(originalInitialVmdDeltas[index])
+			// sizingInitialGravityPos := calcGravity(sizingInitialAllDeltas[index])
+
+			// // 元の重心比率差を計算
+			// gravityDiff := originalGravityPos.Dived(originalInitialGravityPos).Effective()
+
+			// // 元の重心のうち、足と足首がそれぞれ占める割合
+			// originalLegLength := originalGravityPos.Y * originalLegRatio
+			// originalAnkleLength := originalGravityPos.Y * originalAnkleRatio
+
+			// // 元の長さを、先の長さに適用
+			// sizingLegLength := originalLegLength * legScale * moveScale.X
+			// sizingAnkleLength := originalAnkleLength * ankleScale * moveScale.X
+
+			// // 理想の重心Y位置を計算
+			// gravityIdealPosition := &mmath.MVec3{
+			// 	X: sizingGravityPos.X,
+			// 	Y: sizingGravityPos.Y + sizingOffsetY,
+			// 	Z: sizingGravityPos.Z,
+			// }
 
 			centerBf := sizingProcessMotion.BoneFrames.Get(pmx.CENTER.String()).Get(float32(data))
-			centerPositions[index] = centerBf.Position.Muled(moveScale)
-			centerPositions[index].Y = centerBf.FilledPosition().Added(centerIdealPositions[index].Subed(sizingGravityPos)).Y
+			grooveBf := sizingProcessMotion.BoneFrames.Get(pmx.GROOVE.String()).Get(float32(data))
+
+			centerPosition := centerBf.FilledPosition().Added(grooveBf.FilledPosition())
+			centerPositions[index] = centerPosition.Muled(moveScale)
+			centerPositions[index].Y = centerPosition.Added(gravityIdealPosition.Subed(sizingGravityPos)).Y
+
+			// sizingTrunkRootMat := sizingAllDeltas[index].Bones.Get(sizingSet.SizingTrunkRootBone().Index()).FilledGlobalMatrix()
+
+			// trunkRootIdealPosition := sizingTrunkRootMat.MulVec3(&mmath.MVec3{X: 0, Y: sizingOffsetY, Z: 0})
+			// centerPositions[index].Y = centerPosition.Y +
+			// 	sizingTrunkRootMat.Inverted().MulVec3(trunkRootIdealPosition).Y
+
+			if mlog.IsDebug() {
+				// originalLowestPositions[index] = originalLowestBonePosition
+				// sizingLowestPositions[index] = sizingLowestBonePosition
+				originalGravities[index] = originalGravityPos
+				sizingGravities[index] = sizingGravityPos
+				gravityIdealPositions[index] = gravityIdealPosition
+				// trunkRootIdealPositions[index] = trunkRootIdealPosition
+			}
 
 			if isActiveGroove {
 				// グルーブがある場合、Yをグルーブ位置に移動
@@ -388,6 +522,16 @@ func calculateAdjustedCenter(
 
 		for i, iFrame := range allFrames {
 			frame := float32(iFrame)
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = originalLowestPositions[i]
+			// 	motion.InsertRegisteredBoneFrame("元底辺", bf)
+			// }
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = sizingLowestPositions[i]
+			// 	motion.InsertRegisteredBoneFrame("先底辺", bf)
+			// }
 			{
 				bf := vmd.NewBoneFrame(frame)
 				bf.Position = originalGravities[i]
@@ -400,9 +544,14 @@ func calculateAdjustedCenter(
 			}
 			{
 				bf := vmd.NewBoneFrame(frame)
-				bf.Position = centerIdealPositions[i]
-				motion.InsertRegisteredBoneFrame("先理想重心", bf)
+				bf.Position = gravityIdealPositions[i]
+				motion.InsertRegisteredBoneFrame("理想重心", bf)
 			}
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = trunkRootIdealPositions[i]
+			// 	motion.InsertRegisteredBoneFrame("理想体幹根元", bf)
+			// }
 			{
 				bf := vmd.NewBoneFrame(frame)
 				if groovePositions[i] == nil {

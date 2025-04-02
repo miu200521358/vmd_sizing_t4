@@ -54,7 +54,7 @@ type SizingSet struct {
 
 	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone,
 	originalUpperRootBone, originalUpperBone, originalUpper2Bone, originalNeckRootBone,
-	originalLeftLegIkParentBone, originalLeftLegIkBone,
+	originalLegCenterBone, originalLeftLegIkParentBone, originalLeftLegIkBone,
 	originalLeftLegBone, originalLeftKneeBone, originalLeftAnkleBone,
 	originalLeftToeIkBone, originalLeftToeTailBone, originalLeftHeelBone, originalLeftToePBone,
 	originalRightLegIkParentBone, originalRightLegIkBone,
@@ -63,7 +63,8 @@ type SizingSet struct {
 
 	sizingCenterBone, sizingGrooveBone, sizingTrunkRootBone, sizingLowerBone,
 	sizingUpperRootBone, sizingUpperBone, sizingUpper2Bone, sizingNeckRootBone,
-	sizingLeftLegIkParentBone, sizingLeftLegIkBone, sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
+	sizingLegCenterBone, sizingLeftLegIkParentBone, sizingLeftLegIkBone,
+	sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
 	sizingLeftToeIkBone, sizingLeftToeTailBone, sizingLeftHeelBone, sizingLeftToePBone,
 	sizingRightLegIkParentBone, sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
 	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone *pmx.Bone // サイジング先モデルのボーン情報
@@ -362,9 +363,12 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 	leftLegIkBone, _ := bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
 
 	for _, v := range [][]any{
+		// {"元底辺", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		// {"先底辺", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
 		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
 		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"先理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		// {"理想体幹根元", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
 		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正02"},
 		{"左足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_Y補正"},
 		{"左足Y補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正04_Y補正"},
