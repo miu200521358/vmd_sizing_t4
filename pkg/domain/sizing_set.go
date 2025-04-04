@@ -363,12 +363,8 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 	leftLegIkBone, _ := bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
 
 	for _, v := range [][]any{
-		{"元下半身", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"元下半身X", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"元下半身Y", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"元下半身Z", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"先下半身Z", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"先下半身", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先足中心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先理想足中心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
 		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
 		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
 		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},

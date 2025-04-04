@@ -56,16 +56,11 @@ func SizingUpper(
 	incrementCompletedCount()
 
 	// サイジング先の上半身回転情報を取得(全フレーム処理してズレ検知用)
-	var upperRotations, upper2Rotations []*mmath.MQuaternion
-	upperRotations, upper2Rotations, err = calculateAdjustedUpper(
-		sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas, sizingProcessMotion)
-	if err != nil {
+	if err := calculateAdjustedUpper(
+		sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas,
+		sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
-
-	incrementCompletedCount()
-
-	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations)
 
 	incrementCompletedCount()
 
@@ -294,16 +289,16 @@ func createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 func calculateAdjustedUpper(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
-) (upperRotations, upper2Rotations []*mmath.MQuaternion, err error) {
-
+	incrementCompletedCount func(),
+) error {
 	var upperDistance float64
-	upperDistance, err = calculateUpperDistance(sizingSet)
+	upperDistance, err := calculateUpperDistance(sizingSet)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 
-	upperRotations = make([]*mmath.MQuaternion, len(allFrames))
-	upper2Rotations = make([]*mmath.MQuaternion, len(allFrames))
+	upperRotations := make([]*mmath.MQuaternion, len(allFrames))
+	upper2Rotations := make([]*mmath.MQuaternion, len(allFrames))
 
 	upperIkBone := createUpperIkBone(sizingSet)
 
@@ -347,6 +342,9 @@ func calculateAdjustedUpper(
 		func(iterIndex, allCount int) {
 			processLog("上半身補正02", sizingSet.Index, iterIndex, allCount)
 		})
+	if err != nil {
+		return err
+	}
 
 	if mlog.IsDebug() {
 		motion := vmd.NewVmdMotion("")
@@ -373,7 +371,11 @@ func calculateAdjustedUpper(
 		outputVerboseMotion("上半身01", sizingSet.OutputMotionPath, motion)
 	}
 
-	return
+	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations)
+
+	incrementCompletedCount()
+
+	return nil
 }
 
 func checkBonesForSizingUpper(sizingSet *domain.SizingSet) (err error) {

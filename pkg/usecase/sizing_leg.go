@@ -12,6 +12,7 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/domain/vmd"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/miter"
+	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
 // SizingLeg は、足補正処理を行います。
@@ -67,7 +68,7 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// 下半身補正を実施
-	if err := calculateAdjustedLower(sizingSet, allFrames, blockSize, moveScale,
+	if err := calculateAdjustedLower(sizingSet, allFrames, blockSize,
 		originalAllDeltas, sizingIkOffAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
@@ -75,68 +76,29 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// センター・グルーブ補正を実施
-	centerPositions, groovePositions, err := calculateAdjustedCenter(sizingSet, allFrames, blockSize, moveScale,
-		originalAllDeltas, sizingIkOffAllDeltas, sizingProcessMotion)
-	if err != nil {
-		return false, err
-	}
-
-	incrementCompletedCount()
-
-	// センター・グルーブ位置をサイジング先モーションに反映
-	updateCenter(sizingSet, allFrames, sizingProcessMotion, centerPositions, groovePositions)
-
-	incrementCompletedCount()
-
-	// 先モデルのデフォーム結果を並列処理で取得
-	sizingOffAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, false, all_lower_leg_bone_names, "足補正01")
-	if err != nil {
+	if err := calculateAdjustedCenter(sizingSet, allFrames, blockSize, moveScale,
+		originalAllDeltas, sizingIkOffAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
 
 	// 足IK 補正処理
-	leftLegIkPositions, leftLegIkRotations, rightLegIkPositions, rightLegIkRotations, err := calculateAdjustedLegIK(
-		sizingSet, allFrames, blockSize, originalAllDeltas, sizingOffAllDeltas,
-		moveScale,
-	)
-	if err != nil {
+	if err := calculateAdjustedLegIK(
+		sizingSet, allFrames, blockSize, originalAllDeltas, moveScale, sizingProcessMotion, incrementCompletedCount,
+	); err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
 
-	// 足IK 補正値をサイジング先モーションに反映
-	updateLegIK(sizingSet, allFrames, sizingProcessMotion,
-		leftLegIkPositions, leftLegIkRotations, rightLegIkPositions, rightLegIkRotations, originalAllDeltas)
-
-	incrementCompletedCount()
-
-	// 先モデルのデフォーム結果を並列処理で取得
-	sizingIkOffAllDeltas, err = computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
-	if err != nil {
+	// 足FK 再計算（IK ON状態）
+	if err := calculateAdjustedLegFK(sizingSet, allFrames, blockSize,
+		sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
-
-	// // 足FK 再計算（IK ON状態）
-	// leftLegRotations, leftKneeRotations, leftAnkleRotations,
-	// 	rightLegRotations, rightKneeRotations, rightAnkleRotations, err :=
-	// 	calculateAdjustedLegFK(sizingSet, allFrames, blockSize, sizingIkOffAllDeltas)
-	// if err != nil {
-	// 	return false, err
-	// }
-
-	// incrementCompletedCount()
-
-	// // 再計算した回転情報をサイジング先モーションに反映
-	// updateAdjustedLegFk(sizingSet, allFrames, sizingProcessMotion,
-	// 	leftLegRotations, leftKneeRotations, leftAnkleRotations,
-	// 	rightLegRotations, rightKneeRotations, rightAnkleRotations)
-
-	// incrementCompletedCount()
 
 	// sizingSet.OutputMotion = sizingProcessMotion
 	// 足補正処理の結果をサイジング先モーションに反映
@@ -150,111 +112,6 @@ func SizingLeg(
 	sizingSet.CompletedSizingLeg = true
 
 	return true, nil
-}
-
-func updateLegResultMotion(
-	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
-	incrementCompletedCount func(),
-) error {
-	// 足補正処理の結果をサイジング先モーションに反映
-	sizingModel := sizingSet.SizingConfigModel
-	outputMotion := sizingSet.OutputMotion
-
-	activeFrames := getFrames(outputMotion, all_lower_leg_bone_names)
-
-	// TOE_IK キーフレームのリセット
-	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Left()))
-	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
-
-	// 足系はあるボーンだけ上書きする
-	for _, bone := range []*pmx.Bone{
-		sizingSet.SizingCenterBone(), sizingSet.SizingGrooveBone(), sizingSet.SizingLowerBone(),
-		sizingSet.SizingLeftLegIkBone(), sizingSet.SizingLeftLegBone(), sizingSet.SizingLeftKneeBone(), sizingSet.SizingLeftAnkleBone(),
-		sizingSet.SizingRightLegIkBone(), sizingSet.SizingRightLegBone(), sizingSet.SizingRightKneeBone(), sizingSet.SizingRightAnkleBone(),
-	} {
-		outputMotion.BoneFrames.Get(bone.Name()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-			processBf := sizingProcessMotion.BoneFrames.Get(bone.Name()).Get(frame)
-			bf.Position = processBf.FilledPosition().Copy()
-			bf.Rotation = processBf.FilledRotation().Copy()
-			outputMotion.BoneFrames.Get(bone.Name()).Update(bf)
-			return true
-		})
-	}
-
-	// 中間キーフレのズレをチェック
-	kneeThreshold := 0.3
-	ankleThreshold := 0.2
-	toeThreshold := 0.1
-
-	err := miter.IterParallelByList([]pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}, 1, 1,
-		func(dIndex int, direction pmx.BoneDirection) error {
-			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
-				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-					sizingModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
-				if err != nil {
-					return err
-				}
-
-				for fIndex, iFrame := range targetFrames {
-					if sizingSet.IsTerminate {
-						return merr.TerminateError
-					}
-					frame := float32(iFrame)
-
-					// 現時点の結果
-					resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-						sizingModel, outputMotion, sizingSet, true, leg_direction_bone_names[dIndex], "")
-					if err != nil {
-						return err
-					}
-
-					// ひざの位置をチェック
-					resultKneeDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
-					processKneeDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
-
-					// 足首の位置をチェック
-					resultAnkleDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
-					processAnkleDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
-
-					// つま先親の位置をチェック
-					resultToePDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.TOE_P.StringFromDirection(direction))
-					processToePDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.TOE_P.StringFromDirection(direction))
-
-					// 各関節位置がズレている場合、元の回転を焼き込む
-					if resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold ||
-						resultAnkleDelta.FilledGlobalPosition().Distance(processAnkleDelta.FilledGlobalPosition()) > ankleThreshold ||
-						resultToePDelta.FilledGlobalPosition().Distance(processToePDelta.FilledGlobalPosition()) > toeThreshold {
-						for _, legBoneName := range []pmx.StandardBoneName{pmx.LEG, pmx.KNEE, pmx.ANKLE, pmx.LEG_IK} {
-							boneName := legBoneName.StringFromDirection(direction)
-							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
-							resultBf.Position = processBf.FilledPosition().Copy()
-							resultBf.Rotation = processBf.FilledRotation().Copy()
-							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
-						}
-					}
-
-					if fIndex > 0 && fIndex%1000 == 0 {
-						mlog.I(mi18n.T("足補正09", map[string]interface{}{
-							"No":          sizingSet.Index + 1,
-							"IterIndex":   fmt.Sprintf("%04d", iFrame),
-							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
-							"Direction":   direction.String(),
-							"FramesIndex": tIndex + 1}))
-					}
-				}
-			}
-
-			incrementCompletedCount()
-
-			return nil
-		}, nil)
-
-	if mlog.IsDebug() {
-		outputVerboseMotion("足10", sizingSet.OutputMotionPath, outputMotion)
-	}
-
-	return err
 }
 
 // computeInitialGravity は、対象モデルの初期重心位置を計算します。
@@ -356,30 +213,49 @@ func newIkEnableFrameWithBone(boneName string, enabled bool) *vmd.IkEnabledFrame
 // 	return initialAllDeltas, nil
 // }
 
+func createLowerIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
+	// 下半身IK
+	lowerIkBone := pmx.NewBoneByName(fmt.Sprintf("%s%sIk", pmx.MLIB_PREFIX, pmx.LOWER.String()))
+	lowerIkBone.Position = sizingSet.SizingLegCenterBone().Position.Copy()
+	lowerIkBone.Ik = pmx.NewIk()
+	lowerIkBone.Ik.BoneIndex = sizingSet.SizingLegCenterBone().Index()
+	lowerIkBone.Ik.LoopCount = 100
+	lowerIkBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	lowerIkBone.Ik.Links = make([]*pmx.IkLink, 1)
+	{
+		lowerIkBone.Ik.Links[0] = pmx.NewIkLink()
+		lowerIkBone.Ik.Links[0].BoneIndex = sizingSet.SizingLowerBone().Index()
+	}
+
+	return lowerIkBone
+}
+
 // calculateAdjustedCenter は、センターおよびグルーブの位置補正を並列処理で計算します。
 func calculateAdjustedLower(
-	sizingSet *domain.SizingSet, allFrames []int, blockSize int, moveScale *mmath.MVec3,
+	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	originalAllDeltas, sizingAllDeltas []*delta.VmdDeltas,
 	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
 ) error {
-	originalLowerPositions := make([]*mmath.MVec3, len(allFrames))
-	sizingLowerPositions := make([]*mmath.MVec3, len(allFrames))
+	// originalLowerPositions := make([]*mmath.MVec3, len(allFrames))
+	// sizingLowerPositions := make([]*mmath.MVec3, len(allFrames))
 	// legCenterPositions := make([]*mmath.MVec3, len(allFrames))
-	originalLowerXRotations := make([]*mmath.MQuaternion, len(allFrames))
-	originalLowerYRotations := make([]*mmath.MQuaternion, len(allFrames))
-	originalLowerZRotations := make([]*mmath.MQuaternion, len(allFrames))
-	sizingLowerZRotations := make([]*mmath.MQuaternion, len(allFrames))
-	// ankleCenterPositions := make([]*mmath.MVec3, len(allFrames))
-	// ankleCenterIdealPositions := make([]*mmath.MVec3, len(allFrames))
+	// originalLowerXRotations := make([]*mmath.MQuaternion, len(allFrames))
+	// originalLowerYRotations := make([]*mmath.MQuaternion, len(allFrames))
+	// originalLowerZRotations := make([]*mmath.MQuaternion, len(allFrames))
+	// sizingLowerZRotations := make([]*mmath.MQuaternion, len(allFrames))
+	legCenterPositions := make([]*mmath.MVec3, len(allFrames))
+	legCenterIdealPositions := make([]*mmath.MVec3, len(allFrames))
 	originalLowerRotations := make([]*mmath.MQuaternion, len(allFrames))
 	lowerRotations := make([]*mmath.MQuaternion, len(allFrames))
 	lowerCancelRotations := make([]*mmath.MQuaternion, len(allFrames))
 	// rightLegCancelRotations := make([]*mmath.MQuaternion, len(allFrames))
 
-	// 下半身から足中心へのベクトル
-	originalLowerVector := sizingSet.OriginalLegCenterBone().Position.Subed(sizingSet.OriginalLowerBone().Position)
-	sizingLowerVector := sizingSet.SizingLegCenterBone().Position.Subed(sizingSet.SizingLowerBone().Position)
-	lowerScale := sizingLowerVector.Length() / originalLowerVector.Length()
+	// 体幹中心から足中心へのベクトル
+	originalLowerVector := sizingSet.OriginalLegCenterBone().Position.Subed(sizingSet.OriginalTrunkRootBone().Position)
+	sizingLowerVector := sizingSet.SizingLegCenterBone().Position.Subed(sizingSet.SizingTrunkRootBone().Position)
+	lowerScale := &mmath.MVec3{X: 1.0, Y: sizingLowerVector.Length() / originalLowerVector.Length(), Z: 1.0}
+
+	lowerIkBone := createLowerIkBone(sizingSet)
 
 	err := miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
@@ -387,8 +263,9 @@ func calculateAdjustedLower(
 				return merr.TerminateError
 			}
 
+			originalTrunkRootDelta := originalAllDeltas[index].Bones.GetByName(sizingSet.OriginalTrunkRootBone().Name())
 			originalLowerDelta := originalAllDeltas[index].Bones.GetByName(sizingSet.OriginalLowerBone().Name())
-			// originalLegCenterDelta := originalAllDeltas[index].Bones.GetByName(sizingSet.OriginalLowerBone().Name())
+			originalLegCenterDelta := originalAllDeltas[index].Bones.GetByName(sizingSet.OriginalLegCenterBone().Name())
 			// originalLeftLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.StringFromDirection(pmx.BONE_DIRECTION_LEFT))
 			// originalLeftAnkleDelta := originalAllDeltas[index].Bones.GetByName(pmx.ANKLE.StringFromDirection(pmx.BONE_DIRECTION_LEFT))
 			// // originalRightLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.StringFromDirection(pmx.BONE_DIRECTION_RIGHT))
@@ -396,6 +273,7 @@ func calculateAdjustedLower(
 			// originalLeftHeelDelta := originalAllDeltas[index].Bones.GetByName(pmx.HEEL.StringFromDirection(pmx.BONE_DIRECTION_LEFT))
 			// originalRightHeelDelta := originalAllDeltas[index].Bones.GetByName(pmx.HEEL.StringFromDirection(pmx.BONE_DIRECTION_RIGHT))
 
+			sizingTrunkRootDelta := sizingAllDeltas[index].Bones.GetByName(sizingSet.SizingTrunkRootBone().Name())
 			// sizingLowerDelta := sizingAllDeltas[index].Bones.GetByName(sizingSet.SizingLowerBone().Name())
 			// sizingLegCenterDelta := sizingAllDeltas[index].Bones.GetByName(sizingSet.SizingLowerBone().Name())
 			// sizingLeftLegDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LEG.StringFromDirection(pmx.BONE_DIRECTION_LEFT))
@@ -405,23 +283,38 @@ func calculateAdjustedLower(
 			// sizingLeftHeelDelta := sizingAllDeltas[index].Bones.GetByName(pmx.HEEL.StringFromDirection(pmx.BONE_DIRECTION_LEFT))
 			// sizingRightHeelDelta := sizingAllDeltas[index].Bones.GetByName(pmx.HEEL.StringFromDirection(pmx.BONE_DIRECTION_RIGHT))
 
+			// 元の下半身から見た足中心のローカル位置
+			originalLowerLocalPosition := originalLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(originalLegCenterDelta.FilledGlobalPosition())
+			// 足中心のローカル位置を先モデルのスケールに合わせる
+			sizingLegCenterLocalPosition := originalLowerLocalPosition.Muled(lowerScale)
+			// 元の下半身に先の足中心ローカル位置を合わせたグローバル位置
+			sizingLegCenterOriginalPosition := originalLowerDelta.FilledGlobalMatrix().MulVec3(sizingLegCenterLocalPosition)
+			// 元の体幹中心から見た、先の足中心のローカル位置
+			sizingLegCenterIdealLocalPosition := originalTrunkRootDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingLegCenterOriginalPosition)
+			// 先の体幹中心から見た、先の足中心のグローバル位置
+			sizingLegCenterIdealPosition := sizingTrunkRootDelta.FilledGlobalMatrix().MulVec3(sizingLegCenterIdealLocalPosition)
+
+			sizingLowerDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), lowerIkBone, sizingLegCenterIdealPosition, trunk_lower_bone_names, false)
+
+			lowerRotations[index] = sizingLowerDeltas.Bones.GetByName(pmx.LOWER.String()).FilledFrameRotation()
+
+			lowerBf := sizingProcessMotion.BoneFrames.Get(pmx.LOWER.String()).Get(float32(data))
+			lowerCancelRotations[index] = lowerRotations[index].Inverted().Muled(lowerBf.FilledRotation()).Normalized()
+
 			// // 元の足のベクトルと先の足のベクトルが合う様に、下半身の角度を調整する
 			// originalHeelVector := originalRightHeelDelta.FilledGlobalPosition().Subed(originalLeftHeelDelta.FilledGlobalPosition()).Normalized()
 			// sizingHeelVector := sizingRightHeelDelta.FilledGlobalPosition().Subed(sizingLeftHeelDelta.FilledGlobalPosition()).Normalized()
 
 			// originalLowerVector := originalLegCenterDelta.FilledGlobalPosition().Subed(originalLowerDelta.FilledGlobalPosition()).Normalized()
 
-			lowerBf := sizingProcessMotion.BoneFrames.Get(pmx.LOWER.String()).Get(float32(data))
-			lowerXRotation, lowerYRotation, lowerZRotation := lowerBf.FilledRotation().SeparateByAxis(originalLowerVector.Normalized())
+			// lowerXRotation, lowerYRotation, lowerZRotation := lowerBf.FilledRotation().SeparateByAxis(originalLowerVector.Normalized())
 
-			lowerXRotation.Shorten()
-			lowerYRotation.Shorten()
-			lowerZRotation.Shorten()
+			// lowerXRotation.Shorten()
+			// lowerYRotation.Shorten()
+			// lowerZRotation.Shorten()
 
-			sizingLowerZRotation := lowerZRotation.MuledScalar(lowerScale).Shorten()
-			lowerRotations[index] = sizingLowerZRotation.Muled(lowerYRotation).Muled(lowerXRotation).Normalized()
-
-			lowerCancelRotations[index] = lowerRotations[index].Inverted().Muled(lowerBf.FilledRotation()).Normalized()
+			// sizingLowerZRotation := lowerZRotation.MuledScalar(lowerScale).Shorten()
+			// lowerRotations[index] = sizingLowerZRotation.Muled(lowerYRotation).Muled(lowerXRotation).Normalized()
 
 			// rightLegBf := sizingProcessMotion.BoneFrames.Get(pmx.LEG.StringFromDirection(pmx.BONE_DIRECTION_RIGHT)).Get(float32(data))
 			// rightLegCancelRotations[index] = lowerRotations[index].Inverted().Muled(rightLegBf.FilledRotation()).Normalized()
@@ -442,18 +335,22 @@ func calculateAdjustedLower(
 			// lowerRotations[index] = lowerBf.FilledRotation().Muled(lowerDiff).Normalized()
 
 			if mlog.IsDebug() {
-				originalLowerPositions[index] = originalLowerDelta.FilledGlobalPosition()
-				sizingLowerDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
-				// sizingLegCenterDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LEG_CENTER.String())
-				sizingLowerPositions[index] = sizingLowerDelta.FilledGlobalPosition()
-				// legCenterPositions[index] = sizingLegCenterDelta.FilledGlobalPosition()
-				originalLowerXRotations[index] = lowerXRotation
-				originalLowerYRotations[index] = lowerYRotation
-				originalLowerZRotations[index] = lowerZRotation
-				sizingLowerZRotations[index] = sizingLowerZRotation
+				sizingLegCenterDelta := sizingAllDeltas[index].Bones.GetByName(sizingSet.SizingLegCenterBone().Name())
+				legCenterPositions[index] = sizingLegCenterDelta.FilledGlobalPosition()
+				legCenterIdealPositions[index] = sizingLegCenterIdealPosition
 				originalLowerRotations[index] = lowerBf.FilledRotation()
-				// ankleCenterPositions[index] = sizingAnkleCenterPosition
-				// ankleCenterIdealPositions[index] = sizingIdealAnkleCenterPosition
+
+				// originalLowerPositions[index] = originalLowerDelta.FilledGlobalPosition()
+				// sizingLowerDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
+				// // sizingLegCenterDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LEG_CENTER.String())
+				// sizingLowerPositions[index] = sizingLowerDelta.FilledGlobalPosition()
+				// // legCenterPositions[index] = sizingLegCenterDelta.FilledGlobalPosition()
+				// // originalLowerXRotations[index] = lowerXRotation
+				// // originalLowerYRotations[index] = lowerYRotation
+				// // originalLowerZRotations[index] = lowerZRotation
+				// // sizingLowerZRotations[index] = sizingLowerZRotation
+				// // ankleCenterPositions[index] = sizingAnkleCenterPosition
+				// // ankleCenterIdealPositions[index] = sizingIdealAnkleCenterPosition
 			}
 
 			return nil
@@ -461,6 +358,9 @@ func calculateAdjustedLower(
 		func(iterIndex, allCount int) {
 			processLog("足補正03", sizingSet.Index, iterIndex, allCount)
 		})
+	if err != nil {
+		return err
+	}
 
 	if mlog.IsDebug() {
 		motion := vmd.NewVmdMotion("")
@@ -469,40 +369,40 @@ func calculateAdjustedLower(
 			frame := float32(iFrame)
 			{
 				bf := vmd.NewBoneFrame(frame)
-				bf.Position = originalLowerPositions[i]
+				bf.Position = legCenterPositions[i]
 				bf.Rotation = originalLowerRotations[i]
-				motion.InsertRegisteredBoneFrame("元下半身", bf)
+				motion.InsertRegisteredBoneFrame("先足中心", bf)
 			}
 			{
 				bf := vmd.NewBoneFrame(frame)
-				bf.Position = originalLowerPositions[i]
-				bf.Rotation = originalLowerXRotations[i]
-				motion.InsertRegisteredBoneFrame("元下半身X", bf)
-			}
-			{
-				bf := vmd.NewBoneFrame(frame)
-				bf.Position = originalLowerPositions[i]
-				bf.Rotation = originalLowerYRotations[i]
-				motion.InsertRegisteredBoneFrame("元下半身Y", bf)
-			}
-			{
-				bf := vmd.NewBoneFrame(frame)
-				bf.Position = originalLowerPositions[i]
-				bf.Rotation = originalLowerZRotations[i]
-				motion.InsertRegisteredBoneFrame("元下半身Z", bf)
-			}
-			{
-				bf := vmd.NewBoneFrame(frame)
-				bf.Position = sizingLowerPositions[i]
-				bf.Rotation = sizingLowerZRotations[i]
-				motion.InsertRegisteredBoneFrame("先下半身Z", bf)
-			}
-			{
-				bf := vmd.NewBoneFrame(frame)
-				bf.Position = sizingLowerPositions[i]
+				bf.Position = legCenterIdealPositions[i]
 				bf.Rotation = lowerRotations[i]
-				motion.InsertRegisteredBoneFrame("先下半身", bf)
+				motion.InsertRegisteredBoneFrame("先理想足中心", bf)
 			}
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = originalLowerPositions[i]
+			// 	bf.Rotation = originalLowerYRotations[i]
+			// 	motion.InsertRegisteredBoneFrame("元下半身Y", bf)
+			// }
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = originalLowerPositions[i]
+			// 	bf.Rotation = originalLowerZRotations[i]
+			// 	motion.InsertRegisteredBoneFrame("元下半身Z", bf)
+			// }
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = sizingLowerPositions[i]
+			// 	bf.Rotation = sizingLowerZRotations[i]
+			// 	motion.InsertRegisteredBoneFrame("先下半身Z", bf)
+			// }
+			// {
+			// 	bf := vmd.NewBoneFrame(frame)
+			// 	bf.Position = sizingLowerPositions[i]
+			// 	bf.Rotation = lowerRotations[i]
+			// 	motion.InsertRegisteredBoneFrame("先下半身", bf)
+			// }
 			// {
 			// 	bf := vmd.NewBoneFrame(frame)
 			// 	bf.Position = legCenterPositions[i]
@@ -573,8 +473,8 @@ func updateLower(
 func calculateAdjustedCenter(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, moveScale *mmath.MVec3,
 	originalAllDeltas, sizingAllDeltas []*delta.VmdDeltas,
-	sizingProcessMotion *vmd.VmdMotion,
-) ([]*mmath.MVec3, []*mmath.MVec3, error) {
+	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
+) error {
 	centerPositions := make([]*mmath.MVec3, len(allFrames))
 	groovePositions := make([]*mmath.MVec3, len(allFrames))
 
@@ -737,6 +637,9 @@ func calculateAdjustedCenter(
 		func(iterIndex, allCount int) {
 			processLog("足補正05", sizingSet.Index, iterIndex, allCount)
 		})
+	if err != nil {
+		return err
+	}
 
 	if mlog.IsDebug() {
 		motion := vmd.NewVmdMotion("")
@@ -787,7 +690,12 @@ func calculateAdjustedCenter(
 		outputVerboseMotion("足04", sizingSet.OutputMotionPath, motion)
 	}
 
-	return centerPositions, groovePositions, err
+	incrementCompletedCount()
+
+	// センター・グルーブ位置をサイジング先モーションに反映
+	updateCenter(sizingSet, allFrames, sizingProcessMotion, centerPositions, groovePositions)
+
+	return nil
 }
 
 // updateCenter は、計算したセンター・グルーブ位置をサイジング先モーションに反映します。
@@ -820,16 +728,22 @@ func updateCenter(
 // calculateAdjustedLegIK は、足IK 補正の計算を並列処理で行い、各フレームごとの位置・回転補正値を算出します。
 func calculateAdjustedLegIK(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
-	originalAllDeltas, sizingOffAllDeltas []*delta.VmdDeltas,
-	moveScale *mmath.MVec3,
-) (
-	leftLegIkPositions []*mmath.MVec3, leftLegIkRotations []*mmath.MQuaternion,
-	rightLegIkPositions []*mmath.MVec3, rightLegIkRotations []*mmath.MQuaternion, err error,
-) {
-	leftLegIkPositions = make([]*mmath.MVec3, len(allFrames))
-	leftLegIkRotations = make([]*mmath.MQuaternion, len(allFrames))
-	rightLegIkPositions = make([]*mmath.MVec3, len(allFrames))
-	rightLegIkRotations = make([]*mmath.MQuaternion, len(allFrames))
+	originalAllDeltas []*delta.VmdDeltas, moveScale *mmath.MVec3, sizingProcessMotion *vmd.VmdMotion,
+	incrementCompletedCount func(),
+) error {
+
+	// 先モデルのデフォーム結果を並列処理で取得
+	sizingOffAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, false, all_lower_leg_bone_names, "足補正01")
+	if err != nil {
+		return err
+	}
+
+	incrementCompletedCount()
+
+	leftLegIkPositions := make([]*mmath.MVec3, len(allFrames))
+	leftLegIkRotations := make([]*mmath.MQuaternion, len(allFrames))
+	rightLegIkPositions := make([]*mmath.MVec3, len(allFrames))
+	rightLegIkRotations := make([]*mmath.MQuaternion, len(allFrames))
 
 	leftLegBeforePositions := make([]*mmath.MVec3, len(allFrames))
 	rightLegBeforePositions := make([]*mmath.MVec3, len(allFrames))
@@ -941,6 +855,9 @@ func calculateAdjustedLegIK(
 		func(iterIndex, allCount int) {
 			processLog("足補正07", sizingSet.Index, iterIndex, allCount)
 		})
+	if err != nil {
+		return err
+	}
 
 	if mlog.IsDebug() {
 		motion := vmd.NewVmdMotion("")
@@ -1012,7 +929,13 @@ func calculateAdjustedLegIK(
 		outputVerboseMotion("足06", sizingSet.OutputMotionPath, motion)
 	}
 
-	return
+	incrementCompletedCount()
+
+	// 足IK 補正値をサイジング先モーションに反映
+	updateLegIK(sizingSet, allFrames, sizingProcessMotion,
+		leftLegIkPositions, leftLegIkRotations, rightLegIkPositions, rightLegIkRotations, originalAllDeltas)
+
+	return nil
 }
 
 // updateLegIK は、計算済みの足IK 補正位置と回転値をモーションデータに反映させます。
@@ -1132,10 +1055,18 @@ func updateLegIK(
 
 // calculateAdjustedLegFK は、IK ON状態で足FK の回転を再計算し、その結果を配列で返します。
 func calculateAdjustedLegFK(
-	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingAllDeltas []*delta.VmdDeltas,
+	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
+	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
 
-) ([]*mmath.MQuaternion, []*mmath.MQuaternion, []*mmath.MQuaternion,
-	[]*mmath.MQuaternion, []*mmath.MQuaternion, []*mmath.MQuaternion, error) {
+) error {
+	// 先モデルのデフォーム結果を並列処理で取得
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
+	if err != nil {
+		return err
+	}
+
+	incrementCompletedCount()
+
 	leftLegRotations := make([]*mmath.MQuaternion, len(allFrames))
 	leftKneeRotations := make([]*mmath.MQuaternion, len(allFrames))
 	leftAnkleRotations := make([]*mmath.MQuaternion, len(allFrames))
@@ -1143,7 +1074,7 @@ func calculateAdjustedLegFK(
 	rightKneeRotations := make([]*mmath.MQuaternion, len(allFrames))
 	rightAnkleRotations := make([]*mmath.MQuaternion, len(allFrames))
 
-	err := miter.IterParallelByList(allFrames, blockSize, log_block_size,
+	err = miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
 			if sizingSet.IsTerminate {
 				return merr.TerminateError
@@ -1161,8 +1092,18 @@ func calculateAdjustedLegFK(
 		func(iterIndex, allCount int) {
 			processLog("足補正09", sizingSet.Index, iterIndex, allCount)
 		})
+	if err != nil {
+		return err
+	}
 
-	return leftLegRotations, leftKneeRotations, leftAnkleRotations, rightLegRotations, rightKneeRotations, rightAnkleRotations, err
+	incrementCompletedCount()
+
+	// 再計算した回転情報をサイジング先モーションに反映
+	updateAdjustedLegFk(sizingSet, allFrames, sizingProcessMotion,
+		leftLegRotations, leftKneeRotations, leftAnkleRotations,
+		rightLegRotations, rightKneeRotations, rightAnkleRotations)
+
+	return nil
 }
 
 func calcLegIkPositionY(
@@ -1282,6 +1223,114 @@ func updateAdjustedLegFk(
 	if mlog.IsDebug() {
 		outputVerboseMotion("足09", sizingSet.OutputMotionPath, sizingProcessMotion)
 	}
+}
+
+func updateLegResultMotion(
+	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
+	incrementCompletedCount func(),
+) error {
+	// 足補正処理の結果をサイジング先モーションに反映
+	sizingModel := sizingSet.SizingConfigModel
+	outputMotion := sizingSet.OutputMotion
+
+	activeFrames := getFrames(outputMotion, all_lower_leg_bone_names)
+
+	// TOE_IK キーフレームのリセット
+	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Left()))
+	outputMotion.BoneFrames.Update(vmd.NewBoneNameFrames(pmx.TOE_IK.Right()))
+
+	// 足系はあるボーンだけ上書きする
+	for _, bone := range []*pmx.Bone{
+		sizingSet.SizingCenterBone(), sizingSet.SizingGrooveBone(), sizingSet.SizingLowerBone(),
+		sizingSet.SizingLeftLegIkBone(), sizingSet.SizingLeftLegBone(), sizingSet.SizingLeftKneeBone(), sizingSet.SizingLeftAnkleBone(),
+		sizingSet.SizingRightLegIkBone(), sizingSet.SizingRightLegBone(), sizingSet.SizingRightKneeBone(), sizingSet.SizingRightAnkleBone(),
+	} {
+		outputMotion.BoneFrames.Get(bone.Name()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+			processBf := sizingProcessMotion.BoneFrames.Get(bone.Name()).Get(frame)
+			bf.Position = processBf.FilledPosition().Copy()
+			bf.Rotation = processBf.FilledRotation().Copy()
+			outputMotion.BoneFrames.Get(bone.Name()).Update(bf)
+			return true
+		})
+	}
+
+	// 中間キーフレのズレをチェック
+	kneeThreshold := 0.3
+	ankleThreshold := 0.2
+	toeThreshold := 0.1
+
+	err := miter.IterParallelByList([]pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}, 1, 1,
+		func(dIndex int, direction pmx.BoneDirection) error {
+			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
+				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
+					sizingModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
+				if err != nil {
+					return err
+				}
+
+				for fIndex, iFrame := range targetFrames {
+					if sizingSet.IsTerminate {
+						return merr.TerminateError
+					}
+					frame := float32(iFrame)
+
+					// 現時点の結果
+					resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
+						sizingModel, outputMotion, sizingSet, true, leg_direction_bone_names[dIndex], "")
+					if err != nil {
+						return err
+					}
+
+					// ひざの位置をチェック
+					resultKneeDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
+					processKneeDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.KNEE.StringFromDirection(direction))
+
+					// 足首の位置をチェック
+					resultAnkleDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
+					processAnkleDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
+
+					// つま先親の位置をチェック
+					resultToePDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.TOE_P.StringFromDirection(direction))
+					processToePDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.TOE_P.StringFromDirection(direction))
+
+					// 各関節位置がズレている場合、元の回転を焼き込む
+					if resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold ||
+						resultAnkleDelta.FilledGlobalPosition().Distance(processAnkleDelta.FilledGlobalPosition()) > ankleThreshold ||
+						resultToePDelta.FilledGlobalPosition().Distance(processToePDelta.FilledGlobalPosition()) > toeThreshold {
+						for _, legBoneName := range []pmx.StandardBoneName{pmx.LEG, pmx.KNEE, pmx.ANKLE, pmx.LEG_IK} {
+							boneName := legBoneName.StringFromDirection(direction)
+							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
+							resultBf.Position = processBf.FilledPosition().Copy()
+							resultBf.Rotation = processBf.FilledRotation().Copy()
+							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
+						}
+					}
+
+					if fIndex > 0 && fIndex%1000 == 0 {
+						mlog.I(mi18n.T("足補正09", map[string]interface{}{
+							"No":          sizingSet.Index + 1,
+							"IterIndex":   fmt.Sprintf("%04d", iFrame),
+							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
+							"Direction":   direction.String(),
+							"FramesIndex": tIndex + 1}))
+					}
+				}
+			}
+
+			incrementCompletedCount()
+
+			return nil
+		}, nil)
+	if err != nil {
+		return err
+	}
+
+	if mlog.IsDebug() {
+		outputVerboseMotion("足10", sizingSet.OutputMotionPath, outputMotion)
+	}
+
+	return err
 }
 
 func checkBonesForSizingLeg(sizingSet *domain.SizingSet) (err error) {
