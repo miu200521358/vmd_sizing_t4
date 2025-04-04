@@ -449,30 +449,38 @@
     },
     {
         "id": "足補正03",
-        "translation": "【No.{{.No}}】足補正 - センター補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 下半身補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正04",
-        "translation": "【No.{{.No}}】足補正 - センター登録 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 下半身登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正05",
-        "translation": "【No.{{.No}}】足補正 - 足IK補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - センター補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正06",
-        "translation": "【No.{{.No}}】足補正 - 足IK登録 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - センター登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正07",
-        "translation": "【No.{{.No}}】足補正 - 足FK再計算 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足IK補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正08",
-        "translation": "【No.{{.No}}】足補正 - 再計算足FK登録 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - 足IK登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "足補正09",
+        "translation": "【No.{{.No}}】足補正 - 足FK再計算 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正10",
+        "translation": "【No.{{.No}}】足補正 - 再計算足FK登録 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "足補正11",
         "translation": "【No.{{.No}}】足補正 - {{.Direction}}足 - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
     },
     {

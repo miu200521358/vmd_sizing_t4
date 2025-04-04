@@ -133,9 +133,9 @@ func (ss *SizingSet) GetProcessCount() (processCount, completedCount int) {
 	}
 
 	if ss.IsSizingLeg {
-		processCount += 12
+		processCount += 14
 		if ss.CompletedSizingLeg {
-			completedCount += 12
+			completedCount += 14
 		}
 	}
 	if ss.IsSizingUpper {
@@ -363,31 +363,30 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 	leftLegIkBone, _ := bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
 
 	for _, v := range [][]any{
-		// {"元底辺", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		// {"先底辺", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		// {"理想体幹根元", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
-		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正02"},
-		{"左足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_Y補正"},
-		{"左足Y補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正04_Y補正"},
-		{"右足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_Y補正"},
-		{"右足Y補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正04_Y補正"},
-		{"左つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
-		{"左つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
-		{"右つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
-		{"右つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_つま先"},
-		{"左かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
-		{"左かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
-		{"右かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
-		{"右かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正04_かかと"},
-		{"左足継承X", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
-		{"左足継承Y", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
-		{"左足継承Z", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06"},
-		{"右足継承X", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
-		{"右足継承Y", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
-		{"右足継承Z", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06"},
+		{"元下半身", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"元下半身X", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"元下半身Y", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"元下半身Z", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先下半身Z", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"先下半身", rootBone.Index(), mmath.NewMVec3(), "足補正02"},
+		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
+		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
+		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
+		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正04"},
+		{"左足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"左足Y補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06_Y補正"},
+		{"右足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"右足Y補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06_Y補正"},
+		{"左つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
+		{"左つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
+		{"右つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
+		{"右つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
+		{"左かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_かかと"},
+		{"左かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_かかと"},
+		{"右かかと補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_かかと"},
+		{"右かかと理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_かかと"},
+		{"左足継承", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正08"},
+		{"右足継承", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正08"},
 		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},
 		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},
 		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身補正02"},

@@ -268,10 +268,10 @@ func calculateUpperDistance(sizingSet *domain.SizingSet) (float64, error) {
 
 func createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 	upperBones := make([]*pmx.Bone, 0)
-	if sizingSet.SizingUpper2VanillaBone() != nil {
+	if sizingSet.SizingUpper2Bone() != nil {
 		upperBones = append(upperBones, sizingSet.SizingUpper2Bone())
 	}
-	if sizingSet.SizingUpperVanillaBone() != nil {
+	if sizingSet.SizingUpperBone() != nil {
 		upperBones = append(upperBones, sizingSet.SizingUpperBone())
 	}
 
@@ -305,7 +305,7 @@ func calculateAdjustedUpper(
 	upperRotations = make([]*mmath.MQuaternion, len(allFrames))
 	upper2Rotations = make([]*mmath.MQuaternion, len(allFrames))
 
-	upperIkVanillaBone := createUpperIkBone(sizingSet)
+	upperIkBone := createUpperIkBone(sizingSet)
 
 	actualUpperRootPositions := make([]*mmath.MVec3, len(allFrames))
 	actualNeckRootPositions := make([]*mmath.MVec3, len(allFrames))
@@ -335,7 +335,7 @@ func calculateAdjustedUpper(
 				actualNeckRootPositions[index] = sizingAllDeltas[index].Bones.GetByName(pmx.NECK_ROOT.String()).FilledGlobalPosition()
 			}
 
-			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkVanillaBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false)
+			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false)
 
 			upperRotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER.String()).FilledFrameRotation()
 			if sizingSet.SizingUpper2VanillaBone() != nil {
