@@ -96,11 +96,11 @@ func updateStanceRotations(
 				if sizingSet.IsTerminate {
 					return merr.TerminateError
 				}
-
-				mlog.I(mi18n.T("腕指スタンス補正02", map[string]interface{}{
-					"No":        sizingSet.Index + 1,
-					"Direction": direction.String()}))
 			}
+
+			mlog.I(mi18n.T("腕指スタンス補正02", map[string]interface{}{
+				"No":        sizingSet.Index + 1,
+				"Direction": direction.String()}))
 
 			incrementCompletedCount()
 
@@ -244,10 +244,16 @@ func createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotation
 
 			if offsetQuat.IsIdent() {
 				stanceRotations[sizingTargetBone.Index()][1] = mmath.NewMMat4()
-			} else {
+			} else if sizingTargetBone.Config().IsArm() {
 				// 捩り成分を除去
 				_, yzOffsetQuat := offsetQuat.SeparateTwistByAxis(sizingDirection)
 				stanceRotations[sizingTargetBone.Index()][1] = yzOffsetQuat.ToMat4()
+			} else if sizingTargetBone.Config().IsFinger() {
+				// 指は開き具合だけを補正する
+				_, yOffsetQuat, _ := offsetQuat.SeparateByAxis(sizingDirection)
+				stanceRotations[sizingTargetBone.Index()][1] = yOffsetQuat.ToMat4()
+			} else {
+				stanceRotations[sizingTargetBone.Index()][1] = offsetQuat.ToMat4()
 			}
 		}
 	}
