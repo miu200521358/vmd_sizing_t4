@@ -158,7 +158,6 @@ func (sizingState *SizingState) LoadOriginalModel(
 
 	cw.StoreModel(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalModel)
 
-	sizingState.CurrentSet().PrepareBoneNameFrames()
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 }
@@ -171,7 +170,6 @@ func (sizingState *SizingState) LoadSizingModel(
 
 	cw.StoreModel(0, sizingState.CurrentIndex(), sizingState.CurrentSet().SizingModel)
 
-	sizingState.CurrentSet().PrepareBoneNameFrames()
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
@@ -183,7 +181,6 @@ func (sizingState *SizingState) LoadSizingMotion(
 	cw *controller.ControlWindow, path string,
 ) {
 	sizingState.CurrentSet().LoadMotion(path)
-	sizingState.CurrentSet().PrepareBoneNameFrames()
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)

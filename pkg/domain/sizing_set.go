@@ -595,12 +595,6 @@ func (ss *SizingSet) LoadMotion(path string) {
 		vmdRep := repository.NewVmdVpdRepository(true)
 		if data, err := vmdRep.Load(path); err == nil {
 			sizingMotion = data.(*vmd.VmdMotion)
-			for boneName := range pmx.GetStandardBoneConfigs() {
-				// 枠だけ用意しておく
-				sizingMotion.BoneFrames.Get(boneName.String())
-				sizingMotion.BoneFrames.Get(boneName.Left())
-				sizingMotion.BoneFrames.Get(boneName.Right())
-			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
 		}
@@ -612,23 +606,6 @@ func (ss *SizingSet) LoadMotion(path string) {
 
 	outputPath := ss.CreateOutputMotionPath()
 	ss.OutputMotionPath = outputPath
-}
-
-// PrepareBoneNameFrames モーションのボーンフレームを準備する(並列対策)
-func (ss *SizingSet) PrepareBoneNameFrames() {
-	if ss.OriginalMotion != nil && ss.OriginalConfigModel != nil {
-		ss.OriginalConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
-			ss.OriginalMotion.BoneFrames.Get(bone.Name())
-			return true
-		})
-	}
-
-	if ss.OutputMotion != nil && ss.SizingConfigModel != nil {
-		ss.SizingConfigModel.Bones.ForEach(func(index int, bone *pmx.Bone) bool {
-			ss.OutputMotion.BoneFrames.Get(bone.Name())
-			return true
-		})
-	}
 }
 
 func (ss *SizingSet) Delete() {
