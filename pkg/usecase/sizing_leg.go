@@ -1124,17 +1124,17 @@ func calculateAdjustedLegFK(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
 ) error {
-	// 足FKを一旦クリア
-	for _, boneName := range []string{
-		pmx.LEG.Left(), pmx.KNEE.Left(), pmx.ANKLE.Left(),
-		pmx.LEG.Right(), pmx.KNEE.Right(), pmx.ANKLE.Right(),
-	} {
-		copiedBoneNameFrames, err := sizingSet.OutputMotion.BoneFrames.Get(boneName).Copy()
-		if err != nil {
-			return err
-		}
-		sizingProcessMotion.BoneFrames.Update(copiedBoneNameFrames)
-	}
+	// // 足FKを一旦クリア
+	// for _, boneName := range []string{
+	// 	pmx.LEG.Left(), pmx.KNEE.Left(), pmx.ANKLE.Left(),
+	// 	pmx.LEG.Right(), pmx.KNEE.Right(), pmx.ANKLE.Right(),
+	// } {
+	// 	copiedBoneNameFrames, err := sizingSet.OutputMotion.BoneFrames.Get(boneName).Copy()
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	sizingProcessMotion.BoneFrames.Update(copiedBoneNameFrames)
+	// }
 
 	// 先モデルのデフォーム結果を並列処理で取得
 	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, all_lower_leg_bone_names, "足補正01")
