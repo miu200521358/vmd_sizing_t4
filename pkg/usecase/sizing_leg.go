@@ -547,6 +547,8 @@ func calculateAdjustedCenter(
 		return true
 	})
 
+	sizingCenterParentBone := sizingSet.SizingCenterBone().ParentBone
+
 	err := miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
 			if sizingSet.IsTerminate {
@@ -578,6 +580,17 @@ func calculateAdjustedCenter(
 
 			gravityIdealPosition := sizingGravityPos.Copy()
 			gravityIdealPosition.Y = sizingFixCenterTargetY
+
+			sizingCenterParentDelta := sizingAllDeltas[index].Bones.GetByName(sizingCenterParentBone.Name())
+
+			// センターの親から見た重心のローカル位置
+			sizingGravityLocalPosition := sizingCenterParentDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingGravityPos)
+
+			// センターの親から見た理想の重心のローカル位置
+			sizingGravityIdealLocalPosition := sizingCenterParentDelta.FilledGlobalMatrix().Inverted().MulVec3(gravityIdealPosition)
+
+			// 重心の差分
+			sizingGravityDiff := sizingGravityIdealLocalPosition.Subed(sizingGravityLocalPosition)
 
 			// if mlog.IsDebug() {
 			// 	originalGravities[index] = originalGravityPos
@@ -619,7 +632,7 @@ func calculateAdjustedCenter(
 
 			centerPosition := centerBf.FilledPosition().Added(grooveBf.FilledPosition())
 			centerPositions[index] = centerPosition.Muled(moveScale)
-			centerPositions[index].Y = centerPosition.Added(gravityIdealPosition.Subed(sizingGravityPos)).Y
+			centerPositions[index].Y = centerPosition.Y + sizingGravityDiff.Y
 
 			// sizingTrunkRootMat := sizingAllDeltas[index].Bones.Get(sizingSet.SizingTrunkRootBone().Index()).FilledGlobalMatrix()
 
@@ -875,8 +888,8 @@ func calculateAdjustedLegIK(
 			leftLegIkPositionDiff := leftIdealAnklePosition.Subed(leftLegIkInitialPosition)
 			rightLegIkPositionDiff := rightIdealAnklePosition.Subed(rightLegIkInitialPosition)
 
-			sizingLeftLegIkBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingLeftLegIkBone().Name()).Get(float32(data))
-			sizingRightLegIkBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingRightLegIkBone().Name()).Get(float32(data))
+			sizingLeftLegIkBf := sizingProcessMotion.BoneFrames.Get(pmx.LEG_IK.Left()).Get(float32(data))
+			sizingRightLegIkBf := sizingProcessMotion.BoneFrames.Get(pmx.LEG_IK.Right()).Get(float32(data))
 
 			leftLegIkPositions[index] = sizingLeftLegIkBf.FilledPosition().Added(leftLegIkPositionDiff)
 			rightLegIkPositions[index] = sizingRightLegIkBf.FilledPosition().Added(rightLegIkPositionDiff)
@@ -1147,7 +1160,7 @@ func calculateAdjustedLegFK(
 
 			sizingLeftLegDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingOffAllDeltas[index], float32(data), sizingSet.SizingLeftLegIkBone(),
-				leftLegAnkleIdealPositions[index], leg_direction_bone_names[0], true)
+				leftLegAnkleIdealPositions[index], leg_direction_bone_names[0], false)
 
 			leftLegRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.LEG.Left()).FilledFrameRotation()
 			leftKneeRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.KNEE.Left()).FilledFrameRotation()

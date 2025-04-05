@@ -130,56 +130,37 @@ func (ss *SizingSet) CreateOutputMotionPath() string {
 		ss.OriginalMotionPath, fmt.Sprintf("%s%s", fileName, suffix))
 }
 
-func (ss *SizingSet) GetProcessCount() (processCount, completedCount int) {
+func (ss *SizingSet) GetProcessCount() (processCount int) {
 	if ss.OriginalConfigModel == nil || ss.SizingConfigModel == nil ||
 		ss.OutputMotion == nil {
-		return 0, 0
+		return 0
 	}
 
-	if ss.IsSizingLeg {
+	if ss.IsSizingLeg && !ss.CompletedSizingLeg {
 		processCount += 14
-		if ss.CompletedSizingLeg {
-			completedCount += 14
-		}
-	}
-	if ss.IsSizingUpper {
-		processCount += 6
-		if ss.CompletedSizingUpper {
-			completedCount += 6
-		}
-	}
-	if ss.IsSizingShoulder {
-		processCount += 0
-		if ss.CompletedSizingShoulder {
-			completedCount += 0
-		}
-	}
-	if ss.IsSizingArmStance {
-		processCount += 0
-		if ss.CompletedSizingArmStance {
-			completedCount += 0
-		}
-	}
-	if ss.IsSizingFingerStance {
-		processCount += 0
-		if ss.CompletedSizingFingerStance {
-			completedCount += 0
-		}
-	}
-	if ss.IsSizingArmTwist {
-		processCount += 0
-		if ss.CompletedSizingArmTwist {
-			completedCount += 0
-		}
-	}
-	if ss.IsSizingReduction {
-		processCount += 0
-		if ss.CompletedSizingReduction {
-			completedCount += 0
-		}
 	}
 
-	return processCount, completedCount
+	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
+		processCount += 6
+	}
+
+	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {
+		processCount += 0
+	}
+
+	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
+		processCount += 0
+	}
+
+	if ss.IsSizingFingerStance && !ss.CompletedSizingFingerStance {
+		processCount += 0
+	}
+
+	if ss.IsSizingArmTwist && !ss.CompletedSizingArmTwist {
+		processCount += 0
+	}
+
+	return processCount
 }
 
 func (ss *SizingSet) setMotion(originalMotion, outputMotion *vmd.VmdMotion) {

@@ -30,12 +30,32 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		return
 	}
 
+	for _, sizingSet := range sizingState.SizingSets {
+		if !sizingSet.IsSizingLeg && sizingSet.CompletedSizingLeg ||
+			!sizingSet.IsSizingUpper && sizingSet.CompletedSizingUpper ||
+			!sizingSet.IsSizingShoulder && sizingSet.CompletedSizingShoulder ||
+			!sizingSet.IsSizingArmStance && sizingSet.CompletedSizingArmStance ||
+			!sizingSet.IsSizingFingerStance && sizingSet.CompletedSizingFingerStance ||
+			!sizingSet.IsSizingArmTwist && sizingSet.CompletedSizingArmTwist {
+
+			// チェックを外したら読み直し
+			sizingSet.CompletedSizingLeg = false
+			sizingSet.CompletedSizingUpper = false
+			sizingSet.CompletedSizingShoulder = false
+			sizingSet.CompletedSizingArmStance = false
+			sizingSet.CompletedSizingFingerStance = false
+			sizingSet.CompletedSizingArmTwist = false
+
+			// オリジナルモーションをサイジング先モーションとして読み直し
+			sizingState.SetCurrentIndex(sizingSet.Index)
+			sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
+		}
+	}
+
 	var completedProcessCount int32 = 0
 	totalProcessCount := 0
 	for _, sizingSet := range sizingState.SizingSets {
-		processCount, completedCount := sizingSet.GetProcessCount()
-		totalProcessCount += processCount
-		completedProcessCount += int32(completedCount)
+		totalProcessCount += sizingSet.GetProcessCount()
 	}
 
 	cw.Synchronize(func() {
@@ -67,26 +87,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 		go func(sizingSet *domain.SizingSet) {
 			defer wg.Done()
 
-			if !sizingSet.IsSizingLeg && sizingSet.CompletedSizingLeg ||
-				!sizingSet.IsSizingUpper && sizingSet.CompletedSizingUpper ||
-				!sizingSet.IsSizingShoulder && sizingSet.CompletedSizingShoulder ||
-				!sizingSet.IsSizingArmStance && sizingSet.CompletedSizingArmStance ||
-				!sizingSet.IsSizingFingerStance && sizingSet.CompletedSizingFingerStance ||
-				!sizingSet.IsSizingArmTwist && sizingSet.CompletedSizingArmTwist {
-
-				// チェックを外したら読み直し
-				sizingSet.CompletedSizingLeg = false
-				sizingSet.CompletedSizingUpper = false
-				sizingSet.CompletedSizingShoulder = false
-				sizingSet.CompletedSizingArmStance = false
-				sizingSet.CompletedSizingFingerStance = false
-				sizingSet.CompletedSizingArmTwist = false
-
-				// オリジナルモーションをサイジング先モーションとして読み直し
-				sizingState.SetCurrentIndex(sizingSet.Index)
-				sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
-			}
-
 			incrementCompletedCount := func() {
 				atomic.AddInt32(&completedProcessCount, 1)
 				cw.ProgressBar().Increment()
@@ -103,9 +103,11 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 				isExec = execResult || isExec
 
-				outputMotion := sizingSet.OutputMotion
-				outputMotion.SetRandHash()
-				cw.StoreMotion(0, sizingSet.Index, outputMotion)
+				if isExec {
+					sizingSet.OutputMotion.SetRandHash()
+					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
+					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
+				}
 			}
 
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
@@ -123,9 +125,11 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 					isExec = execResult || isExec
 
-					outputMotion := sizingSet.OutputMotion
-					outputMotion.SetRandHash()
-					cw.StoreMotion(0, sizingSet.Index, outputMotion)
+					if isExec {
+						sizingSet.OutputMotion.SetRandHash()
+						sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
+						cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
+					}
 				}
 			}
 		}(sizingSet)
