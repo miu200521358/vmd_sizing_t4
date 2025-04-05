@@ -8,7 +8,6 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
-	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller"
 	"github.com/miu200521358/mlib_go/pkg/interface/controller/widget"
@@ -223,9 +222,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
 		sizingState.TerminateButton.SetEnabled(false)
-		sizingState.AdoptSizingCheck.CheckStateChanged().Attach(func() {
-			changeSizingCheck(mWidgets.Window(), sizingState, pmx.ROOT)
-		})
 	})
 	mWidgets.SetOnChangePlaying(func(playing bool) {
 		sizingState.SetSizingOptionEnabled(!playing)
@@ -293,7 +289,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("基本補正"),
 								ToolTipText: mi18n.T("基本補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.CENTER)
+									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							// declarative.CheckBox{
@@ -317,7 +313,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("上半身補正"),
 								ToolTipText: mi18n.T("上半身補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.UPPER)
+									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
@@ -325,7 +321,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("肩補正"),
 								ToolTipText: mi18n.T("肩補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.SHOULDER)
+									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
@@ -333,7 +329,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("捩り補正"),
 								ToolTipText: mi18n.T("捩り補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM_TWIST)
+									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
@@ -341,7 +337,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("指スタンス補正"),
 								ToolTipText: mi18n.T("指スタンス補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.INDEX1)
+									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.HSpacer{},
@@ -350,9 +346,9 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("即時反映"),
 								ToolTipText: mi18n.T("即時反映説明"),
 								Checked:     true,
-								// OnCheckStateChanged: func() {
-								// 	changeSizingCheck(mWidgets.Window(), sizingState, pmx.ROOT)
-								// },
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState)
+								},
 							},
 							declarative.CheckBox{
 								AssignTo:    &sizingState.AdoptAllCheck,
@@ -374,7 +370,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	}
 }
 
-func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingState, bone pmx.StandardBoneName) {
+func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	startIndex := 0
 	endIndex := len(sizingState.SizingSets)
 	if !sizingState.AdoptAllCheck.Checked() {
