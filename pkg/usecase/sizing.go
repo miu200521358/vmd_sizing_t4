@@ -292,7 +292,7 @@ func computeVmdDeltas(
 	frames []int, blockSize int,
 	model *pmx.PmxModel, motion *vmd.VmdMotion,
 	sizingSet *domain.SizingSet,
-	isCalc bool, target_bone_names []string, logKey string,
+	isCalcIk bool, target_bone_names []string, logKey string,
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
@@ -304,7 +304,7 @@ func computeVmdDeltas(
 			frame := float32(data)
 			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
 			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
-			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalc, data, target_bone_names)
+			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalcIk, data, target_bone_names)
 			allDeltas[index] = vmdDeltas
 			return nil
 		},
