@@ -375,9 +375,13 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正04"},
 		{"左足IK補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
 		{"左足IK理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"左IK親初期", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"左足IK初期", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
 		{"左足IK補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06_Y補正"},
 		{"右足IK補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
 		{"右足IK理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"右IK親初期", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"右足IK初期", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
 		{"右足IK補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06_Y補正"},
 		{"左つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
 		{"左つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
@@ -425,6 +429,8 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 			displaySlot.References = append(displaySlot.References,
 				pmx.NewDisplaySlotReferenceByValues(pmx.DISPLAY_TYPE_BONE, bone.Index()))
 		}
+
+		bones.Setup()
 	}
 
 	return nil
@@ -547,6 +553,7 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 					if err := bones.Insert(bone); err != nil {
 						return err
 					}
+					bones.Setup()
 				} else {
 					return err
 				}
