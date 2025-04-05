@@ -516,6 +516,18 @@
         "translation": "【No.{{.No}}】指スタンス補正 開始 ---------------------------------"
     },
     {
+        "id": "腕指スタンス補正01",
+        "translation": "【No.{{.No}}】腕指スタンス補正 - デフォーム情報取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "腕指スタンス補正02",
+        "translation": "【No.{{.No}}】腕指スタンス補正 - {{.Direction}}腕 補正値取得"
+    },
+    {
+        "id": "腕指スタンス補正03",
+        "translation": "【No.{{.No}}】腕指スタンス補正 - {{.BoneName}} - 結果モーションへの出力 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
         "id": "ボーン不足エラー",
         "translation": "【No.{{.No}}】{{.ModelType}}に{{.BoneName}}が見つからないため、{{.Process}}処理をスキップします"
     },

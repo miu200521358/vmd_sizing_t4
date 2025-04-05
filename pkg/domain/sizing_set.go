@@ -61,7 +61,10 @@ type SizingSet struct {
 	originalRightLegIkParentBone, originalRightLegIkBone,
 	originalRightLegBone, originalRightKneeBone, originalRightAnkleBone,
 	originalRightToeIkBone, originalRightToeTailBone, originalRightHeelBone, originalRightToePBone,
-	originalRightToeTailDBone, originalRightHeelDBone, originalRightToePDBone *pmx.Bone // 元モデルのボーン情報
+	originalRightToeTailDBone, originalRightHeelDBone, originalRightToePDBone,
+	originalLeftShoulderBone, originalLeftArmBone, originalLeftElbowBone, originalLeftWristBone,
+	originalRightShoulderBone, originalRightArmBone, originalRightElbowBone, originalRightWristBone,
+	originalLeftWristTailBone, originalRightWristTailBone *pmx.Bone // 元モデルのボーン情報
 
 	sizingCenterBone, sizingGrooveBone, sizingTrunkRootBone, sizingLowerBone,
 	sizingUpperRootBone, sizingUpperBone, sizingUpper2Bone, sizingNeckRootBone,
@@ -71,7 +74,10 @@ type SizingSet struct {
 	sizingLeftToeTailDBone, sizingLeftHeelDBone, sizingLeftToePDBone,
 	sizingRightLegIkParentBone, sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
 	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone,
-	sizingRightToeTailDBone, sizingRightHeelDBone, sizingRightToePDBone *pmx.Bone // サイジング先モデルのボーン情報
+	sizingRightToeTailDBone, sizingRightHeelDBone, sizingRightToePDBone,
+	sizingLeftShoulderBone, sizingLeftArmBone, sizingLeftElbowBone, sizingLeftWristBone,
+	sizingRightShoulderBone, sizingRightArmBone, sizingRightElbowBone, sizingRightWristBone,
+	sizingLeftWristTailBone, sizingRightWristTailBone *pmx.Bone // サイジング先モデルのボーン情報
 
 	sizingUpperVanillaBone, sizingUpper2VanillaBone, sizingNeckRootVanillaBone, sizingGrooveVanillaBone *pmx.Bone // サイジング先モデル(バニラ)のボーン情報
 }
@@ -149,11 +155,11 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	}
 
 	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
-		processCount += 0
+		processCount += 2
 	}
 
 	if ss.IsSizingFingerStance && !ss.CompletedSizingFingerStance {
-		processCount += 0
+		processCount += 2
 	}
 
 	if ss.IsSizingArmTwist && !ss.CompletedSizingArmTwist {

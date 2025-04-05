@@ -32,7 +32,7 @@ func SizingUpper(
 	mlog.I(mi18n.T("上半身補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if checkBonesForSizingUpper(sizingSet) != nil {
+	if err := checkBonesForSizingUpper(sizingSet); err != nil {
 		return false, err
 	}
 

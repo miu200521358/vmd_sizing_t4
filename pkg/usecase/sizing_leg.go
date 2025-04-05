@@ -33,7 +33,7 @@ func SizingLeg(
 	mlog.I(mi18n.T("足補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if checkBonesForSizingLeg(sizingSet) != nil {
+	if err := checkBonesForSizingLeg(sizingSet); err != nil {
 		return false, err
 	}
 
@@ -1348,7 +1348,7 @@ func updateLegResultMotion(
 	ankleThreshold := 0.2
 	toeThreshold := 0.1
 
-	err := miter.IterParallelByList([]pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}, 1, 1,
+	err := miter.IterParallelByList(directions, 1, 1,
 		func(dIndex int, direction pmx.BoneDirection) error {
 			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
 				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,

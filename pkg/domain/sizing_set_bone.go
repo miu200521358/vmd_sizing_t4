@@ -400,6 +400,126 @@ func (ss *SizingSet) OriginalRightToePDBone() *pmx.Bone {
 	return ss.originalRightToePDBone
 }
 
+func (ss *SizingSet) OriginalLeftShoulderBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftShoulderBone == nil {
+		ss.originalLeftShoulderBone, _ = ss.OriginalConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftShoulderBone
+}
+
+func (ss *SizingSet) OriginalRightShoulderBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightShoulderBone == nil {
+		ss.originalRightShoulderBone, _ = ss.OriginalConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightShoulderBone
+}
+
+func (ss *SizingSet) OriginalLeftArmBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftArmBone == nil {
+		ss.originalLeftArmBone, _ = ss.OriginalConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftArmBone
+}
+
+func (ss *SizingSet) OriginalRightArmBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightArmBone == nil {
+		ss.originalRightArmBone, _ = ss.OriginalConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightArmBone
+}
+
+func (ss *SizingSet) OriginalLeftElbowBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftElbowBone == nil {
+		ss.originalLeftElbowBone, _ = ss.OriginalConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftElbowBone
+}
+
+func (ss *SizingSet) OriginalRightElbowBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightElbowBone == nil {
+		ss.originalRightElbowBone, _ = ss.OriginalConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightElbowBone
+}
+
+func (ss *SizingSet) OriginalLeftWristBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftWristBone == nil {
+		ss.originalLeftWristBone, _ = ss.OriginalConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftWristBone
+}
+
+func (ss *SizingSet) OriginalRightWristBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightWristBone == nil {
+		ss.originalRightWristBone, _ = ss.OriginalConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightWristBone
+}
+
+func (ss *SizingSet) OriginalLeftWristTailBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftWristTailBone == nil {
+		ss.originalLeftWristTailBone, _ = ss.OriginalConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftWristTailBone
+}
+
+func (ss *SizingSet) OriginalRightWristTailBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightWristTailBone == nil {
+		ss.originalRightWristTailBone, _ = ss.OriginalConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightWristTailBone
+}
+
 // --------------------------------------------------------------------
 
 func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
@@ -796,6 +916,126 @@ func (ss *SizingSet) SizingRightToePDBone() *pmx.Bone {
 	}
 
 	return ss.sizingRightToePDBone
+}
+
+func (ss *SizingSet) SizingLeftShoulderBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftShoulderBone == nil {
+		ss.sizingLeftShoulderBone, _ = ss.SizingConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftShoulderBone
+}
+
+func (ss *SizingSet) SizingRightShoulderBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightShoulderBone == nil {
+		ss.sizingRightShoulderBone, _ = ss.SizingConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightShoulderBone
+}
+
+func (ss *SizingSet) SizingLeftArmBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftArmBone == nil {
+		ss.sizingLeftArmBone, _ = ss.SizingConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftArmBone
+}
+
+func (ss *SizingSet) SizingRightArmBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightArmBone == nil {
+		ss.sizingRightArmBone, _ = ss.SizingConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightArmBone
+}
+
+func (ss *SizingSet) SizingLeftElbowBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftElbowBone == nil {
+		ss.sizingLeftElbowBone, _ = ss.SizingConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftElbowBone
+}
+
+func (ss *SizingSet) SizingRightElbowBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightElbowBone == nil {
+		ss.sizingRightElbowBone, _ = ss.SizingConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightElbowBone
+}
+
+func (ss *SizingSet) SizingLeftWristBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftWristBone == nil {
+		ss.sizingLeftWristBone, _ = ss.SizingConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftWristBone
+}
+
+func (ss *SizingSet) SizingRightWristBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightWristBone == nil {
+		ss.sizingRightWristBone, _ = ss.SizingConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightWristBone
+}
+
+func (ss *SizingSet) SizingLeftWristTailBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftWristTailBone == nil {
+		ss.sizingLeftWristTailBone, _ = ss.SizingConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftWristTailBone
+}
+
+func (ss *SizingSet) SizingRightWristTailBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightWristTailBone == nil {
+		ss.sizingRightWristTailBone, _ = ss.SizingConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightWristTailBone
 }
 
 // --------------------------------------------------------------------

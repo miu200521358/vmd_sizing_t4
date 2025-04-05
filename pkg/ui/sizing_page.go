@@ -289,30 +289,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 						Layout: declarative.Grid{Columns: 3},
 						Children: []declarative.Widget{
 							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingLegCheck,
-								Text:        mi18n.T("足補正"),
-								ToolTipText: mi18n.T("足補正説明"),
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
-								},
-							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingUpperCheck,
-								Text:        mi18n.T("上半身補正"),
-								ToolTipText: mi18n.T("上半身補正説明"),
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.UPPER)
-								},
-							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingShoulderCheck,
-								Text:        mi18n.T("肩補正"),
-								ToolTipText: mi18n.T("肩補正説明"),
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.SHOULDER)
-								},
-							},
-							declarative.CheckBox{
 								AssignTo:    &sizingState.SizingArmStanceCheck,
 								Text:        mi18n.T("腕スタンス補正"),
 								ToolTipText: mi18n.T("腕スタンス補正説明"),
@@ -326,6 +302,30 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								ToolTipText: mi18n.T("指スタンス補正説明"),
 								OnCheckStateChanged: func() {
 									changeSizingCheck(mWidgets.Window(), sizingState, pmx.INDEX1)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingUpperCheck,
+								Text:        mi18n.T("上半身補正"),
+								ToolTipText: mi18n.T("上半身補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.UPPER)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingLegCheck,
+								Text:        mi18n.T("足補正"),
+								ToolTipText: mi18n.T("足補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
+								},
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingShoulderCheck,
+								Text:        mi18n.T("肩補正"),
+								ToolTipText: mi18n.T("肩補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.SHOULDER)
 								},
 							},
 							declarative.CheckBox{

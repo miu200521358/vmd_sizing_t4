@@ -92,25 +92,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				cw.ProgressBar().Increment()
 			}
 
-			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
-				errorChan <- err
-				return
-			} else {
-				if sizingSet.IsTerminate {
-					isExec = false
-					return
-				}
-
-				isExec = execResult || isExec
-
-				if isExec {
-					sizingSet.OutputMotion.SetRandHash()
-					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
-					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
-				}
-			}
-
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
+				SizingArmFingerStance,
 				SizingUpper,
 			} {
 
@@ -130,6 +113,24 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 						sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
 						cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
 					}
+				}
+			}
+
+			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+				errorChan <- err
+				return
+			} else {
+				if sizingSet.IsTerminate {
+					isExec = false
+					return
+				}
+
+				isExec = execResult || isExec
+
+				if isExec {
+					sizingSet.OutputMotion.SetRandHash()
+					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
+					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
 				}
 			}
 		}(sizingSet)
@@ -323,6 +324,9 @@ func computeVmdDeltas(
 // ログはCPUのサイズに応じて可変でブロッキングして出力する
 var log_block_size = runtime.NumCPU() * 50
 
+// 方向
+var directions = []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}
+
 // 体幹下部ボーン名
 var trunk_lower_bone_names = []string{
 	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
@@ -361,3 +365,19 @@ var trunk_upper_bone_names = []string{
 	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
 	pmx.UPPER_ROOT.String(), pmx.UPPER.String(), pmx.UPPER2.String(), pmx.NECK_ROOT.String(),
 	pmx.SHOULDER.Left(), pmx.SHOULDER.Right(), pmx.NECK.String()}
+
+// 腕系ボーン名（左右別）
+var all_arm_stance_bone_names = [][]string{
+	{pmx.ARM.Left(), pmx.ELBOW.Left(), pmx.WRIST.Left(), pmx.WRIST_TAIL.Left(),
+		pmx.THUMB0.Left(), pmx.THUMB1.Left(), pmx.THUMB2.Left(), pmx.THUMB_TAIL.Left(),
+		pmx.INDEX1.Left(), pmx.INDEX2.Left(), pmx.INDEX3.Left(), pmx.INDEX_TAIL.Left(),
+		pmx.MIDDLE1.Left(), pmx.MIDDLE2.Left(), pmx.MIDDLE3.Left(), pmx.MIDDLE_TAIL.Left(),
+		pmx.RING1.Left(), pmx.RING2.Left(), pmx.RING3.Left(), pmx.RING_TAIL.Left(),
+		pmx.PINKY1.Left(), pmx.PINKY2.Left(), pmx.PINKY3.Left(), pmx.PINKY_TAIL.Left()},
+	{pmx.ARM.Right(), pmx.ELBOW.Right(), pmx.WRIST.Right(), pmx.WRIST_TAIL.Right(),
+		pmx.THUMB0.Right(), pmx.THUMB1.Right(), pmx.THUMB2.Right(), pmx.THUMB_TAIL.Right(),
+		pmx.INDEX1.Right(), pmx.INDEX2.Right(), pmx.INDEX3.Right(), pmx.INDEX_TAIL.Right(),
+		pmx.MIDDLE1.Right(), pmx.MIDDLE2.Right(), pmx.MIDDLE3.Right(), pmx.MIDDLE_TAIL.Right(),
+		pmx.RING1.Right(), pmx.RING2.Right(), pmx.RING3.Right(), pmx.RING_TAIL.Right(),
+		pmx.PINKY1.Right(), pmx.PINKY2.Right(), pmx.PINKY3.Right(), pmx.PINKY_TAIL.Right()},
+}
