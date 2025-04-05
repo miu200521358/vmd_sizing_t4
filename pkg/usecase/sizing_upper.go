@@ -381,16 +381,21 @@ func calculateAdjustedUpper(
 func checkBonesForSizingUpper(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
-		{sizingSet.OriginalCenterBone, pmx.CENTER.String()},
-		{sizingSet.OriginalTrunkRootBone, pmx.UPPER_ROOT.String()},
-		{sizingSet.OriginalUpperBone, pmx.UPPER.String()},
-		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String()},
+		{sizingSet.OriginalCenterBone, pmx.CENTER.String(), true},
+		{sizingSet.OriginalTrunkRootBone, pmx.UPPER_ROOT.String(), false},
+		{sizingSet.OriginalUpperBone, pmx.UPPER.String(), true},
+		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String(), false},
 	} {
 		getFunc := v[0].(func() *pmx.Bone)
 		boneName := v[1].(string)
+		isStandard := v[2].(bool)
 
 		if getFunc() == nil {
-			mlog.WT(mi18n.T("ボーン不足"), mi18n.T("ボーン不足エラー", map[string]interface{}{
+			keyName := "ボーン不足エラー"
+			if !isStandard {
+				keyName = "検証ボーン不足エラー"
+			}
+			mlog.WT(mi18n.T("ボーン不足"), mi18n.T(keyName, map[string]interface{}{
 				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1, "ModelType": "元モデル", "BoneName": boneName}))
 			err = merr.NameNotFoundError
 		}
@@ -403,16 +408,21 @@ func checkBonesForSizingUpper(sizingSet *domain.SizingSet) (err error) {
 	sizingSet.SizingUpper2VanillaBone()
 
 	for _, v := range [][]interface{}{
-		{sizingSet.SizingCenterBone, pmx.CENTER.String()},
-		{sizingSet.SizingTrunkRootBone, pmx.UPPER_ROOT.String()},
-		{sizingSet.SizingUpperBone, pmx.UPPER.String()},
-		{sizingSet.SizingNeckRootBone, pmx.NECK_ROOT.String()},
+		{sizingSet.SizingCenterBone, pmx.CENTER.String(), true},
+		{sizingSet.SizingTrunkRootBone, pmx.UPPER_ROOT.String(), false},
+		{sizingSet.SizingUpperBone, pmx.UPPER.String(), true},
+		{sizingSet.SizingNeckRootBone, pmx.NECK_ROOT.String(), false},
 	} {
 		getFunc := v[0].(func() *pmx.Bone)
 		boneName := v[1].(string)
+		isStandard := v[2].(bool)
 
 		if getFunc() == nil {
-			mlog.WT(mi18n.T("ボーン不足"), mi18n.T("ボーン不足エラー", map[string]interface{}{
+			keyName := "ボーン不足エラー"
+			if !isStandard {
+				keyName = "検証ボーン不足エラー"
+			}
+			mlog.WT(mi18n.T("ボーン不足"), mi18n.T(keyName, map[string]interface{}{
 				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1, "ModelType": "先モデル", "BoneName": boneName}))
 			err = merr.NameNotFoundError
 		}

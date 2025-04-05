@@ -220,6 +220,42 @@ func (ss *SizingSet) OriginalLeftToePBone() *pmx.Bone {
 	return ss.originalLeftToePBone
 }
 
+func (ss *SizingSet) OriginalLeftToeTailDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftToeTailDBone == nil {
+		ss.originalLeftToeTailDBone, _ = ss.OriginalConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftToeTailDBone
+}
+
+func (ss *SizingSet) OriginalLeftHeelDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftHeelDBone == nil {
+		ss.originalLeftHeelDBone, _ = ss.OriginalConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftHeelDBone
+}
+
+func (ss *SizingSet) OriginalLeftToePDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalLeftToePDBone == nil {
+		ss.originalLeftToePDBone, _ = ss.OriginalConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.originalLeftToePDBone
+}
+
 func (ss *SizingSet) OriginalRightLegIkParentBone() *pmx.Bone {
 	if ss.OriginalConfigModel == nil {
 		return nil
@@ -326,6 +362,42 @@ func (ss *SizingSet) OriginalRightToePBone() *pmx.Bone {
 	}
 
 	return ss.originalRightToePBone
+}
+
+func (ss *SizingSet) OriginalRightToeTailDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightToeTailDBone == nil {
+		ss.originalRightToeTailDBone, _ = ss.OriginalConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightToeTailDBone
+}
+
+func (ss *SizingSet) OriginalRightHeelDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightHeelDBone == nil {
+		ss.originalRightHeelDBone, _ = ss.OriginalConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightHeelDBone
+}
+
+func (ss *SizingSet) OriginalRightToePDBone() *pmx.Bone {
+	if ss.OriginalConfigModel == nil {
+		return nil
+	}
+
+	if ss.originalRightToePDBone == nil {
+		ss.originalRightToePDBone, _ = ss.OriginalConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.originalRightToePDBone
 }
 
 // --------------------------------------------------------------------
@@ -546,6 +618,42 @@ func (ss *SizingSet) SizingLeftToePBone() *pmx.Bone {
 	return ss.sizingLeftToePBone
 }
 
+func (ss *SizingSet) SizingLeftToeTailDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftToeTailDBone == nil {
+		ss.sizingLeftToeTailDBone, _ = ss.SizingConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftToeTailDBone
+}
+
+func (ss *SizingSet) SizingLeftHeelDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftHeelDBone == nil {
+		ss.sizingLeftHeelDBone, _ = ss.SizingConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftHeelDBone
+}
+
+func (ss *SizingSet) SizingLeftToePDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingLeftToePDBone == nil {
+		ss.sizingLeftToePDBone, _ = ss.SizingConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_LEFT)
+	}
+
+	return ss.sizingLeftToePDBone
+}
+
 func (ss *SizingSet) SizingRightLegIkParentBone() *pmx.Bone {
 	if ss.SizingConfigModel == nil {
 		return nil
@@ -652,6 +760,42 @@ func (ss *SizingSet) SizingRightToePBone() *pmx.Bone {
 	}
 
 	return ss.sizingRightToePBone
+}
+
+func (ss *SizingSet) SizingRightToeTailDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightToeTailDBone == nil {
+		ss.sizingRightToeTailDBone, _ = ss.SizingConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightToeTailDBone
+}
+
+func (ss *SizingSet) SizingRightHeelDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightHeelDBone == nil {
+		ss.sizingRightHeelDBone, _ = ss.SizingConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightHeelDBone
+}
+
+func (ss *SizingSet) SizingRightToePDBone() *pmx.Bone {
+	if ss.SizingConfigModel == nil {
+		return nil
+	}
+
+	if ss.sizingRightToePDBone == nil {
+		ss.sizingRightToePDBone, _ = ss.SizingConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_RIGHT)
+	}
+
+	return ss.sizingRightToePDBone
 }
 
 // --------------------------------------------------------------------

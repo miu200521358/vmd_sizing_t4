@@ -57,17 +57,21 @@ type SizingSet struct {
 	originalLegCenterBone, originalLeftLegIkParentBone, originalLeftLegIkBone,
 	originalLeftLegBone, originalLeftKneeBone, originalLeftAnkleBone,
 	originalLeftToeIkBone, originalLeftToeTailBone, originalLeftHeelBone, originalLeftToePBone,
+	originalLeftToeTailDBone, originalLeftHeelDBone, originalLeftToePDBone,
 	originalRightLegIkParentBone, originalRightLegIkBone,
 	originalRightLegBone, originalRightKneeBone, originalRightAnkleBone,
-	originalRightToeIkBone, originalRightToeTailBone, originalRightHeelBone, originalRightToePBone *pmx.Bone // 元モデルのボーン情報
+	originalRightToeIkBone, originalRightToeTailBone, originalRightHeelBone, originalRightToePBone,
+	originalRightToeTailDBone, originalRightHeelDBone, originalRightToePDBone *pmx.Bone // 元モデルのボーン情報
 
 	sizingCenterBone, sizingGrooveBone, sizingTrunkRootBone, sizingLowerBone,
 	sizingUpperRootBone, sizingUpperBone, sizingUpper2Bone, sizingNeckRootBone,
 	sizingLegCenterBone, sizingLeftLegIkParentBone, sizingLeftLegIkBone,
 	sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone,
 	sizingLeftToeIkBone, sizingLeftToeTailBone, sizingLeftHeelBone, sizingLeftToePBone,
+	sizingLeftToeTailDBone, sizingLeftHeelDBone, sizingLeftToePDBone,
 	sizingRightLegIkParentBone, sizingRightLegIkBone, sizingRightLegBone, sizingRightKneeBone, sizingRightAnkleBone,
-	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone *pmx.Bone // サイジング先モデルのボーン情報
+	sizingRightToeIkBone, sizingRightToeTailBone, sizingRightHeelBone, sizingRightToePBone,
+	sizingRightToeTailDBone, sizingRightHeelDBone, sizingRightToePDBone *pmx.Bone // サイジング先モデルのボーン情報
 
 	sizingUpperVanillaBone, sizingUpper2VanillaBone, sizingNeckRootVanillaBone, sizingGrooveVanillaBone *pmx.Bone // サイジング先モデル(バニラ)のボーン情報
 }
@@ -369,10 +373,12 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
 		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足補正04"},
 		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足補正04"},
-		{"左足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
-		{"左足Y補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06_Y補正"},
-		{"右足Y補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
-		{"右足Y補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06_Y補正"},
+		{"左足IK補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"左足IK理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"左足IK補正後", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足補正06_Y補正"},
+		{"右足IK補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"右足IK理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_Y補正"},
+		{"右足IK補正後", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足補正06_Y補正"},
 		{"左つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
 		{"左つま先理想", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
 		{"右つま先補正前", rootBone.Index(), mmath.NewMVec3(), "足補正06_つま先"},
