@@ -38,39 +38,56 @@ func SizingArmFingerStance(
 		return false, err
 	}
 
+	incrementCompletedCount()
+
+	if sizingSet.IsSizingArmStance {
+		sizingSet.CompletedSizingArmStance = true
+	}
+	if sizingSet.IsSizingFingerStance {
+		sizingSet.CompletedSizingFingerStance = true
+	}
+
 	return true, nil
 }
 
 func updateStanceRotations(
 	sizingSet *domain.SizingSet, stanceRotations map[int][]*mmath.MMat4, incrementCompletedCount func(),
 ) (err error) {
+	count := int(sizingSet.OutputMotion.MaxFrame()) + 1
+
 	boneRotations := make(map[string][]*mmath.MQuaternion)
 	for dIndex := range directions {
 		for _, boneName := range all_arm_stance_bone_names[dIndex] {
-			boneRotations[boneName] = make([]*mmath.MQuaternion, int(sizingSet.OutputMotion.MaxFrame()+1))
+			boneRotations[boneName] = make([]*mmath.MQuaternion, count)
 		}
 	}
 
 	err = miter.IterParallelByList(directions, 1, 1,
 		func(dIndex int, direction pmx.BoneDirection) error {
 			for _, boneName := range all_arm_stance_bone_names[dIndex] {
+				bone, err := sizingSet.SizingConfigModel.Bones.GetByName(boneName)
+				if err != nil {
+					continue
+				}
+
+				if bone.Config().IsArm() && (!sizingSet.IsSizingArmStance || sizingSet.CompletedSizingArmStance) {
+					// 既に腕が終わっていたらスルー
+					continue
+				}
+				if bone.Config().IsFinger() && (!sizingSet.IsSizingFingerStance || sizingSet.CompletedSizingFingerStance) {
+					// 既に指が終わっていたらスルー
+					continue
+				}
+
 				sizingSet.OutputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 					if sizingSet.IsTerminate {
 						return false
 					}
 
 					// 回転補正
-					bone, err := sizingSet.SizingConfigModel.Bones.GetByName(boneName)
-					if err != nil {
-						return true
-					}
-
 					if _, ok := stanceRotations[bone.Index()]; ok {
-						sizingRotation := bf.Rotation
-						if sizingRotation == nil {
-							sizingRotation = mmath.MQuaternionIdent
-						}
-						boneRotations[boneName][int(frame)] = stanceRotations[bone.Index()][0].Muled(sizingRotation.ToMat4()).Muled(stanceRotations[bone.Index()][1]).Quaternion()
+						boneRotations[boneName][int(frame)] = stanceRotations[bone.Index()][0].Muled(
+							bf.FilledRotation().ToMat4()).Muled(stanceRotations[bone.Index()][1]).Quaternion()
 					}
 
 					return true
@@ -83,9 +100,9 @@ func updateStanceRotations(
 				mlog.I(mi18n.T("腕指スタンス補正02", map[string]interface{}{
 					"No":        sizingSet.Index + 1,
 					"Direction": direction.String()}))
-
-				incrementCompletedCount()
 			}
+
+			incrementCompletedCount()
 
 			return nil
 		}, nil)
@@ -186,24 +203,13 @@ func createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotation
 			targetBoneName := boneNames[1]
 			toBoneName := boneNames[2]
 
-			var sizingFromBone *pmx.Bone
-			if fromBoneName != "" && sizingSet.SizingConfigModel.Bones.ContainsByName(fromBoneName) {
-				sizingFromBone, _ = sizingSet.SizingConfigModel.Bones.GetByName(fromBoneName)
-			}
+			sizingFromBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(fromBoneName)
 
-			var originalTargetBone, sizingTargetBone *pmx.Bone
-			if targetBoneName != "" && sizingSet.OriginalConfigModel.Bones.ContainsByName(targetBoneName) &&
-				sizingSet.SizingConfigModel.Bones.ContainsByName(targetBoneName) {
-				originalTargetBone, _ = sizingSet.OriginalConfigModel.Bones.GetByName(targetBoneName)
-				sizingTargetBone, _ = sizingSet.SizingConfigModel.Bones.GetByName(targetBoneName)
-			}
+			originalTargetBone, _ := sizingSet.OriginalConfigModel.Bones.GetByName(targetBoneName)
+			sizingTargetBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(targetBoneName)
 
-			var originalToBone, sizingToBone *pmx.Bone
-			if toBoneName != "" && sizingSet.OriginalConfigModel.Bones.ContainsByName(toBoneName) &&
-				sizingSet.SizingConfigModel.Bones.ContainsByName(toBoneName) {
-				originalToBone, _ = sizingSet.OriginalConfigModel.Bones.GetByName(toBoneName)
-				sizingToBone, _ = sizingSet.SizingConfigModel.Bones.GetByName(toBoneName)
-			}
+			originalToBone, _ := sizingSet.OriginalConfigModel.Bones.GetByName(toBoneName)
+			sizingToBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(toBoneName)
 
 			if originalTargetBone == nil || sizingTargetBone == nil ||
 				originalToBone == nil || sizingToBone == nil {
@@ -239,6 +245,7 @@ func createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotation
 			if offsetQuat.IsIdent() {
 				stanceRotations[sizingTargetBone.Index()][1] = mmath.NewMMat4()
 			} else {
+				// 捩り成分を除去
 				_, yzOffsetQuat := offsetQuat.SeparateTwistByAxis(sizingDirection)
 				stanceRotations[sizingTargetBone.Index()][1] = yzOffsetQuat.ToMat4()
 			}

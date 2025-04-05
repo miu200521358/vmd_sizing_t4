@@ -155,11 +155,11 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	}
 
 	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
-		processCount += 2
+		processCount += 4
 	}
 
 	if ss.IsSizingFingerStance && !ss.CompletedSizingFingerStance {
-		processCount += 2
+		processCount += 4
 	}
 
 	if ss.IsSizingArmTwist && !ss.CompletedSizingArmTwist {

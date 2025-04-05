@@ -289,35 +289,35 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 						Layout: declarative.Grid{Columns: 3},
 						Children: []declarative.Widget{
 							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingArmStanceCheck,
-								Text:        mi18n.T("腕スタンス補正"),
-								ToolTipText: mi18n.T("腕スタンス補正説明"),
+								AssignTo:    &sizingState.SizingBasicCheck,
+								Text:        mi18n.T("基本補正"),
+								ToolTipText: mi18n.T("基本補正説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM)
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.CENTER)
 								},
 							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingFingerStanceCheck,
-								Text:        mi18n.T("指スタンス補正"),
-								ToolTipText: mi18n.T("指スタンス補正説明"),
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.INDEX1)
-								},
-							},
+							// declarative.CheckBox{
+							// 	AssignTo:    &sizingState.SizingArmStanceCheck,
+							// 	Text:        mi18n.T("腕スタンス補正"),
+							// 	ToolTipText: mi18n.T("腕スタンス補正説明"),
+							// 	OnCheckStateChanged: func() {
+							// 		changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM)
+							// 	},
+							// },
+							// declarative.CheckBox{
+							// 	AssignTo:    &sizingState.SizingLegCheck,
+							// 	Text:        mi18n.T("足補正"),
+							// 	ToolTipText: mi18n.T("足補正説明"),
+							// 	OnCheckStateChanged: func() {
+							// 		changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
+							// 	},
+							// },
 							declarative.CheckBox{
 								AssignTo:    &sizingState.SizingUpperCheck,
 								Text:        mi18n.T("上半身補正"),
 								ToolTipText: mi18n.T("上半身補正説明"),
 								OnCheckStateChanged: func() {
 									changeSizingCheck(mWidgets.Window(), sizingState, pmx.UPPER)
-								},
-							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingLegCheck,
-								Text:        mi18n.T("足補正"),
-								ToolTipText: mi18n.T("足補正説明"),
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState, pmx.LEG)
 								},
 							},
 							declarative.CheckBox{
@@ -336,6 +336,15 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 									changeSizingCheck(mWidgets.Window(), sizingState, pmx.ARM_TWIST)
 								},
 							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingFingerStanceCheck,
+								Text:        mi18n.T("指スタンス補正"),
+								ToolTipText: mi18n.T("指スタンス補正説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState, pmx.INDEX1)
+								},
+							},
+							declarative.HSpacer{},
 							declarative.CheckBox{
 								AssignTo:    &sizingState.AdoptSizingCheck,
 								Text:        mi18n.T("即時反映"),
@@ -374,21 +383,22 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		endIndex = min(len(sizingState.SizingSets), startIndex+1)
 	}
 
+	// if bone == pmx.CENTER {
+	// 	prevAdopt := sizingState.AdoptSizingCheck.Checked()
+
+	// 	sizingState.AdoptSizingCheck.SetChecked(false)
+	// 	sizingState.SizingLegCheck.SetChecked(sizingState.SizingBasicCheck.Checked())
+	// 	sizingState.SizingArmStanceCheck.SetChecked(sizingState.SizingBasicCheck.Checked())
+	// 	sizingState.AdoptSizingCheck.SetChecked(prevAdopt)
+	// }
+
 	for _, sizingSet := range sizingState.SizingSets[startIndex:endIndex] {
-		switch bone {
-		case pmx.LEG:
-			sizingSet.IsSizingLeg = sizingState.SizingLegCheck.Checked()
-		case pmx.UPPER:
-			sizingSet.IsSizingUpper = sizingState.SizingUpperCheck.Checked()
-		case pmx.SHOULDER:
-			sizingSet.IsSizingShoulder = sizingState.SizingShoulderCheck.Checked()
-		case pmx.ARM:
-			sizingSet.IsSizingArmStance = sizingState.SizingArmStanceCheck.Checked()
-		case pmx.INDEX1:
-			sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
-		case pmx.ARM_TWIST:
-			sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
-		}
+		sizingSet.IsSizingLeg = sizingState.SizingBasicCheck.Checked()
+		sizingSet.IsSizingUpper = sizingState.SizingUpperCheck.Checked()
+		sizingSet.IsSizingShoulder = sizingState.SizingShoulderCheck.Checked()
+		sizingSet.IsSizingArmStance = sizingState.SizingBasicCheck.Checked()
+		sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
+		sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
 
 		outputPath := sizingSet.CreateOutputMotionPath()
 		if outputPath != "" {
