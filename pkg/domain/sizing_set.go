@@ -424,7 +424,7 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 }
 
 // InsertShortageSizingConfigBones サイジング用不足ボーン作成
-func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
+func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pmx.Bones) error {
 
 	// 体幹系
 	for _, funcs := range [][]func() (*pmx.Bone, error){
@@ -453,9 +453,10 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 							((strings.Contains(bone.Name(), "上") && !strings.Contains(b.Name(), "下") &&
 								!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右")) ||
 								(strings.Contains(bone.Name(), "下") && !strings.Contains(b.Name(), "上") &&
-									!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右"))) {
+									!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右")) ||
+								(bone.Name() == pmx.NECK_ROOT.String() || bone.Name() == pmx.LEG_CENTER.String())) {
 							b.ParentIndex = bone.Index()
-							return false
+							return true
 						}
 						return true
 					})
@@ -507,6 +508,31 @@ func (ss *SizingSet) insertShortageConfigBones(bones *pmx.Bones) error {
 			if bone, err := getFunc(direction); err != nil && err == merr.NameNotFoundError && bone == nil {
 				if bone, err := createFunc(direction); err == nil && bone != nil {
 					bone.IsSystem = true
+
+					if bone.Name() == pmx.TOE_T.StringFromDirection(direction) {
+						// つま先の位置は、足首・足首D・足先EXの中で最もZ値が小さい位置にする
+						vertexMap := vertices.GetMapByBoneIndex(1e-1)
+						if vertexMap != nil {
+							for _, ankleBoneName := range []string{
+								pmx.ANKLE.StringFromDirection(direction),
+								pmx.ANKLE_D.StringFromDirection(direction),
+								pmx.TOE_EX.StringFromDirection(direction),
+							} {
+								ankleBone, _ := bones.GetByName(ankleBoneName)
+								if ankleBone == nil {
+									continue
+								}
+								if boneVertices, ok := vertexMap[ankleBone.Index()]; ok && boneVertices != nil {
+									for _, vertex := range boneVertices {
+										if vertex.Position.Z < bone.Position.Z && vertex.Position.Y < bone.Position.Y {
+											bone.Position = vertex.Position.Copy()
+										}
+									}
+								}
+							}
+							bone.Position.Y = 0
+						}
+					}
 
 					if err := bones.Insert(bone); err != nil {
 						return err
