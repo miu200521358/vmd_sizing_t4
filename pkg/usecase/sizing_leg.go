@@ -92,7 +92,7 @@ func SizingLeg(
 	incrementCompletedCount()
 
 	// 足IK 補正処理
-	leftLegAnkleIdealPositions, rightLegAnkleIdealPositions, err := calculateAdjustedLegIK(
+	_, _, err = calculateAdjustedLegIK(
 		sizingSet, allFrames, blockSize, moveScale, originalAllDeltas, sizingOffAllDeltas, sizingProcessMotion, incrementCompletedCount,
 	)
 	if err != nil {
@@ -101,14 +101,14 @@ func SizingLeg(
 
 	incrementCompletedCount()
 
-	// 足FK 再計算（IK ON状態）
-	if err := calculateAdjustedLegFK(sizingSet, allFrames, blockSize,
-		sizingOffAllDeltas, leftLegAnkleIdealPositions, rightLegAnkleIdealPositions,
-		sizingProcessMotion, incrementCompletedCount); err != nil {
-		return false, err
-	}
+	// // 足FK 再計算（IK ON状態）
+	// if err := calculateAdjustedLegFK(sizingSet, allFrames, blockSize,
+	// 	sizingOffAllDeltas, leftLegAnkleIdealPositions, rightLegAnkleIdealPositions,
+	// 	sizingProcessMotion, incrementCompletedCount); err != nil {
+	// 	return false, err
+	// }
 
-	incrementCompletedCount()
+	// incrementCompletedCount()
 
 	// sizingSet.OutputMotion = sizingProcessMotion
 	// 足補正処理の結果をサイジング先モーションに反映
@@ -534,10 +534,18 @@ func calculateAdjustedCenter(
 	// originalInitialVmdDeltas, err := computeInitialAllDeltas(sizingSet, allFrames, blockSize, sizingSet.OriginalConfigModel, sizingProcessMotion)
 	// sizingInitialAllDeltas, err := computeInitialAllDeltas(sizingSet, allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion)
 
+	// // 元と先の足中心から首根元までの長さ比率
+	// originalUpperY := sizingSet.OriginalTrunkRootBone().Position.Y - sizingSet.OriginalLegCenterBone().Position.Y
+	// sizingUpperY := sizingSet.SizingTrunkRootBone().Position.Y - sizingSet.SizingLegCenterBone().Position.Y
+	// upperScale := sizingUpperY / originalUpperY
+
+	// // 元と先の足の長さ比率
+	// legScale := sizingSet.SizingLegCenterBone().Position.Y / sizingSet.OriginalLegCenterBone().Position.Y
+
 	// 元モデルと先モデルの初期重心を計算
 	originalInitialGravityPos := computeInitialGravity(sizingSet, sizingSet.OriginalConfigModel, vmd.InitialMotion)
 	sizingInitialGravityPos := computeInitialGravity(sizingSet, sizingSet.SizingConfigModel, vmd.InitialMotion)
-	gravityRatio := sizingInitialGravityPos.Y / originalInitialGravityPos.Y
+	gravityScale := sizingInitialGravityPos.Y / originalInitialGravityPos.Y
 	isActiveGroove := false
 	sizingProcessMotion.BoneFrames.Get(pmx.GROOVE.String()).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 		if !mmath.NearEquals(bf.FilledPosition().Y, 0.0, 1e-3) {
@@ -546,6 +554,8 @@ func calculateAdjustedCenter(
 		}
 		return true
 	})
+
+	// totalGravityScale := gravityScale * legScale
 
 	sizingCenterParentBone := sizingSet.SizingCenterBone().ParentBone
 
@@ -576,7 +586,7 @@ func calculateAdjustedCenter(
 
 			originalGravityPos := calcGravity(originalAllDeltas[index])
 			sizingGravityPos := calcGravity(sizingAllDeltas[index])
-			sizingFixCenterTargetY := originalGravityPos.Y * gravityRatio
+			sizingFixCenterTargetY := originalGravityPos.Y * gravityScale
 
 			gravityIdealPosition := sizingGravityPos.Copy()
 			gravityIdealPosition.Y = sizingFixCenterTargetY
