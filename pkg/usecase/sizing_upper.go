@@ -83,39 +83,16 @@ func updateUpperResultMotion(
 
 	activeFrames := getFrames(outputMotion, trunk_upper_bone_names)
 
-	// 先に差分を腕ボーンに適用
-	for _, armBoneName := range []string{pmx.ARM.Left(), pmx.ARM.Right()} {
-		outputMotion.BoneFrames.Get(armBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-			processUpperBf := sizingProcessMotion.BoneFrames.Get(pmx.UPPER.String()).Get(frame)
-			outputUpperBf := outputMotion.BoneFrames.Get(pmx.UPPER.String()).Get(frame)
-
-			diffQuat := outputUpperBf.Rotation.Muled(processUpperBf.Rotation.Inverted())
-
-			if sizingSet.SizingUpper2VanillaBone() != nil {
-				processUpper2Bf := sizingProcessMotion.BoneFrames.Get(pmx.UPPER2.String()).Get(frame)
-				outputUpper2Bf := outputMotion.BoneFrames.Get(pmx.UPPER2.String()).Get(frame)
-
-				diffQuat.Mul(outputUpper2Bf.Rotation.Muled(processUpper2Bf.Rotation.Inverted()))
-			}
-
-			armBf := outputMotion.BoneFrames.Get(armBoneName).Get(frame)
-			armBf.Rotation = armBf.Rotation.Muled(diffQuat)
-			outputMotion.BoneFrames.Get(armBoneName).Update(armBf)
-
-			return true
-		})
-	}
-
-	// 上半身はあるボーンだけ上書きする
-	for _, upperBoneName := range []string{pmx.UPPER.String(), pmx.UPPER2.String()} {
-		if !sizingSet.SizingModel.Bones.ContainsByName(upperBoneName) {
+	// あるボーンだけ上書きする
+	for _, boneName := range []string{pmx.UPPER.String(), pmx.UPPER2.String(),
+		pmx.ARM.Left(), pmx.ARM.Right(), pmx.NECK.String()} {
+		if !sizingSet.SizingModel.Bones.ContainsByName(boneName) {
 			continue
 		}
-
-		outputMotion.BoneFrames.Get(upperBoneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-			processBf := sizingProcessMotion.BoneFrames.Get(upperBoneName).Get(frame)
+		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 			bf.Rotation = processBf.Rotation.Copy()
-			outputMotion.BoneFrames.Get(upperBoneName).Update(bf)
+			outputMotion.BoneFrames.Get(boneName).Update(bf)
 
 			return true
 		})
@@ -185,7 +162,7 @@ func updateUpperResultMotion(
 
 func updateUpper(
 	sizingSet *domain.SizingSet, allFrames []int, sizingProcessMotion *vmd.VmdMotion,
-	upperRotations, upper2Rotations []*mmath.MQuaternion,
+	upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations []*mmath.MQuaternion,
 ) {
 	for i, iFrame := range allFrames {
 		frame := float32(iFrame)
@@ -197,6 +174,27 @@ func updateUpper(
 			upper2Bf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingUpper2Bone().Name()).Get(frame)
 			upper2Bf.Rotation = upper2Rotations[i]
 			sizingProcessMotion.InsertRegisteredBoneFrame(sizingSet.SizingUpper2Bone().Name(), upper2Bf)
+		}
+
+		{
+			neckBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingNeckRootBone().Name()).Get(frame)
+			if upper2CancelRotations != nil && upper2CancelRotations[i] != nil {
+				neckBf.Rotation = upper2CancelRotations[i].Muled(upperCancelRotations[i]).Muled(neckBf.FilledRotation())
+			} else {
+				neckBf.Rotation = upperCancelRotations[i].Muled(neckBf.FilledRotation())
+			}
+			sizingProcessMotion.InsertRegisteredBoneFrame(sizingSet.SizingNeckRootBone().Name(), neckBf)
+		}
+		{
+			for _, direction := range directions {
+				armBf := sizingProcessMotion.BoneFrames.Get(pmx.ARM.StringFromDirection(direction)).Get(frame)
+				if upper2CancelRotations != nil && upper2CancelRotations[i] != nil {
+					armBf.Rotation = upper2CancelRotations[i].Muled(upperCancelRotations[i]).Muled(armBf.FilledRotation())
+				} else {
+					armBf.Rotation = upperCancelRotations[i].Muled(armBf.FilledRotation())
+				}
+				sizingProcessMotion.InsertRegisteredBoneFrame(pmx.ARM.StringFromDirection(direction), armBf)
+			}
 		}
 
 		if i > 0 && i%1000 == 0 {
@@ -299,6 +297,8 @@ func calculateAdjustedUpper(
 
 	upperRotations := make([]*mmath.MQuaternion, len(allFrames))
 	upper2Rotations := make([]*mmath.MQuaternion, len(allFrames))
+	upperCancelRotations := make([]*mmath.MQuaternion, len(allFrames))
+	upper2CancelRotations := make([]*mmath.MQuaternion, len(allFrames))
 
 	upperIkBone := createUpperIkBone(sizingSet)
 
@@ -333,8 +333,15 @@ func calculateAdjustedUpper(
 			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false)
 
 			upperRotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER.String()).FilledFrameRotation()
+
+			upperBf := sizingProcessMotion.BoneFrames.Get(pmx.UPPER.String()).Get(float32(data))
+			upperCancelRotations[index] = upperRotations[index].Inverted().Muled(upperBf.FilledRotation())
+
 			if sizingSet.SizingUpper2VanillaBone() != nil {
 				upper2Rotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER2.String()).FilledFrameRotation()
+
+				upper2Bf := sizingProcessMotion.BoneFrames.Get(pmx.UPPER2.String()).Get(float32(data))
+				upper2CancelRotations[index] = upper2Rotations[index].Inverted().Muled(upper2Bf.FilledRotation())
 			}
 
 			return nil
@@ -371,7 +378,7 @@ func calculateAdjustedUpper(
 		outputVerboseMotion("上半身01", sizingSet.OutputMotionPath, motion)
 	}
 
-	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations)
+	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)
 
 	incrementCompletedCount()
 
