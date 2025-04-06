@@ -141,7 +141,7 @@ func calculateAdjustedShoulder(
 				// 元の首根元に先の腕のローカル位置を合わせたグローバル位置
 				sizingArmIdealPosition := sizingNeckRootDelta.FilledGlobalMatrix().MulVec3(sizingArmLocalPosition)
 
-				sizingArmDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), shoulderIkBones[i], sizingArmIdealPosition, all_shoulder_bone_names[i], data == 0)
+				sizingArmDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), shoulderIkBones[i], sizingArmIdealPosition, all_shoulder_bone_names[i], false)
 
 				shoulderBf := sizingProcessMotion.BoneFrames.Get(pmx.SHOULDER.StringFromDirection(direction)).Get(float32(data))
 

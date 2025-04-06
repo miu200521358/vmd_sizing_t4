@@ -222,6 +222,9 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.SizingSets = append(sizingState.SizingSets, domain.NewSizingSet(len(sizingState.SizingSets)))
 		sizingState.AddAction()
 		sizingState.TerminateButton.SetEnabled(false)
+		sizingState.AdoptSizingCheck.CheckStateChanged().Attach(func() {
+			changeSizingCheck(mWidgets.Window(), sizingState)
+		})
 	})
 	mWidgets.SetOnChangePlaying(func(playing bool) {
 		sizingState.SetSizingOptionEnabled(!playing)
@@ -346,9 +349,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("即時反映"),
 								ToolTipText: mi18n.T("即時反映説明"),
 								Checked:     true,
-								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState)
-								},
 							},
 							declarative.CheckBox{
 								AssignTo:    &sizingState.AdoptAllCheck,
