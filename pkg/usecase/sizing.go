@@ -92,9 +92,47 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				cw.ProgressBar().Increment()
 			}
 
+			// 腕指スタンス補正
+			if execResult, err := SizingArmFingerStance(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+				errorChan <- err
+				return
+			} else {
+				if sizingSet.IsTerminate {
+					isExec = false
+					return
+				}
+
+				isExec = execResult || isExec
+
+				if isExec {
+					sizingSet.OutputMotion.SetRandHash()
+					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
+					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
+				}
+			}
+
+			// 下半身・足補正
+			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+				errorChan <- err
+				return
+			} else {
+				if sizingSet.IsTerminate {
+					isExec = false
+					return
+				}
+
+				isExec = execResult || isExec
+
+				if isExec {
+					sizingSet.OutputMotion.SetRandHash()
+					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
+					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
+				}
+			}
+
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
-				SizingArmFingerStance,
-				SizingUpper,
+				SizingUpper,    // 上半身補正
+				SizingShoulder, // 肩補正
 			} {
 
 				if execResult, err := funcUsecase(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
@@ -116,23 +154,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				}
 			}
 
-			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
-				errorChan <- err
-				return
-			} else {
-				if sizingSet.IsTerminate {
-					isExec = false
-					return
-				}
-
-				isExec = execResult || isExec
-
-				if isExec {
-					sizingSet.OutputMotion.SetRandHash()
-					sizingSet.OutputMotion.SetName(sizingSet.SizingModel.Name())
-					cw.StoreMotion(0, sizingSet.Index, sizingSet.OutputMotion)
-				}
-			}
 		}(sizingSet)
 	}
 
@@ -148,6 +169,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			} else {
 				mlog.E(mi18n.T("サイジングエラー", map[string]interface{}{
 					"Error": err.Error(), "AppName": cw.AppConfig().Name, "AppVersion": cw.AppConfig().Version}))
+				panic(err)
 			}
 		}
 	}
@@ -388,4 +410,10 @@ var all_arm_bone_names = [][]string{
 		pmx.ARM.Left(), pmx.ELBOW.Left(), pmx.WRIST.Left(), pmx.WRIST_TAIL.Left()},
 	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(),
 		pmx.ARM.Right(), pmx.ELBOW.Right(), pmx.WRIST.Right(), pmx.WRIST_TAIL.Right()},
+}
+
+// 腕系ボーン名（左右別）
+var all_shoulder_bone_names = [][]string{
+	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Left(), pmx.ARM.Left(), pmx.ELBOW.Left()},
+	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(), pmx.ARM.Right(), pmx.ELBOW.Right()},
 }
