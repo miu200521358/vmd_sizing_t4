@@ -1354,21 +1354,16 @@ func updateLegResultMotion(
 		pmx.LEG_IK.Left(), pmx.LEG.Left(), pmx.KNEE.Left(), pmx.ANKLE.Left(),
 		pmx.LEG_IK.Right(), pmx.LEG.Right(), pmx.KNEE.Right(), pmx.ANKLE.Right(),
 	} {
-		if outputMotion.BoneFrames.Contains(boneName) {
-			outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-				processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-				bf.Position = processBf.FilledPosition().Copy()
-				bf.Rotation = processBf.FilledRotation().Copy()
-				outputMotion.BoneFrames.Get(boneName).Update(bf)
-				return true
-			})
-		} else {
-			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(0)
-			outputBf := outputMotion.BoneFrames.Get(boneName).Get(0)
-			outputBf.Position = processBf.FilledPosition().Copy()
-			outputBf.Rotation = processBf.FilledRotation().Copy()
-			outputMotion.InsertRegisteredBoneFrame(boneName, outputBf)
+		if !outputMotion.BoneFrames.Contains(boneName) {
+			continue
 		}
+		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+			bf.Position = processBf.FilledPosition().Copy()
+			bf.Rotation = processBf.FilledRotation().Copy()
+			outputMotion.BoneFrames.Get(boneName).Update(bf)
+			return true
+		})
 	}
 
 	// 中間キーフレのズレをチェック
@@ -1425,7 +1420,7 @@ func updateLegResultMotion(
 					}
 
 					if fIndex > 0 && fIndex%1000 == 0 {
-						mlog.I(mi18n.T("足補正09", map[string]interface{}{
+						mlog.I(mi18n.T("足補正11", map[string]interface{}{
 							"No":          sizingSet.Index + 1,
 							"IterIndex":   fmt.Sprintf("%04d", iFrame),
 							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
