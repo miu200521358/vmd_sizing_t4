@@ -164,6 +164,7 @@ func (ss *SizingState) LoadSet(jsonPath string) {
 func (sizingState *SizingState) LoadOriginalModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	sizingState.ClearOptions()
 	sizingState.CurrentSet().LoadOriginalModel(path)
 
 	cw.StoreModel(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalModel)
@@ -176,6 +177,7 @@ func (sizingState *SizingState) LoadOriginalModel(
 func (sizingState *SizingState) LoadSizingModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	sizingState.ClearOptions()
 	sizingState.CurrentSet().LoadSizingModel(path)
 
 	cw.StoreModel(0, sizingState.CurrentIndex(), sizingState.CurrentSet().SizingModel)
@@ -190,6 +192,7 @@ func (sizingState *SizingState) LoadSizingModel(
 func (sizingState *SizingState) LoadSizingMotion(
 	cw *controller.ControlWindow, path string,
 ) {
+	sizingState.ClearOptions()
 	sizingState.CurrentSet().LoadMotion(path)
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
