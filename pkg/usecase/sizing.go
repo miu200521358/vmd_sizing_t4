@@ -381,3 +381,11 @@ var all_arm_stance_bone_names = [][]string{
 		pmx.RING1.Right(), pmx.RING2.Right(), pmx.RING3.Right(), pmx.RING_TAIL.Right(),
 		pmx.PINKY1.Right(), pmx.PINKY2.Right(), pmx.PINKY3.Right(), pmx.PINKY_TAIL.Right()},
 }
+
+// 腕系ボーン名（左右別）
+var all_arm_bone_names = [][]string{
+	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Left(),
+		pmx.ARM.Left(), pmx.ELBOW.Left(), pmx.WRIST.Left(), pmx.WRIST_TAIL.Left()},
+	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(),
+		pmx.ARM.Right(), pmx.ELBOW.Right(), pmx.WRIST.Right(), pmx.WRIST_TAIL.Right()},
+}

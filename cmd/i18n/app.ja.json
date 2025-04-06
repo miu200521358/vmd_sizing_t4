@@ -505,7 +505,7 @@
     },
     {
         "id": "上半身補正03",
-        "translation": "【No.{{.No}}】上半身補正 - 上半身2登録 [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】上半身補正 - 上半身登録 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "上半身補正04",
@@ -514,6 +514,22 @@
     {
         "id": "肩補正開始",
         "translation": "【No.{{.No}} 肩補正 開始 ---------------------------------"
+    },
+    {
+        "id": "肩補正01",
+        "translation": "【No.{{.No}}】肩補正 - デフォーム情報取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正02",
+        "translation": "【No.{{.No}}】肩補正 - 肩補正値取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正03",
+        "translation": "【No.{{.No}}】肩補正 - 肩登録 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正04",
+        "translation": "【No.{{.No}}】肩補正 - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "腕スタンス補正開始",
@@ -534,6 +550,18 @@
     {
         "id": "腕指スタンス補正03",
         "translation": "【No.{{.No}}】腕指スタンス補正 - {{.BoneName}} - 結果モーションへの出力 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正開始",
+        "translation": "【No.{{.No}}】肩補正 開始 ---------------------------------"
+    },
+    {
+        "id": "肩補正01",
+        "translation": "【No.{{.No}}】肩補正 - デフォーム情報取得 [{{.IterIndex}}/{{.AllCount}}]"
+    },
+    {
+        "id": "肩補正02",
+        "translation": "【No.{{.No}}】肩補正 - サイジング先モデルの肩補正 【{{.Direction}}】 スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "ボーン不足エラー",
@@ -728,22 +756,6 @@
         "translation": "【No.{{.No}}】腕IK統合 - 中間キーフレームのズレチェック 【{{.BoneName}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
-        "id": "下半身補正01",
-        "translation": "【No.{{.No}}】下半身補正 - 作成元モデルの下半身変形情報取得"
-    },
-    {
-        "id": "下半身補正02",
-        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルのセンター・グルーブ補正"
-    },
-    {
-        "id": "下半身補正03",
-        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足追加補正 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "下半身補正04",
-        "translation": "【No.{{.No}}】下半身補正 - サイジング先モデルの足IK追加補正 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
         "id": "捩り補正ボーン不足",
         "translation": "【No.{{.No}}】捩り分散: {{.ModelType}}に{{.BoneName}}が見つからないため、処理をスキップします"
     },
@@ -770,14 +782,6 @@
     {
         "id": "握り最適化02",
         "translation": "【No.{{.No}}】握り拡散統合 - 中間キーフレームのズレチェック 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "肩補正01",
-        "translation": "【No.{{.No}}】肩補正 - 作成元モデルの肩変形情報取得 【{{.Direction}}】 [{{.IterIndex}}/{{.AllCount}}]"
-    },
-    {
-        "id": "肩補正02",
-        "translation": "【No.{{.No}}】肩補正 - サイジング先モデルの肩補正 【{{.Direction}}】 スケール 【{{.Scale}}】 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
         "id": "捩り補正開始",
