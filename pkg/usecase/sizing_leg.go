@@ -902,7 +902,25 @@ func calculateAdjustedLegIK(
 			sizingRightLegIkBf := sizingProcessMotion.BoneFrames.Get(pmx.LEG_IK.Right()).Get(float32(data))
 
 			leftLegIkPositions[index] = sizingLeftLegIkBf.FilledPosition().Added(leftLegIkPositionDiff)
+			if mmath.NearEquals(sizingLeftLegIkBf.FilledPosition().X, 0.0, 1e-3) {
+				leftLegIkPositions[index].X = sizingLeftLegIkBf.FilledPosition().X
+			}
+			if mmath.NearEquals(sizingLeftLegIkBf.FilledPosition().Y, 0.0, 1e-3) {
+				leftLegIkPositions[index].Y = sizingLeftLegIkBf.FilledPosition().Y
+			}
+			if mmath.NearEquals(sizingLeftLegIkBf.FilledPosition().Z, 0.0, 1e-3) {
+				leftLegIkPositions[index].Z = sizingLeftLegIkBf.FilledPosition().Z
+			}
 			rightLegIkPositions[index] = sizingRightLegIkBf.FilledPosition().Added(rightLegIkPositionDiff)
+			if mmath.NearEquals(sizingRightLegIkBf.FilledPosition().X, 0.0, 1e-3) {
+				rightLegIkPositions[index].X = sizingRightLegIkBf.FilledPosition().X
+			}
+			if mmath.NearEquals(sizingRightLegIkBf.FilledPosition().Y, 0.0, 1e-3) {
+				rightLegIkPositions[index].Y = sizingRightLegIkBf.FilledPosition().Y
+			}
+			if mmath.NearEquals(sizingRightLegIkBf.FilledPosition().Z, 0.0, 1e-3) {
+				rightLegIkPositions[index].Z = sizingRightLegIkBf.FilledPosition().Z
+			}
 
 			if mlog.IsDebug() {
 				leftLegBeforePositions[index] = sizingLeftAnkleDelta.FilledGlobalPosition().Copy()
@@ -1280,7 +1298,7 @@ func calcLegIkPositionY(
 			toeIdealPositions[index].Y = idealSizingToeTailY
 		}
 
-		toeDiff := max(0, idealSizingToeTailY) - actualToeTailY
+		toeDiff := idealSizingToeTailY - actualToeTailY
 		// toeDiff += originalAnkleBone.Position.Y - sizingAnkleBone.Position.Y
 		lerpToeDiff := mmath.Lerp(toeDiff, 0,
 			max(0, originalToeTailDDelta.FilledGlobalPosition().Y/originalAnkleBone.Position.Y))
