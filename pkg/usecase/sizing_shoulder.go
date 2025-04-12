@@ -75,7 +75,7 @@ func createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirecti
 	shoulderBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction))
 	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
 
-	ikBone := pmx.NewBoneByName(fmt.Sprintf("%s%sIk", pmx.MLIB_PREFIX, pmx.SHOULDER.StringFromDirection(direction)))
+	ikBone := pmx.NewBoneByName(fmt.Sprintf("%s%sIk", pmx.MLIB_PREFIX, shoulderBone.Name()))
 	ikBone.Position = armBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = armBone.Index()
@@ -278,21 +278,17 @@ func updateShoulderResultMotion(
 	for _, boneName := range []string{
 		pmx.SHOULDER.Left(), pmx.SHOULDER.Right(), pmx.ARM.Left(), pmx.ARM.Right(),
 	} {
-		if outputMotion.BoneFrames.Contains(boneName) {
-			outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-				processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-				bf.Position = processBf.FilledPosition().Copy()
-				bf.Rotation = processBf.FilledRotation().Copy()
-				outputMotion.BoneFrames.Get(boneName).Update(bf)
-				return true
-			})
-		} else {
-			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(0)
-			outputBf := outputMotion.BoneFrames.Get(boneName).Get(0)
-			outputBf.Position = processBf.FilledPosition().Copy()
-			outputBf.Rotation = processBf.FilledRotation().Copy()
-			outputMotion.InsertRegisteredBoneFrame(boneName, outputBf)
+		if !outputMotion.BoneFrames.Contains(boneName) {
+			continue
 		}
+
+		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+			bf.Position = processBf.FilledPosition().Copy()
+			bf.Rotation = processBf.FilledRotation().Copy()
+			outputMotion.BoneFrames.Get(boneName).Update(bf)
+			return true
+		})
 	}
 
 	// 中間キーフレのズレをチェック
@@ -365,8 +361,8 @@ func checkBonesForSizingShoulder(sizingSet *domain.SizingSet) (err error) {
 		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String(), false},
 		{sizingSet.OriginalLeftShoulderBone, pmx.SHOULDER.Left(), true},
 		{sizingSet.OriginalLeftArmBone, pmx.ARM.Left(), true},
-		{sizingSet.OriginalLeftShoulderBone, pmx.SHOULDER.Right(), true},
-		{sizingSet.OriginalLeftArmBone, pmx.ARM.Right(), true},
+		{sizingSet.OriginalRightShoulderBone, pmx.SHOULDER.Right(), true},
+		{sizingSet.OriginalRightArmBone, pmx.ARM.Right(), true},
 	} {
 		getFunc := v[0].(func() *pmx.Bone)
 		boneName := v[1].(string)
@@ -389,8 +385,8 @@ func checkBonesForSizingShoulder(sizingSet *domain.SizingSet) (err error) {
 		{sizingSet.SizingNeckRootBone, pmx.NECK_ROOT.String(), false},
 		{sizingSet.SizingLeftShoulderBone, pmx.SHOULDER.Left(), true},
 		{sizingSet.SizingLeftArmBone, pmx.ARM.Left(), true},
-		{sizingSet.SizingLeftShoulderBone, pmx.SHOULDER.Right(), true},
-		{sizingSet.SizingLeftArmBone, pmx.ARM.Right(), true},
+		{sizingSet.SizingRightShoulderBone, pmx.SHOULDER.Right(), true},
+		{sizingSet.SizingRightArmBone, pmx.ARM.Right(), true},
 	} {
 		getFunc := v[0].(func() *pmx.Bone)
 		boneName := v[1].(string)

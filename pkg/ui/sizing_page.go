@@ -343,7 +343,14 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
-							declarative.HSpacer{},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.SizingWristCheck,
+								Text:        mi18n.T("手首位置合わせ"),
+								ToolTipText: mi18n.T("手首位置合わせ説明"),
+								OnCheckStateChanged: func() {
+									changeSizingCheck(mWidgets.Window(), sizingState)
+								},
+							},
 							declarative.CheckBox{
 								AssignTo:    &sizingState.AdoptSizingCheck,
 								Text:        mi18n.T("即時反映"),
@@ -395,6 +402,7 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		sizingSet.IsSizingArmStance = sizingState.SizingBasicCheck.Checked()
 		sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
 		sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
+		sizingSet.IsSizingWrist = sizingState.SizingWristCheck.Checked()
 
 		outputPath := sizingSet.CreateOutputMotionPath()
 		if outputPath != "" {

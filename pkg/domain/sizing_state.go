@@ -15,28 +15,27 @@ import (
 )
 
 type SizingState struct {
-	AddSetButton         *widget.MPushButton // セット追加ボタン
-	ResetSetButton       *widget.MPushButton // セットリセットボタン
-	SaveSetButton        *widget.MPushButton // セット保存ボタン
-	LoadSetButton        *widget.MPushButton // セット読込ボタン
-	NavToolBar           *walk.ToolBar       // セットツールバー
-	currentIndex         int                 // 現在のインデックス
-	OriginalMotionPicker *widget.FilePicker  // 元モーション
-	OriginalModelPicker  *widget.FilePicker  // 元モデル
-	SizingModelPicker    *widget.FilePicker  // サイジング先モデル
-	OutputMotionPicker   *widget.FilePicker  // 出力モーション
-	OutputModelPicker    *widget.FilePicker  // 出力モデル
-	AdoptSizingCheck     *walk.CheckBox      // サイジング反映チェック
-	AdoptAllCheck        *walk.CheckBox      // 全セット反映チェック
-	TerminateButton      *widget.MPushButton // 終了ボタン
-	SaveButton           *widget.MPushButton // 保存ボタン
-	SizingBasicCheck     *walk.CheckBox      // 基本チェック
-	// SizingLegCheck          *walk.CheckBox       // 足チェック
-	SizingUpperCheck    *walk.CheckBox // 上半身チェック
-	SizingShoulderCheck *walk.CheckBox // 肩チェック
-	// SizingArmStanceCheck    *walk.CheckBox       // 腕チェック
+	AddSetButton            *widget.MPushButton  // セット追加ボタン
+	ResetSetButton          *widget.MPushButton  // セットリセットボタン
+	SaveSetButton           *widget.MPushButton  // セット保存ボタン
+	LoadSetButton           *widget.MPushButton  // セット読込ボタン
+	NavToolBar              *walk.ToolBar        // セットツールバー
+	currentIndex            int                  // 現在のインデックス
+	OriginalMotionPicker    *widget.FilePicker   // 元モーション
+	OriginalModelPicker     *widget.FilePicker   // 元モデル
+	SizingModelPicker       *widget.FilePicker   // サイジング先モデル
+	OutputMotionPicker      *widget.FilePicker   // 出力モーション
+	OutputModelPicker       *widget.FilePicker   // 出力モデル
+	AdoptSizingCheck        *walk.CheckBox       // サイジング反映チェック
+	AdoptAllCheck           *walk.CheckBox       // 全セット反映チェック
+	TerminateButton         *widget.MPushButton  // 終了ボタン
+	SaveButton              *widget.MPushButton  // 保存ボタン
+	SizingBasicCheck        *walk.CheckBox       // 基本チェック
+	SizingUpperCheck        *walk.CheckBox       // 上半身チェック
+	SizingShoulderCheck     *walk.CheckBox       // 肩チェック
 	SizingFingerStanceCheck *walk.CheckBox       // 指チェック
 	SizingArmTwistCheck     *walk.CheckBox       // 腕捩りチェック
+	SizingWristCheck        *walk.CheckBox       // 手首位置合わせチェック
 	SizingReductionCheck    *walk.CheckBox       // 間引きチェック
 	Player                  *widget.MotionPlayer // モーションプレイヤー
 	SizingSets              []*SizingSet         `json:"sizing_sets"` // サイジングセット
@@ -105,6 +104,7 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 	ss.SizingFingerStanceCheck.SetChecked(ss.CurrentSet().IsSizingFingerStance)
 	ss.SizingArmTwistCheck.SetChecked(ss.CurrentSet().IsSizingArmTwist)
 	// ss.SizingReductionCheck.SetChecked(ss.CurrentSet().IsSizingReduction)
+	ss.SizingWristCheck.SetChecked(ss.CurrentSet().IsSizingWrist)
 }
 
 func (ss *SizingState) ClearOptions() {
@@ -113,6 +113,7 @@ func (ss *SizingState) ClearOptions() {
 	ss.SizingShoulderCheck.SetChecked(false)
 	ss.SizingFingerStanceCheck.SetChecked(false)
 	ss.SizingArmTwistCheck.SetChecked(false)
+	ss.SizingWristCheck.SetChecked(false)
 }
 
 func (ss *SizingState) SetCurrentIndex(index int) {
@@ -233,4 +234,5 @@ func (sizingState *SizingState) SetSizingOptionEnabled(enabled bool) {
 	// sizingState.SizingArmStanceCheck.SetEnabled(enabled)
 	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
 	sizingState.SizingArmTwistCheck.SetEnabled(enabled)
+	sizingState.SizingWristCheck.SetEnabled(enabled)
 }

@@ -42,6 +42,7 @@ type SizingSet struct {
 	IsSizingArmStance    bool `json:"is_sizing_arm_stance"`    // 腕補正
 	IsSizingFingerStance bool `json:"is_sizing_finger_stance"` // 指補正
 	IsSizingArmTwist     bool `json:"is_sizing_arm_twist"`     // 腕捩補正
+	IsSizingWrist        bool `json:"is_sizing_wrist"`         // 手首補正
 	IsSizingReduction    bool `json:"is_sizing_reduction"`     // 不要キー削除補正
 
 	CompletedSizingLeg          bool `json:"-"` // 足補正完了フラグ
@@ -50,6 +51,7 @@ type SizingSet struct {
 	CompletedSizingArmStance    bool `json:"-"` // 腕補正完了フラグ
 	CompletedSizingFingerStance bool `json:"-"` // 指補正完了フラグ
 	CompletedSizingArmTwist     bool `json:"-"` // 腕捩補正完了フラグ
+	CompletedSizingWrist        bool `json:"-"` // 手首補正完了フラグ
 	CompletedSizingReduction    bool `json:"-"` // 不要キー削除補正完了フラグ
 
 	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone,
@@ -128,6 +130,9 @@ func (ss *SizingSet) CreateOutputMotionPath() string {
 	if ss.IsSizingReduction {
 		suffix += "R"
 	}
+	if ss.IsSizingWrist {
+		suffix += "P"
+	}
 	if len(suffix) > 0 {
 		suffix = fmt.Sprintf("_%s", suffix)
 	}
@@ -159,6 +164,10 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	}
 
 	if ss.IsSizingFingerStance && !ss.CompletedSizingFingerStance {
+		processCount += 4
+	}
+
+	if ss.IsSizingWrist && !ss.CompletedSizingWrist {
 		processCount += 4
 	}
 
@@ -391,6 +400,16 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先右腕理想", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先右肩", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先右肩結果", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"位元左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
+		{"位元右手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
+		{"位先左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先左手首首理", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先左手首腹理", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先左手首理想", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先右手首", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先右手首首理", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先右手首腹理", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
+		{"位先右手首理想", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
 	} {
 		boneName := v[0].(string)
 		parentBoneIndex := v[1].(int)
@@ -653,6 +672,7 @@ func (ss *SizingSet) Delete() {
 	ss.IsSizingArmStance = false
 	ss.IsSizingFingerStance = false
 	ss.IsSizingArmTwist = false
+	ss.IsSizingWrist = false
 	ss.IsSizingReduction = false
 
 	ss.CompletedSizingLeg = false

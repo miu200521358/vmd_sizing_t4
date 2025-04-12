@@ -208,40 +208,42 @@ func updateUpper(
 }
 
 func calculateUpperDistanceRange(bones *pmx.Bones, upperRootIndex, neckRootIndex int) float64 {
-	// distance := 0.0
+	distance := 0.0
 
-	// startIndex := neckRootIndex
+	startIndex := neckRootIndex
 
-	// for range 100 {
-	// 	bone, err := bones.Get(startIndex)
-	// 	if err != nil || bone.ParentIndex == -1 {
-	// 		break
-	// 	}
+	for range 100 {
+		bone, err := bones.Get(startIndex)
+		if err != nil || bone.ParentIndex == -1 {
+			break
+		}
 
-	// 	parentBone, err := bones.Get(bone.ParentIndex)
-	// 	if err != nil {
-	// 		break
-	// 	}
+		parentBone, err := bones.Get(bone.ParentIndex)
+		if err != nil {
+			break
+		}
 
-	// 	distance += bone.Position.Distance(parentBone.Position)
-	// 	if parentBone.Index() == upperRootIndex {
-	// 		break
-	// 	}
+		distance += bone.Position.Distance(parentBone.Position)
+		if parentBone.Index() == upperRootIndex {
+			break
+		}
 
-	// 	startIndex = parentBone.Index()
+		startIndex = parentBone.Index()
+	}
+
+	return distance
+
+	// upperRootBone, err := bones.Get(upperRootIndex)
+	// if err != nil {
+	// 	return 0
 	// }
 
-	upperRootBone, err := bones.Get(upperRootIndex)
-	if err != nil {
-		return 0
-	}
+	// neckRootBone, err := bones.Get(neckRootIndex)
+	// if err != nil {
+	// 	return 0
+	// }
 
-	neckRootBone, err := bones.Get(neckRootIndex)
-	if err != nil {
-		return 0
-	}
-
-	return upperRootBone.Position.Distance(neckRootBone.Position)
+	// return upperRootBone.Position.Distance(neckRootBone.Position)
 }
 
 func calculateUpperDistance(sizingSet *domain.SizingSet) (float64, error) {
@@ -289,6 +291,10 @@ func calculateAdjustedUpper(
 	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
 ) error {
+	if mlog.IsDebug() {
+		outputVerboseMotion("上半身01", sizingSet.OutputMotionPath, sizingProcessMotion)
+	}
+
 	var upperDistance float64
 	upperDistance, err := calculateUpperDistance(sizingSet)
 	if err != nil {
@@ -375,7 +381,7 @@ func calculateAdjustedUpper(
 			}
 		}
 
-		outputVerboseMotion("上半身01", sizingSet.OutputMotionPath, motion)
+		outputVerboseMotion("上半身02", sizingSet.OutputMotionPath, motion)
 	}
 
 	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)

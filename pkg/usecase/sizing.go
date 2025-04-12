@@ -36,7 +36,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			!sizingSet.IsSizingShoulder && sizingSet.CompletedSizingShoulder ||
 			!sizingSet.IsSizingArmStance && sizingSet.CompletedSizingArmStance ||
 			!sizingSet.IsSizingFingerStance && sizingSet.CompletedSizingFingerStance ||
-			!sizingSet.IsSizingArmTwist && sizingSet.CompletedSizingArmTwist {
+			!sizingSet.IsSizingArmTwist && sizingSet.CompletedSizingArmTwist ||
+			!sizingSet.IsSizingWrist && sizingSet.CompletedSizingWrist {
 
 			// チェックを外したら読み直し
 			sizingSet.CompletedSizingLeg = false
@@ -45,6 +46,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			sizingSet.CompletedSizingArmStance = false
 			sizingSet.CompletedSizingFingerStance = false
 			sizingSet.CompletedSizingArmTwist = false
+			sizingSet.CompletedSizingWrist = false
 
 			// オリジナルモーションをサイジング先モーションとして読み直し
 			sizingState.SetCurrentIndex(sizingSet.Index)
@@ -133,6 +135,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
 				SizingUpper,    // 上半身補正
 				SizingShoulder, // 肩補正
+				SizingWrist,    // 手首位置合わせ
 			} {
 
 				if execResult, err := funcUsecase(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
@@ -406,9 +409,9 @@ var all_arm_stance_bone_names = [][]string{
 
 // 腕系ボーン名（左右別）
 var all_arm_bone_names = [][]string{
-	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Left(),
+	{pmx.TRUNK_ROOT.String(), pmx.NECK_ROOT.String(), pmx.SHOULDER.Left(),
 		pmx.ARM.Left(), pmx.ELBOW.Left(), pmx.WRIST.Left(), pmx.WRIST_TAIL.Left()},
-	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(),
+	{pmx.TRUNK_ROOT.String(), pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(),
 		pmx.ARM.Right(), pmx.ELBOW.Right(), pmx.WRIST.Right(), pmx.WRIST_TAIL.Right()},
 }
 
