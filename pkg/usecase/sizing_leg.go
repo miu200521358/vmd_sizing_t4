@@ -264,6 +264,7 @@ func calculateAdjustedLower(
 	sizingLowerVector := sizingSet.SizingLegCenterBone().Position.Subed(sizingSet.SizingTrunkRootBone().Position)
 	lowerScale := &mmath.MVec3{X: 1.0, Y: sizingLowerVector.Length() / originalLowerVector.Length(), Z: 1.0}
 
+	legCenterBone := sizingSet.SizingLegCenterBone()
 	lowerIkBone := createLowerIkBone(sizingSet)
 
 	err := miter.IterParallelByList(allFrames, blockSize, log_block_size,
@@ -303,7 +304,9 @@ func calculateAdjustedLower(
 			// 先の体幹中心から見た、先の足中心のグローバル位置
 			sizingLegCenterIdealPosition := sizingTrunkRootDelta.FilledGlobalMatrix().MulVec3(sizingLegCenterIdealLocalPosition)
 
-			sizingLowerDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), lowerIkBone, sizingLegCenterIdealPosition, trunk_lower_bone_names, false, false)
+			sizingLowerDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+				sizingAllDeltas[index], float32(data), []*pmx.Bone{lowerIkBone}, []*pmx.Bone{legCenterBone},
+				[]*mmath.MVec3{sizingLegCenterIdealPosition}, trunk_lower_bone_names, 1, false, false)
 
 			lowerRotations[index] = sizingLowerDeltas.Bones.GetByName(pmx.LOWER.String()).FilledFrameRotation()
 
@@ -1185,21 +1188,20 @@ func calculateAdjustedLegFK(
 				return merr.TerminateError
 			}
 
-			sizingLeftLegDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion,
-				sizingOffAllDeltas[index], float32(data), sizingSet.SizingLeftLegIkBone(),
-				leftLegAnkleIdealPositions[index], leg_direction_bone_names[0], false, false)
+			sizingLegDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+				sizingOffAllDeltas[index], float32(data),
+				[]*pmx.Bone{sizingSet.SizingLeftLegIkBone(), sizingSet.SizingRightLegIkBone()},
+				[]*pmx.Bone{sizingSet.SizingLeftAnkleBone(), sizingSet.SizingRightAnkleBone()},
+				[]*mmath.MVec3{leftLegAnkleIdealPositions[index], rightLegAnkleIdealPositions[index]},
+				leg_all_direction_bone_names, 1, false, false)
 
-			leftLegRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.LEG.Left()).FilledFrameRotation()
-			leftKneeRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.KNEE.Left()).FilledFrameRotation()
-			leftAnkleRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.ANKLE.Left()).FilledFrameRotation()
+			leftLegRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.LEG.Left()).FilledFrameRotation()
+			leftKneeRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.KNEE.Left()).FilledFrameRotation()
+			leftAnkleRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.ANKLE.Left()).FilledFrameRotation()
 
-			sizingRightLegDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion,
-				sizingOffAllDeltas[index], float32(data), sizingSet.SizingRightLegIkBone(),
-				rightLegAnkleIdealPositions[index], leg_direction_bone_names[1], false, false)
-
-			rightLegRotations[index] = sizingRightLegDeltas.Bones.GetByName(pmx.LEG.Right()).FilledFrameRotation()
-			rightKneeRotations[index] = sizingRightLegDeltas.Bones.GetByName(pmx.KNEE.Right()).FilledFrameRotation()
-			rightAnkleRotations[index] = sizingRightLegDeltas.Bones.GetByName(pmx.ANKLE.Right()).FilledFrameRotation()
+			rightLegRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.LEG.Right()).FilledFrameRotation()
+			rightKneeRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.KNEE.Right()).FilledFrameRotation()
+			rightAnkleRotations[index] = sizingLegDeltas.Bones.GetByName(pmx.ANKLE.Right()).FilledFrameRotation()
 			return nil
 		},
 		func(iterIndex, allCount int) {
@@ -1379,6 +1381,7 @@ func updateLegResultMotion(
 					return err
 				}
 
+				prevLog := 0
 				for fIndex, iFrame := range targetFrames {
 					if sizingSet.IsTerminate {
 						return merr.TerminateError
@@ -1418,18 +1421,19 @@ func updateLegResultMotion(
 						}
 					}
 
-					if fIndex > 0 && fIndex%1000 == 0 {
+					if fIndex > 0 && int(iFrame/1000) > prevLog {
 						mlog.I(mi18n.T("足補正11", map[string]interface{}{
 							"No":          sizingSet.Index + 1,
 							"IterIndex":   fmt.Sprintf("%04d", iFrame),
 							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
+						prevLog = int(iFrame / 1000)
 					}
 				}
-			}
 
-			incrementCompletedCount()
+				incrementCompletedCount()
+			}
 
 			return nil
 		}, nil)

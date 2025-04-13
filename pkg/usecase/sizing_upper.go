@@ -75,91 +75,6 @@ func SizingUpper(
 	return true, nil
 }
 
-func updateUpperResultMotion(
-	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
-) error {
-	// 足補正処理の結果をサイジング先モーションに反映
-	outputMotion := sizingSet.OutputMotion
-
-	activeFrames := getFrames(outputMotion, trunk_upper_bone_names)
-
-	// あるボーンだけ上書きする
-	for _, boneName := range []string{pmx.UPPER.String(), pmx.UPPER2.String(),
-		pmx.ARM.Left(), pmx.ARM.Right(), pmx.NECK.String()} {
-		if !sizingSet.SizingModel.Bones.ContainsByName(boneName) {
-			continue
-		}
-		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
-			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-			bf.Rotation = processBf.Rotation.Copy()
-			outputMotion.BoneFrames.Get(boneName).Update(bf)
-
-			return true
-		})
-	}
-
-	// 中間キーフレのズレをチェック
-	neckRootThreshold := 0.2
-
-	for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
-		processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-			sizingSet.SizingModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01")
-
-		if err != nil {
-			return err
-		}
-
-		for fIndex, iFrame := range targetFrames {
-			if sizingSet.IsTerminate {
-				return merr.TerminateError
-			}
-			frame := float32(iFrame)
-
-			// 現時点の結果
-			resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-				sizingSet.SizingModel, outputMotion, sizingSet, true, trunk_upper_bone_names, "")
-			if err != nil {
-				return err
-			}
-
-			// 首根元の位置をチェック
-			resultNeckRootDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.NECK_ROOT.String())
-			processNeckRootDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.NECK_ROOT.String())
-
-			if resultNeckRootDelta.FilledGlobalPosition().Distance(processNeckRootDelta.FilledGlobalPosition()) > neckRootThreshold {
-				// 各関節位置がズレている場合、元の回転を焼き込む
-				for _, upperBone := range []*pmx.Bone{
-					sizingSet.SizingUpperVanillaBone(), sizingSet.SizingUpper2VanillaBone(),
-				} {
-					if upperBone == nil {
-						continue
-					}
-					processBf := sizingProcessMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
-					resultBf := outputMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
-					resultBf.Rotation = processBf.Rotation.Copy()
-					outputMotion.InsertBoneFrame(upperBone.Name(), resultBf)
-				}
-			}
-
-			if fIndex > 0 && fIndex%1000 == 0 {
-				mlog.I(mi18n.T("上半身補正04", map[string]interface{}{
-					"No":          sizingSet.Index + 1,
-					"IterIndex":   fmt.Sprintf("%04d", iFrame),
-					"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
-					"FramesIndex": tIndex + 1}))
-			}
-		}
-
-		incrementCompletedCount()
-	}
-
-	if mlog.IsDebug() {
-		outputVerboseMotion("上半身03", sizingSet.OutputMotionPath, outputMotion)
-	}
-
-	return nil
-}
-
 func updateUpper(
 	sizingSet *domain.SizingSet, allFrames []int, sizingProcessMotion *vmd.VmdMotion,
 	upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations []*mmath.MQuaternion,
@@ -336,7 +251,10 @@ func calculateAdjustedUpper(
 				actualNeckRootPositions[index] = sizingAllDeltas[index].Bones.GetByName(pmx.NECK_ROOT.String()).FilledGlobalPosition()
 			}
 
-			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false, false)
+			sizingUpperDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+				sizingAllDeltas[index], float32(data), []*pmx.Bone{upperIkBone},
+				[]*pmx.Bone{sizingSet.SizingNeckRootBone()},
+				[]*mmath.MVec3{sizingGlobalUpperPosition}, trunk_upper_bone_names, 1, false, false)
 
 			upperRotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER.String()).FilledFrameRotation()
 
@@ -387,6 +305,94 @@ func calculateAdjustedUpper(
 	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)
 
 	incrementCompletedCount()
+
+	return nil
+}
+
+func updateUpperResultMotion(
+	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
+) error {
+	// 足補正処理の結果をサイジング先モーションに反映
+	outputMotion := sizingSet.OutputMotion
+
+	activeFrames := getFrames(outputMotion, trunk_upper_bone_names)
+
+	// あるボーンだけ上書きする
+	for _, boneName := range []string{pmx.UPPER.String(), pmx.UPPER2.String(),
+		pmx.ARM.Left(), pmx.ARM.Right(), pmx.NECK.String()} {
+		if !sizingSet.SizingModel.Bones.ContainsByName(boneName) {
+			continue
+		}
+		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
+			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
+			bf.Rotation = processBf.Rotation.Copy()
+			outputMotion.BoneFrames.Get(boneName).Update(bf)
+
+			return true
+		})
+	}
+
+	// 中間キーフレのズレをチェック
+	neckRootThreshold := 0.2
+
+	for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
+		processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
+			sizingSet.SizingModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01")
+
+		if err != nil {
+			return err
+		}
+
+		prevLog := 0
+
+		for fIndex, iFrame := range targetFrames {
+			if sizingSet.IsTerminate {
+				return merr.TerminateError
+			}
+			frame := float32(iFrame)
+
+			// 現時点の結果
+			resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
+				sizingSet.SizingModel, outputMotion, sizingSet, true, trunk_upper_bone_names, "")
+			if err != nil {
+				return err
+			}
+
+			// 首根元の位置をチェック
+			resultNeckRootDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.NECK_ROOT.String())
+			processNeckRootDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.NECK_ROOT.String())
+
+			if resultNeckRootDelta.FilledGlobalPosition().Distance(processNeckRootDelta.FilledGlobalPosition()) > neckRootThreshold {
+				// 各関節位置がズレている場合、元の回転を焼き込む
+				for _, upperBone := range []*pmx.Bone{
+					sizingSet.SizingUpperVanillaBone(), sizingSet.SizingUpper2VanillaBone(),
+				} {
+					if upperBone == nil {
+						continue
+					}
+					processBf := sizingProcessMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
+					resultBf := outputMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
+					resultBf.Rotation = processBf.Rotation.Copy()
+					outputMotion.InsertBoneFrame(upperBone.Name(), resultBf)
+				}
+			}
+
+			if fIndex > 0 && int(iFrame/1000) > prevLog {
+				mlog.I(mi18n.T("上半身補正04", map[string]interface{}{
+					"No":          sizingSet.Index + 1,
+					"IterIndex":   fmt.Sprintf("%04d", iFrame),
+					"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
+					"FramesIndex": tIndex + 1}))
+				prevLog = int(iFrame / 1000)
+			}
+
+			incrementCompletedCount()
+		}
+	}
+
+	if mlog.IsDebug() {
+		outputVerboseMotion("上半身03", sizingSet.OutputMotionPath, outputMotion)
+	}
 
 	return nil
 }

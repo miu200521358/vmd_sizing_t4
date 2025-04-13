@@ -152,11 +152,11 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	}
 
 	if ss.IsSizingLeg && !ss.CompletedSizingLeg {
-		processCount += 14
+		processCount += 16
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
-		processCount += 6
+		processCount += 8
 	}
 
 	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {

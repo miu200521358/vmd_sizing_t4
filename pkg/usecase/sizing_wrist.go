@@ -196,6 +196,7 @@ func calculateAdjustedWrist(
 				armBoneName := pmx.ARM.StringFromDirection(direction)
 				elbowBoneName := pmx.ELBOW.StringFromDirection(direction)
 				wristBoneName := pmx.WRIST.StringFromDirection(direction)
+				wristBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(wristBoneName)
 
 				originalWristDelta := originalAllDeltas[index].Bones.GetByName(wristBoneName)
 				sizingWristDelta := sizingAllDeltas[index].Bones.GetByName(wristBoneName)
@@ -255,7 +256,10 @@ func calculateAdjustedWrist(
 
 				// ------------
 
-				sizingWristDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), armIkBones[i], sizingWristIdealPosition, all_arm_bone_names[i], false, false)
+				sizingWristDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+					sizingAllDeltas[index], float32(data),
+					[]*pmx.Bone{armIkBones[i]}, []*pmx.Bone{wristBone},
+					[]*mmath.MVec3{sizingWristIdealPosition}, all_arm_bone_names[i], 1, false, false)
 
 				sizingArmRotations[i][index] = sizingWristDeltas.Bones.GetByName(pmx.ARM.StringFromDirection(direction)).FilledFrameRotation()
 				sizingElbowRotations[i][index] = sizingWristDeltas.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction)).FilledFrameRotation()
