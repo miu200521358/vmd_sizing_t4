@@ -414,9 +414,3 @@ var all_arm_bone_names = [][]string{
 	{pmx.TRUNK_ROOT.String(), pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(),
 		pmx.ARM.Right(), pmx.ELBOW.Right(), pmx.WRIST.Right(), pmx.WRIST_TAIL.Right()},
 }
-
-// 腕系ボーン名（左右別）
-var all_shoulder_bone_names = [][]string{
-	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Left(), pmx.ARM.Left(), pmx.ELBOW.Left()},
-	{pmx.NECK_ROOT.String(), pmx.SHOULDER.Right(), pmx.ARM.Right(), pmx.ELBOW.Right()},
-}
