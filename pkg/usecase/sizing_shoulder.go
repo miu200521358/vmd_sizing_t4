@@ -38,15 +38,7 @@ func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCo
 	allFrames := mmath.IntRanges(int(originalMotion.MaxFrame()) + 1)
 	blockSize, _ := miter.GetBlockSize(len(allFrames) * sizingSetCount)
 
-	// // 元モデルのデフォーム結果を並列処理で取得
-	// originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, append(all_shoulder_bone_names[0], all_shoulder_bone_names[1]...), "肩補正01")
-	// if err != nil {
-	// 	return false, err
-	// }
-
-	// incrementCompletedCount()
-
-	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_shoulder_bone_names[0], all_shoulder_bone_names[1]...), "肩補正01")
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "肩補正01")
 	if err != nil {
 		return false, err
 	}
@@ -81,8 +73,8 @@ func createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirecti
 	ikBone.Position = armBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = armBone.Index()
-	ikBone.Ik.LoopCount = 10
-	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 2, Y: 0.0, Z: 0.0}
+	ikBone.Ik.LoopCount = 100
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
 	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
 	for _, boneIndex := range armBone.ParentBoneIndexes {
 		parentBone, _ := sizingSet.SizingConfigModel.Bones.Get(boneIndex)
@@ -95,6 +87,68 @@ func createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirecti
 		ikBone.Ik.Links = append(ikBone.Ik.Links, link)
 
 		if parentBone.Name() == shoulderBone.Name() {
+			// 肩までいったら終了
+			break
+		}
+	}
+
+	return ikBone
+}
+
+func createElbowIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+	// ひじIK
+	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
+	elbowBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
+
+	ikBone := pmx.NewBoneByName(fmt.Sprintf("%s%sIk", pmx.MLIB_PREFIX, elbowBone.Name()))
+	ikBone.Position = elbowBone.Position.Copy()
+	ikBone.Ik = pmx.NewIk()
+	ikBone.Ik.BoneIndex = elbowBone.Index()
+	ikBone.Ik.LoopCount = 100
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
+	for _, boneIndex := range elbowBone.ParentBoneIndexes {
+		parentBone, _ := sizingSet.SizingConfigModel.Bones.Get(boneIndex)
+		link := pmx.NewIkLink()
+		link.BoneIndex = parentBone.Index()
+		if parentBone.Name() != armBone.Name() {
+			// 腕以外は動かさない
+			link.AngleLimit = true
+		}
+		ikBone.Ik.Links = append(ikBone.Ik.Links, link)
+
+		if parentBone.Name() == armBone.Name() {
+			// 腕までいったら終了
+			break
+		}
+	}
+
+	return ikBone
+}
+
+func createWristIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+	// 手首IK
+	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
+	wristBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
+
+	ikBone := pmx.NewBoneByName(fmt.Sprintf("%s%sIk", pmx.MLIB_PREFIX, wristBone.Name()))
+	ikBone.Position = wristBone.Position.Copy()
+	ikBone.Ik = pmx.NewIk()
+	ikBone.Ik.BoneIndex = wristBone.Index()
+	ikBone.Ik.LoopCount = 100
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
+	for _, boneIndex := range wristBone.ParentBoneIndexes {
+		parentBone, _ := sizingSet.SizingConfigModel.Bones.Get(boneIndex)
+		link := pmx.NewIkLink()
+		link.BoneIndex = parentBone.Index()
+		if parentBone.Name() != armBone.Name() {
+			// 腕以外は動かさない
+			link.AngleLimit = true
+		}
+		ikBone.Ik.Links = append(ikBone.Ik.Links, link)
+
+		if parentBone.Name() == armBone.Name() {
 			// 腕までいったら終了
 			break
 		}
@@ -111,8 +165,12 @@ func calculateAdjustedShoulder(
 	outputVerboseMotion("肩01", sizingSet.OutputMotionPath, sizingProcessMotion)
 
 	shoulderIkBones := make([]*pmx.Bone, 2)
+	elbowIkBones := make([]*pmx.Bone, 2)
+	wristIkBones := make([]*pmx.Bone, 2)
 	for i, direction := range directions {
 		shoulderIkBones[i] = createShoulderIkBone(sizingSet, direction)
+		elbowIkBones[i] = createElbowIkBoneForShoulder(sizingSet, direction)
+		wristIkBones[i] = createWristIkBoneForShoulder(sizingSet, direction)
 	}
 
 	armPositions := make([][]*mmath.MVec3, 2)
@@ -120,10 +178,15 @@ func calculateAdjustedShoulder(
 	armRatioPositions := make([][]*mmath.MVec3, 2)
 	armFixYPositions := make([][]*mmath.MVec3, 2)
 	armLimitedPositions := make([][]*mmath.MVec3, 2)
-	elbowPositions := make([][]*mmath.MVec3, 2)
-	shoulderPositions := make([][]*mmath.MVec3, 2)
-	shoulderRotations := make([][]*mmath.MQuaternion, 2)
-	armRotations := make([][]*mmath.MQuaternion, 2)
+	shoulderResultPositions := make([][]*mmath.MVec3, 2)
+	shoulderResultRotations := make([][]*mmath.MQuaternion, 2)
+	armResultPositions := make([][]*mmath.MVec3, 2)
+	armResultRotations := make([][]*mmath.MQuaternion, 2)
+	elbowResultPositions := make([][]*mmath.MVec3, 2)
+	elbowResultRotations := make([][]*mmath.MQuaternion, 2)
+	wristPositions := make([][]*mmath.MVec3, 2)
+	wristResultPositions := make([][]*mmath.MVec3, 2)
+	wristResultRotations := make([][]*mmath.MQuaternion, 2)
 
 	armLocalInitialPositions := make([]*mmath.MVec3, 2)
 	armRatios := make([]*mmath.MVec3, 2) // ひじまでの長さに対する腕までの長さの割合
@@ -136,24 +199,27 @@ func calculateAdjustedShoulder(
 		armRatioPositions[i] = make([]*mmath.MVec3, len(allFrames))
 		armFixYPositions[i] = make([]*mmath.MVec3, len(allFrames))
 		armLimitedPositions[i] = make([]*mmath.MVec3, len(allFrames))
-		elbowPositions[i] = make([]*mmath.MVec3, len(allFrames))
-		shoulderPositions[i] = make([]*mmath.MVec3, len(allFrames))
-		shoulderRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
-		armRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		shoulderResultPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		shoulderResultRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		armResultPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		armResultRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		elbowResultPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		elbowResultRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		wristPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		wristResultPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		wristResultRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
 
 		neckRootBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.NECK_ROOT.String())
 		armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(directions[i]))
 		elbowBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ELBOW.StringFromDirection(directions[i]))
-		wristBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.WRIST.StringFromDirection(directions[i]))
 
 		armLocalInitialPositions[i] = armBone.Position.Subed(neckRootBone.Position)
 
 		armLength := armLocalInitialPositions[i].Length()
 		elbowLength := armLocalInitialPositions[i].Length() + elbowBone.Position.Distance(armBone.Position)
-		wristLength := elbowLength + wristBone.Position.Distance(elbowBone.Position)
 		armRatios[i] = &mmath.MVec3{
 			X: armLength / elbowLength,
-			Y: armLength / wristLength,
+			Y: armLength / elbowLength,
 			Z: armLength / elbowLength,
 		}
 	}
@@ -164,11 +230,17 @@ func calculateAdjustedShoulder(
 				return merr.TerminateError
 			}
 
+			frame := float32(data)
 			sizingNeckRootDelta := sizingAllDeltas[index].Bones.GetByName(pmx.NECK_ROOT.String())
 
 			for i, direction := range directions {
-				sizingElbowDelta := sizingAllDeltas[index].Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
-				sizingArmDelta := sizingAllDeltas[index].Bones.GetByName(pmx.ARM.StringFromDirection(direction))
+				armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
+				elbowBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
+				wristBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
+
+				sizingArmDelta := sizingAllDeltas[index].Bones.GetByName(armBone.Name())
+				sizingElbowDelta := sizingAllDeltas[index].Bones.GetByName(elbowBone.Name())
+				sizingWristDelta := sizingAllDeltas[index].Bones.GetByName(wristBone.Name())
 
 				// 先の首根元から見た、先腕のローカル位置
 				armLocalPositionFromNeckRoot := sizingNeckRootDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingArmDelta.FilledGlobalPosition())
@@ -181,9 +253,9 @@ func calculateAdjustedShoulder(
 				armLocalPositionFromRatio := elbowLocalPositionFromNeckRoot.Muled(armRatios[i])
 
 				// 腕のローカルYはひじだけ上げる動作があり得るので、元々の腕Yと比率で求めた腕Yの中間を取る
-				// ひじだけ上げている場合、t がマイナスになるので、元々の腕Yになる
+				// 肩だけ上げている場合、t がマイナスになるので、元々の腕Yになる
 				armY := mmath.Lerp(armLocalPositionFromNeckRoot.Y, armLocalPositionFromRatio.Y,
-					armLocalPositionFromNeckRoot.Y/elbowLocalPositionFromNeckRoot.Y)
+					armLocalPositionFromNeckRoot.Y*3/elbowLocalPositionFromNeckRoot.Y)
 
 				// 腕Yが決まった、腕のローカル位置
 				armLocalPositionFixY := &mmath.MVec3{
@@ -198,26 +270,41 @@ func calculateAdjustedShoulder(
 				// 元の首根元に先の腕のローカル位置を合わせたグローバル位置
 				sizingArmIdealPosition := sizingNeckRootDelta.FilledGlobalMatrix().MulVec3(sizingArmLocalPosition)
 
+				sizingElbowPosition := sizingElbowDelta.FilledGlobalPosition().Copy()
+				sizingWristPosition := sizingWristDelta.FilledGlobalPosition().Copy()
+
 				if mlog.IsDebug() {
 					armPositions[i][index] = sizingArmDelta.FilledGlobalPosition().Copy()
 					armIdealPositions[i][index] = sizingArmIdealPosition.Copy()
 					armRatioPositions[i][index] = sizingNeckRootDelta.FilledGlobalMatrix().MulVec3(armLocalPositionFromRatio)
 					armFixYPositions[i][index] = sizingNeckRootDelta.FilledGlobalMatrix().MulVec3(armLocalPositionFixY)
+
+					wristPositions[i][index] = sizingWristPosition.Copy()
 				}
 
-				sizingArmDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), shoulderIkBones[i], sizingArmIdealPosition, all_shoulder_bone_names[i], false)
+				sizingShoulderDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+					sizingAllDeltas[index], frame, []*pmx.Bone{shoulderIkBones[i], elbowIkBones[i], wristIkBones[i]},
+					[]*pmx.Bone{armBone, elbowBone, wristBone},
+					[]*mmath.MVec3{sizingArmIdealPosition, sizingElbowPosition, sizingWristPosition},
+					all_arm_bone_names[i], 5, false, false)
 
-				shoulderBf := sizingProcessMotion.BoneFrames.Get(pmx.SHOULDER.StringFromDirection(direction)).Get(float32(data))
-
-				shoulderRotations[i][index] = sizingArmDeltas.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction)).FilledFrameRotation()
-				shoulderCancelRotation := shoulderRotations[i][index].Inverted().Muled(shoulderBf.FilledRotation()).Normalized()
-
-				armBf := sizingProcessMotion.BoneFrames.Get(pmx.ARM.StringFromDirection(direction)).Get(float32(data))
-				armRotations[i][index] = shoulderCancelRotation.Muled(armBf.FilledRotation()).Normalized()
+				shoulderResultRotations[i][index] = sizingShoulderDeltas.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction)).FilledFrameRotation()
+				armResultRotations[i][index] = sizingShoulderDeltas.Bones.GetByName(armBone.Name()).FilledFrameRotation()
 
 				if mlog.IsDebug() {
-					sizingDeformShoulderDelta := sizingArmDeltas.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction))
-					shoulderPositions[i][index] = sizingDeformShoulderDelta.FilledGlobalPosition()
+					shoulderDeformDelta := sizingShoulderDeltas.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction))
+					shoulderResultPositions[i][index] = shoulderDeformDelta.FilledGlobalPosition().Copy()
+
+					armDeformDelta := sizingShoulderDeltas.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
+					armResultPositions[i][index] = armDeformDelta.FilledGlobalPosition().Copy()
+
+					elbowDeformDelta := sizingShoulderDeltas.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
+					elbowResultPositions[i][index] = elbowDeformDelta.FilledGlobalPosition().Copy()
+					elbowResultRotations[i][index] = elbowDeformDelta.FilledFrameRotation().Copy()
+
+					wristDeformDelta := sizingShoulderDeltas.Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
+					wristResultPositions[i][index] = wristDeformDelta.FilledGlobalPosition().Copy()
+					wristResultRotations[i][index] = wristDeformDelta.FilledFrameRotation().Copy()
 				}
 			}
 
@@ -239,33 +326,56 @@ func calculateAdjustedShoulder(
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = armPositions[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s腕", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕先肩", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = armRatioPositions[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s腕比率", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕比率先肩", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = armFixYPositions[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s腕Y固定", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕Y固定先肩", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = armLimitedPositions[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s腕限定", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕限定先肩", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = armIdealPositions[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s腕理想", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕理想先肩", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
-					bf.Position = shoulderPositions[j][i]
-					bf.Rotation = shoulderRotations[j][i]
-					motion.InsertBoneFrame(fmt.Sprintf("先%s肩結果", direction.String()), bf)
+					bf.Position = wristPositions[j][i]
+					motion.InsertBoneFrame(fmt.Sprintf("%s手首先肩", direction.String()), bf)
+				}
+				{
+					bf := vmd.NewBoneFrame(frame)
+					bf.Position = shoulderResultPositions[j][i]
+					bf.Rotation = shoulderResultRotations[j][i]
+					motion.InsertBoneFrame(fmt.Sprintf("%s肩結果先肩", direction.String()), bf)
+				}
+				{
+					bf := vmd.NewBoneFrame(frame)
+					bf.Position = armResultPositions[j][i]
+					bf.Rotation = armResultRotations[j][i]
+					motion.InsertBoneFrame(fmt.Sprintf("%s腕結果先肩", direction.String()), bf)
+				}
+				{
+					bf := vmd.NewBoneFrame(frame)
+					bf.Position = elbowResultPositions[j][i]
+					bf.Rotation = elbowResultRotations[j][i]
+					motion.InsertBoneFrame(fmt.Sprintf("%sひじ結果先肩", direction.String()), bf)
+				}
+				{
+					bf := vmd.NewBoneFrame(frame)
+					bf.Position = wristResultPositions[j][i]
+					bf.Rotation = wristResultRotations[j][i]
+					motion.InsertBoneFrame(fmt.Sprintf("%s手首結果先肩", direction.String()), bf)
 				}
 			}
 		}
@@ -276,7 +386,7 @@ func calculateAdjustedShoulder(
 	incrementCompletedCount()
 
 	// 肩回転をサイジング先モーションに反映
-	updateShoulder(sizingSet, allFrames, sizingProcessMotion, shoulderRotations, armRotations)
+	updateShoulder(sizingSet, allFrames, sizingProcessMotion, shoulderResultRotations, armResultRotations)
 
 	return nil
 }
@@ -345,10 +455,12 @@ func updateShoulderResultMotion(
 		func(dIndex int, direction pmx.BoneDirection) error {
 			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
 				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-					sizingModel, sizingProcessMotion, sizingSet, true, all_shoulder_bone_names[dIndex], "肩補正01")
+					sizingModel, sizingProcessMotion, sizingSet, true, all_arm_bone_names[dIndex], "肩補正01")
 				if err != nil {
 					return err
 				}
+
+				prevLog := 0
 
 				for fIndex, iFrame := range targetFrames {
 					if sizingSet.IsTerminate {
@@ -358,7 +470,7 @@ func updateShoulderResultMotion(
 
 					// 現時点の結果
 					resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-						sizingModel, outputMotion, sizingSet, true, all_shoulder_bone_names[dIndex], "")
+						sizingModel, outputMotion, sizingSet, true, all_arm_bone_names[dIndex], "")
 					if err != nil {
 						return err
 					}
@@ -371,9 +483,14 @@ func updateShoulderResultMotion(
 					resultElbowDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
 					processElbowDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
 
+					// 手首の位置をチェック
+					resultWristDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
+					processWristDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
+
 					// 各関節位置がズレている場合、元の回転を焼き込む
 					if resultArmDelta.FilledGlobalPosition().Distance(processArmDelta.FilledGlobalPosition()) > threshold ||
-						resultElbowDelta.FilledGlobalPosition().Distance(processElbowDelta.FilledGlobalPosition()) > threshold {
+						resultElbowDelta.FilledGlobalPosition().Distance(processElbowDelta.FilledGlobalPosition()) > threshold ||
+						resultWristDelta.FilledGlobalPosition().Distance(processWristDelta.FilledGlobalPosition()) > threshold {
 						for _, boneName := range []string{
 							pmx.SHOULDER.StringFromDirection(direction),
 							pmx.ARM.StringFromDirection(direction),
@@ -385,18 +502,19 @@ func updateShoulderResultMotion(
 						}
 					}
 
-					if fIndex > 0 && fIndex%1000 == 0 {
+					if fIndex > 0 && int(iFrame/1000) > prevLog {
 						mlog.I(mi18n.T("肩補正04", map[string]interface{}{
 							"No":          sizingSet.Index + 1,
 							"IterIndex":   fmt.Sprintf("%04d", iFrame),
 							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
+						prevLog = int(iFrame / 1000)
 					}
 				}
-			}
 
-			incrementCompletedCount()
+				incrementCompletedCount()
+			}
 
 			return nil
 		}, nil)

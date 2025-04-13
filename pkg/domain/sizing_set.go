@@ -160,7 +160,7 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	}
 
 	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {
-		processCount += 5
+		processCount += 8
 	}
 
 	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
@@ -438,16 +438,24 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
-		{"先左腕", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先左腕比率", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先左腕Y固定", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先左腕理想", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先左肩結果", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右腕", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右腕比率", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右腕Y固定", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右腕理想", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右肩結果", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"左腕先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左腕比率先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左腕Y固定先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左腕理想先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左手首先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左肩結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左腕結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左ひじ結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"左手首結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
+		{"右腕先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右腕比率先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右腕Y固定先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右腕理想先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右手首先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右肩結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右腕結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右ひじ結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		{"右手首結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
 		{"位元左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
 		{"位元右手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
 		{"位先左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
