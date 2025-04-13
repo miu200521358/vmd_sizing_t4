@@ -328,17 +328,17 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								},
 							},
 							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingArmTwistCheck,
-								Text:        mi18n.T("捩り補正"),
-								ToolTipText: mi18n.T("捩り補正説明"),
+								AssignTo:    &sizingState.SizingFingerStanceCheck,
+								Text:        mi18n.T("指スタンス補正"),
+								ToolTipText: mi18n.T("指スタンス補正説明"),
 								OnCheckStateChanged: func() {
 									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
-								AssignTo:    &sizingState.SizingFingerStanceCheck,
-								Text:        mi18n.T("指スタンス補正"),
-								ToolTipText: mi18n.T("指スタンス補正説明"),
+								AssignTo:    &sizingState.SizingArmTwistCheck,
+								Text:        mi18n.T("捩り補正"),
+								ToolTipText: mi18n.T("捩り補正説明"),
 								OnCheckStateChanged: func() {
 									changeSizingCheck(mWidgets.Window(), sizingState)
 								},
@@ -348,7 +348,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								Text:        mi18n.T("手首位置合わせ"),
 								ToolTipText: mi18n.T("手首位置合わせ説明"),
 								OnCheckStateChanged: func() {
-									changeSizingCheck(mWidgets.Window(), sizingState)
+									// changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
 							declarative.CheckBox{
