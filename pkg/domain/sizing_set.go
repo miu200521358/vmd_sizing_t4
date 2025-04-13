@@ -101,7 +101,7 @@ func (ss *SizingSet) CreateOutputModelPath() string {
 }
 
 func (ss *SizingSet) CreateOutputMotionPath() string {
-	if ss.OriginalMotionPath == "" {
+	if ss.OriginalMotionPath == "" || ss.SizingModelPath == "" {
 		return ""
 	}
 
@@ -354,6 +354,7 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 
 	// 出力パスを設定
 	ss.OutputModelPath = ss.CreateOutputModelPath()
+	ss.OutputMotionPath = ss.CreateOutputMotionPath()
 }
 
 func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.DisplaySlots) error {
