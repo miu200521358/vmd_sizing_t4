@@ -4,6 +4,7 @@ import (
 	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"miu200521358/vmd_sizing_t4/pkg/usecase"
 	"path/filepath"
+	"strconv"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
@@ -146,9 +147,18 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 
 			for index := range sizingState.SizingSets {
 				sizingState.ChangeCurrentAction(index)
-				sizingState.OriginalMotionPicker.SetPath(sizingState.SizingSets[index].OriginalMotionPath)
-				sizingState.OriginalModelPicker.SetPath(sizingState.SizingSets[index].OriginalModelPath)
-				sizingState.SizingModelPicker.SetPath(sizingState.SizingSets[index].SizingModelPath)
+				sizingState.OriginalMotionPicker.SetForcePath(sizingState.SizingSets[index].OriginalMotionPath)
+				sizingState.OriginalModelPicker.SetForcePath(sizingState.SizingSets[index].OriginalModelPath)
+				sizingState.SizingModelPicker.SetForcePath(sizingState.SizingSets[index].SizingModelPath)
+
+				sizingState.SizingBasicCheck.SetChecked(sizingState.SizingSets[index].IsSizingLeg || sizingState.SizingSets[index].IsSizingArmStance)
+				sizingState.SizingUpperCheck.SetChecked(sizingState.SizingSets[index].IsSizingUpper)
+				sizingState.SizingShoulderCheck.SetChecked(sizingState.SizingSets[index].IsSizingShoulder)
+				sizingState.SizingFingerStanceCheck.SetChecked(sizingState.SizingSets[index].IsSizingFingerStance)
+				sizingState.SizingArmTwistCheck.SetChecked(sizingState.SizingSets[index].IsSizingArmTwist)
+				sizingState.SizingWristCheck.SetChecked(sizingState.SizingSets[index].IsSizingWrist)
+				sizingState.ShoulderWeightEdit.ChangeText(strconv.Itoa(sizingState.SizingSets[index].ShoulderWeight))
+				sizingState.ShoulderWeightSlider.ChangeValue(sizingState.SizingSets[index].ShoulderWeight)
 			}
 
 			sizingState.SetCurrentIndex(0)
@@ -367,6 +377,43 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 						},
 					},
 					declarative.VSeparator{},
+					declarative.Composite{
+						Layout: declarative.Grid{Columns: 8},
+						Children: []declarative.Widget{
+							declarative.TextLabel{
+								Text: mi18n.T("肩の比重"),
+							},
+							declarative.TextEdit{
+								AssignTo: &sizingState.ShoulderWeightEdit,
+								OnTextChanged: func() {
+									if sizingState.ShoulderWeightEdit.Text() != "" {
+										weight, err := strconv.Atoi(sizingState.ShoulderWeightEdit.Text())
+										if err != nil {
+											sizingState.ShoulderWeightSlider.SetValue(0)
+											return
+										}
+										sizingState.ShoulderWeightSlider.SetValue(weight)
+									}
+								},
+								MinSize: declarative.Size{Width: 30, Height: 20},
+								MaxSize: declarative.Size{Width: 30, Height: 20},
+							},
+							declarative.TextLabel{
+								Text: "%",
+							},
+							declarative.Slider{
+								AssignTo:    &sizingState.ShoulderWeightSlider,
+								ToolTipText: mi18n.T("肩比重説明"),
+								OnValueChanged: func() {
+									sizingState.ShoulderWeightEdit.ChangeText(
+										strconv.Itoa(sizingState.ShoulderWeightSlider.Value()))
+									changeSizingCheck(mWidgets.Window(), sizingState)
+								},
+								ColumnSpan: 5,
+							},
+						},
+					},
+					declarative.VSeparator{},
 					sizingState.OutputMotionPicker.Widgets(),
 					sizingState.OutputModelPicker.Widgets(),
 				},
@@ -403,6 +450,7 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
 		sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
 		sizingSet.IsSizingWrist = sizingState.SizingWristCheck.Checked()
+		sizingSet.ShoulderWeight = sizingState.ShoulderWeightSlider.Value()
 
 		outputPath := sizingSet.CreateOutputMotionPath()
 		if outputPath != "" {

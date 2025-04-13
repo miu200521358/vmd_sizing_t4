@@ -54,6 +54,10 @@ type SizingSet struct {
 	CompletedSizingWrist        bool `json:"-"` // 手首補正完了フラグ
 	CompletedSizingReduction    bool `json:"-"` // 不要キー削除補正完了フラグ
 
+	ShoulderWeight          int   `json:"shoulder_weight"` // 肩の比重
+	CompletedShoulderWeight int   `json:"-"`               // 補正完了時の肩の比重
+	DefaultShoulderWeights  []int `json:"-"`               // デフォルトの肩の比重(左右別)
+
 	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone,
 	originalUpperRootBone, originalUpperBone, originalUpper2Bone, originalNeckRootBone,
 	originalLegCenterBone, originalLeftLegIkParentBone, originalLeftLegIkBone,
@@ -355,6 +359,47 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 	// 出力パスを設定
 	ss.OutputModelPath = ss.CreateOutputModelPath()
 	ss.OutputMotionPath = ss.CreateOutputMotionPath()
+
+	// 肩の比重を計算する
+	ss.ShoulderWeight = ss.calculateShoulderWeight()
+}
+
+func (ss *SizingSet) calculateShoulderWeight() int {
+	if ss.SizingModel == nil {
+		return 0
+	}
+
+	// 肩の比重を計算する
+	neckRootBone, err := ss.SizingModel.Bones.GetNeckRoot()
+	if err != nil {
+		return 0
+	}
+
+	ss.DefaultShoulderWeights = make([]int, 2)
+
+	for i, direction := range []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT} {
+		armBone, err := ss.SizingModel.Bones.GetArm(direction)
+		if err != nil {
+			return 0
+		}
+
+		elbowBone, err := ss.SizingModel.Bones.GetElbow(direction)
+		if err != nil {
+			return 0
+		}
+
+		wristBone, err := ss.SizingModel.Bones.GetWrist(direction)
+		if err != nil {
+			return 0
+		}
+
+		shoulderLength := neckRootBone.Position.Distance(armBone.Position)
+		armLength := armBone.Position.Distance(elbowBone.Position) + elbowBone.Position.Distance(wristBone.Position)
+
+		ss.DefaultShoulderWeights[i] = int(shoulderLength / armLength * 100)
+	}
+
+	return (ss.DefaultShoulderWeights[0] + ss.DefaultShoulderWeights[1]) / 2
 }
 
 func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.DisplaySlots) error {
@@ -394,12 +439,14 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"先左腕", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"先左腕比率", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"先左腕Y固定", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先左腕理想", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先左肩", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先左肩結果", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先右腕", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"先右腕比率", rootBone.Index(), mmath.NewMVec3(), "肩02"},
+		{"先右腕Y固定", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先右腕理想", rootBone.Index(), mmath.NewMVec3(), "肩02"},
-		{"先右肩", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"先右肩結果", rootBone.Index(), mmath.NewMVec3(), "肩02"},
 		{"位元左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
 		{"位元右手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},

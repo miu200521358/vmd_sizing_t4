@@ -37,7 +37,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			!sizingSet.IsSizingArmStance && sizingSet.CompletedSizingArmStance ||
 			!sizingSet.IsSizingFingerStance && sizingSet.CompletedSizingFingerStance ||
 			!sizingSet.IsSizingArmTwist && sizingSet.CompletedSizingArmTwist ||
-			!sizingSet.IsSizingWrist && sizingSet.CompletedSizingWrist {
+			!sizingSet.IsSizingWrist && sizingSet.CompletedSizingWrist ||
+			sizingSet.ShoulderWeight != sizingSet.CompletedShoulderWeight {
 
 			// チェックを外したら読み直し
 			sizingSet.CompletedSizingLeg = false
@@ -137,7 +138,6 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				SizingShoulder, // 肩補正
 				SizingWrist,    // 手首位置合わせ
 			} {
-
 				if execResult, err := funcUsecase(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
@@ -291,7 +291,7 @@ func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 
 // getFrames 処理対象のフレームを取得する
 func getFrames(motion *vmd.VmdMotion, boneNames []string) []int {
-	frames := motion.BoneFrames.RegisteredIndexesByNames(boneNames)
+	frames := motion.BoneFrames.IndexesByNames(boneNames)
 	// TODO
 	// rangeFrames := mmath.IntRangesByStep(0, int(motion.MaxFrame()), 5)
 	// frames = append(frames, rangeFrames...)

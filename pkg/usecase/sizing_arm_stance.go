@@ -124,7 +124,7 @@ func updateStanceRotations(
 			}
 
 			bf.Rotation = rotations[iFrame]
-			sizingSet.OutputMotion.InsertRegisteredBoneFrame(boneName, bf)
+			sizingSet.OutputMotion.InsertBoneFrame(boneName, bf)
 
 			if frame > 0 && iFrame%1000 == 0 {
 				mlog.I(mi18n.T("腕指スタンス補正03", map[string]interface{}{

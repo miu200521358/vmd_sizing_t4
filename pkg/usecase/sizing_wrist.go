@@ -288,28 +288,28 @@ func calculateAdjustedWrist(
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = originalWristPositions[j][i]
-					motion.InsertRegisteredBoneFrame(fmt.Sprintf("位元%s手首", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("位元%s手首", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = sizingWristPositions[j][i]
-					motion.InsertRegisteredBoneFrame(fmt.Sprintf("位先%s手首", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("位先%s手首", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = sizingWristFromTrunkIdealPositions[j][i]
-					motion.InsertRegisteredBoneFrame(fmt.Sprintf("位先%s手首腹理", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("位先%s手首腹理", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = sizingWristFromNeckIdealPositions[j][i]
-					motion.InsertRegisteredBoneFrame(fmt.Sprintf("位先%s手首首理", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("位先%s手首首理", direction.String()), bf)
 				}
 				{
 					bf := vmd.NewBoneFrame(frame)
 					bf.Position = sizingWristIdealPositions[j][i]
 					bf.Rotation = sizingWristRotations[j][i]
-					motion.InsertRegisteredBoneFrame(fmt.Sprintf("位先%s手首理想", direction.String()), bf)
+					motion.InsertBoneFrame(fmt.Sprintf("位先%s手首理想", direction.String()), bf)
 				}
 			}
 		}
@@ -369,17 +369,17 @@ func updateWrist(
 			{
 				bf := sizingProcessMotion.BoneFrames.Get(pmx.ARM.StringFromDirection(direction)).Get(frame)
 				bf.Rotation = sizingArmRotations[j][i]
-				sizingProcessMotion.InsertRegisteredBoneFrame(pmx.ARM.StringFromDirection(direction), bf)
+				sizingProcessMotion.InsertBoneFrame(pmx.ARM.StringFromDirection(direction), bf)
 			}
 			{
 				bf := sizingProcessMotion.BoneFrames.Get(pmx.ELBOW.StringFromDirection(direction)).Get(frame)
 				bf.Rotation = sizingElbowRotations[j][i]
-				sizingProcessMotion.InsertRegisteredBoneFrame(pmx.ELBOW.StringFromDirection(direction), bf)
+				sizingProcessMotion.InsertBoneFrame(pmx.ELBOW.StringFromDirection(direction), bf)
 			}
 			{
 				bf := sizingProcessMotion.BoneFrames.Get(pmx.WRIST.StringFromDirection(direction)).Get(frame)
 				bf.Rotation = sizingWristRotations[j][i]
-				sizingProcessMotion.InsertRegisteredBoneFrame(pmx.WRIST.StringFromDirection(direction), bf)
+				sizingProcessMotion.InsertBoneFrame(pmx.WRIST.StringFromDirection(direction), bf)
 			}
 		}
 
@@ -467,7 +467,7 @@ func updateWristResultMotion(
 							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
 							resultBf.Rotation = processBf.FilledRotation().Copy()
-							outputMotion.InsertRegisteredBoneFrame(boneName, resultBf)
+							outputMotion.InsertBoneFrame(boneName, resultBf)
 						}
 					}
 

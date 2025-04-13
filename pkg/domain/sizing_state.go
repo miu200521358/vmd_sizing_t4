@@ -36,7 +36,8 @@ type SizingState struct {
 	SizingFingerStanceCheck *walk.CheckBox       // 指チェック
 	SizingArmTwistCheck     *walk.CheckBox       // 腕捩りチェック
 	SizingWristCheck        *walk.CheckBox       // 手首位置合わせチェック
-	SizingReductionCheck    *walk.CheckBox       // 間引きチェック
+	ShoulderWeightSlider    *walk.Slider         // 肩の重みスライダー
+	ShoulderWeightEdit      *walk.TextEdit       // 肩の重みエディット
 	Player                  *widget.MotionPlayer // モーションプレイヤー
 	SizingSets              []*SizingSet         `json:"sizing_sets"` // サイジングセット
 }
@@ -97,14 +98,14 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 
 	// サイジングオプションの情報を表示
 	ss.SizingBasicCheck.SetChecked(ss.CurrentSet().IsSizingLeg || ss.CurrentSet().IsSizingArmStance)
-	// ss.SizingLegCheck.SetChecked(ss.CurrentSet().IsSizingLeg)
 	ss.SizingUpperCheck.SetChecked(ss.CurrentSet().IsSizingUpper)
 	ss.SizingShoulderCheck.SetChecked(ss.CurrentSet().IsSizingShoulder)
-	// ss.SizingArmStanceCheck.SetChecked(ss.CurrentSet().IsSizingArmStance)
 	ss.SizingFingerStanceCheck.SetChecked(ss.CurrentSet().IsSizingFingerStance)
 	ss.SizingArmTwistCheck.SetChecked(ss.CurrentSet().IsSizingArmTwist)
-	// ss.SizingReductionCheck.SetChecked(ss.CurrentSet().IsSizingReduction)
 	ss.SizingWristCheck.SetChecked(ss.CurrentSet().IsSizingWrist)
+
+	ss.ShoulderWeightEdit.ChangeText(fmt.Sprintf("%d", ss.CurrentSet().ShoulderWeight))
+	ss.ShoulderWeightSlider.ChangeValue(ss.CurrentSet().ShoulderWeight)
 }
 
 func (ss *SizingState) ClearOptions() {
@@ -114,6 +115,8 @@ func (ss *SizingState) ClearOptions() {
 	ss.SizingFingerStanceCheck.SetChecked(false)
 	ss.SizingArmTwistCheck.SetChecked(false)
 	ss.SizingWristCheck.SetChecked(false)
+	ss.ShoulderWeightEdit.ChangeText("")
+	ss.ShoulderWeightSlider.SetValue(0)
 }
 
 func (ss *SizingState) SetCurrentIndex(index int) {
@@ -184,8 +187,9 @@ func (sizingState *SizingState) LoadSizingModel(
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
-	sizingState.OutputModelPicker.ChangePath(sizingState.CurrentSet().OutputModelPath)
-	sizingState.OutputMotionPicker.ChangePath(sizingState.CurrentSet().OutputMotionPath)
+	sizingState.OutputModelPicker.SetPath(sizingState.CurrentSet().OutputModelPath)
+	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
+	sizingState.ShoulderWeightSlider.ChangeValue(sizingState.CurrentSet().ShoulderWeight)
 }
 
 // LoadSizingMotion サイジングモーションを読み込む
@@ -201,7 +205,7 @@ func (sizingState *SizingState) LoadSizingMotion(
 		sizingState.Player.Reset(sizingState.CurrentSet().OriginalMotion.MaxFrame())
 	}
 
-	sizingState.OutputMotionPicker.ChangePath(sizingState.CurrentSet().OutputMotionPath)
+	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
 }
 
 // SetSizingEnabled サイジング有効無効設定
@@ -229,11 +233,12 @@ func (sizingState *SizingState) SetSizingOptionEnabled(enabled bool) {
 	sizingState.SaveButton.SetEnabled(enabled)
 
 	sizingState.SizingBasicCheck.SetEnabled(enabled)
-	// sizingState.SizingLegCheck.SetEnabled(enabled)
 	sizingState.SizingUpperCheck.SetEnabled(enabled)
 	sizingState.SizingShoulderCheck.SetEnabled(enabled)
-	// sizingState.SizingArmStanceCheck.SetEnabled(enabled)
 	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
 	sizingState.SizingArmTwistCheck.SetEnabled(enabled)
 	sizingState.SizingWristCheck.SetEnabled(enabled)
+
+	sizingState.ShoulderWeightEdit.SetEnabled(enabled)
+	sizingState.ShoulderWeightSlider.SetEnabled(enabled)
 }

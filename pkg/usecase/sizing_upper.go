@@ -137,7 +137,7 @@ func updateUpperResultMotion(
 					processBf := sizingProcessMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
 					resultBf := outputMotion.BoneFrames.Get(upperBone.Name()).Get(frame)
 					resultBf.Rotation = processBf.Rotation.Copy()
-					outputMotion.InsertRegisteredBoneFrame(upperBone.Name(), resultBf)
+					outputMotion.InsertBoneFrame(upperBone.Name(), resultBf)
 				}
 			}
 
@@ -168,12 +168,12 @@ func updateUpper(
 		frame := float32(iFrame)
 		upperBf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingUpperBone().Name()).Get(frame)
 		upperBf.Rotation = upperRotations[i]
-		sizingProcessMotion.InsertRegisteredBoneFrame(sizingSet.SizingUpperBone().Name(), upperBf)
+		sizingProcessMotion.InsertBoneFrame(sizingSet.SizingUpperBone().Name(), upperBf)
 
 		if sizingSet.SizingUpper2VanillaBone() != nil {
 			upper2Bf := sizingProcessMotion.BoneFrames.Get(sizingSet.SizingUpper2Bone().Name()).Get(frame)
 			upper2Bf.Rotation = upper2Rotations[i]
-			sizingProcessMotion.InsertRegisteredBoneFrame(sizingSet.SizingUpper2Bone().Name(), upper2Bf)
+			sizingProcessMotion.InsertBoneFrame(sizingSet.SizingUpper2Bone().Name(), upper2Bf)
 		}
 
 		{
@@ -183,7 +183,7 @@ func updateUpper(
 			} else {
 				neckBf.Rotation = upperCancelRotations[i].Muled(neckBf.FilledRotation())
 			}
-			sizingProcessMotion.InsertRegisteredBoneFrame(sizingSet.SizingNeckRootBone().Name(), neckBf)
+			sizingProcessMotion.InsertBoneFrame(sizingSet.SizingNeckRootBone().Name(), neckBf)
 		}
 		{
 			for _, direction := range directions {
@@ -193,7 +193,7 @@ func updateUpper(
 				} else {
 					armBf.Rotation = upperCancelRotations[i].Muled(armBf.FilledRotation())
 				}
-				sizingProcessMotion.InsertRegisteredBoneFrame(pmx.ARM.StringFromDirection(direction), armBf)
+				sizingProcessMotion.InsertBoneFrame(pmx.ARM.StringFromDirection(direction), armBf)
 			}
 		}
 
@@ -367,17 +367,17 @@ func calculateAdjustedUpper(
 			{
 				bf := vmd.NewBoneFrame(frame)
 				bf.Position = idealNeckRootPositions[i]
-				motion.InsertRegisteredBoneFrame("上半身IK", bf)
+				motion.InsertBoneFrame("上半身IK", bf)
 			}
 			{
 				bf := vmd.NewBoneFrame(frame)
 				bf.Position = actualUpperRootPositions[i]
-				motion.InsertRegisteredBoneFrame("上半身Root", bf)
+				motion.InsertBoneFrame("上半身Root", bf)
 			}
 			{
 				bf := vmd.NewBoneFrame(frame)
 				bf.Position = actualNeckRootPositions[i]
-				motion.InsertRegisteredBoneFrame("上半身Tgt", bf)
+				motion.InsertBoneFrame("上半身Tgt", bf)
 			}
 		}
 
