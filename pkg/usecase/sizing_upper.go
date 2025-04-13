@@ -336,7 +336,7 @@ func calculateAdjustedUpper(
 				actualNeckRootPositions[index] = sizingAllDeltas[index].Bones.GetByName(pmx.NECK_ROOT.String()).FilledGlobalPosition()
 			}
 
-			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false)
+			sizingUpperDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), upperIkBone, sizingGlobalUpperPosition, trunk_upper_bone_names, false, false)
 
 			upperRotations[index] = sizingUpperDeltas.Bones.GetByName(pmx.UPPER.String()).FilledFrameRotation()
 

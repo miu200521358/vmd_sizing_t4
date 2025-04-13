@@ -303,7 +303,7 @@ func calculateAdjustedLower(
 			// 先の体幹中心から見た、先の足中心のグローバル位置
 			sizingLegCenterIdealPosition := sizingTrunkRootDelta.FilledGlobalMatrix().MulVec3(sizingLegCenterIdealLocalPosition)
 
-			sizingLowerDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), lowerIkBone, sizingLegCenterIdealPosition, trunk_lower_bone_names, false)
+			sizingLowerDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion, sizingAllDeltas[index], float32(data), lowerIkBone, sizingLegCenterIdealPosition, trunk_lower_bone_names, false, false)
 
 			lowerRotations[index] = sizingLowerDeltas.Bones.GetByName(pmx.LOWER.String()).FilledFrameRotation()
 
@@ -1187,7 +1187,7 @@ func calculateAdjustedLegFK(
 
 			sizingLeftLegDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingOffAllDeltas[index], float32(data), sizingSet.SizingLeftLegIkBone(),
-				leftLegAnkleIdealPositions[index], leg_direction_bone_names[0], false)
+				leftLegAnkleIdealPositions[index], leg_direction_bone_names[0], false, false)
 
 			leftLegRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.LEG.Left()).FilledFrameRotation()
 			leftKneeRotations[index] = sizingLeftLegDeltas.Bones.GetByName(pmx.KNEE.Left()).FilledFrameRotation()
@@ -1195,7 +1195,7 @@ func calculateAdjustedLegFK(
 
 			sizingRightLegDeltas := deform.DeformIk(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingOffAllDeltas[index], float32(data), sizingSet.SizingRightLegIkBone(),
-				rightLegAnkleIdealPositions[index], leg_direction_bone_names[1], false)
+				rightLegAnkleIdealPositions[index], leg_direction_bone_names[1], false, false)
 
 			rightLegRotations[index] = sizingRightLegDeltas.Bones.GetByName(pmx.LEG.Right()).FilledFrameRotation()
 			rightKneeRotations[index] = sizingRightLegDeltas.Bones.GetByName(pmx.KNEE.Right()).FilledFrameRotation()
