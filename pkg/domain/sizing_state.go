@@ -189,6 +189,7 @@ func (sizingState *SizingState) LoadSizingModel(
 
 	sizingState.OutputModelPicker.SetPath(sizingState.CurrentSet().OutputModelPath)
 	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
+	sizingState.ShoulderWeightEdit.ChangeText(fmt.Sprintf("%d", sizingState.CurrentSet().ShoulderWeight))
 	sizingState.ShoulderWeightSlider.ChangeValue(sizingState.CurrentSet().ShoulderWeight)
 }
 
