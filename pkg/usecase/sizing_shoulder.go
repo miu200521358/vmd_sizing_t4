@@ -254,18 +254,18 @@ func calculateAdjustedShoulder(
 
 				// 腕のローカルYはひじだけ上げる動作があり得るので、元々の腕Yと比率で求めた腕Yの中間を取る
 				// 肩だけ上げている場合、t がマイナスになるので、元々の腕Yになる
+				armX := mmath.Lerp(armLocalPositionFromNeckRoot.X, armLocalPositionFromRatio.X,
+					armLocalPositionFromNeckRoot.X/armRatios[i].X/elbowLocalPositionFromNeckRoot.X)
 				armY := mmath.Lerp(armLocalPositionFromNeckRoot.Y, armLocalPositionFromRatio.Y,
-					armLocalPositionFromNeckRoot.Y*3/elbowLocalPositionFromNeckRoot.Y)
+					armLocalPositionFromNeckRoot.Y/armRatios[i].Y/elbowLocalPositionFromNeckRoot.Y)
+				armZ := mmath.Lerp(armLocalPositionFromNeckRoot.Z, armLocalPositionFromRatio.Z,
+					armLocalPositionFromNeckRoot.Z/armRatios[i].Z/elbowLocalPositionFromNeckRoot.Z)
 
 				// 腕Yが決まった、腕のローカル位置
-				armLocalPositionFixY := &mmath.MVec3{
-					X: armLocalPositionFromRatio.X,
-					Y: armY,
-					Z: armLocalPositionFromRatio.Z,
-				}
+				armLocalPositionFixY := &mmath.MVec3{X: armX, Y: armY, Z: armZ}
 
 				// 肩のウェイトに合わせて移動量を決める
-				sizingArmLocalPosition := armLocalInitialPosition.Lerp(armLocalPositionFixY, shoulderWeight)
+				sizingArmLocalPosition := armLocalInitialPosition.Slerp(armLocalPositionFixY, shoulderWeight)
 
 				// 元の首根元に先の腕のローカル位置を合わせたグローバル位置
 				sizingArmIdealPosition := sizingNeckRootDelta.FilledGlobalMatrix().MulVec3(sizingArmLocalPosition)
