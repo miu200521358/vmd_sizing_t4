@@ -388,13 +388,8 @@ func (ss *SizingSet) calculateShoulderWeight() int {
 			return 0
 		}
 
-		wristBone, err := ss.SizingModel.Bones.GetWrist(direction)
-		if err != nil {
-			return 0
-		}
-
 		shoulderLength := neckRootBone.Position.Distance(armBone.Position)
-		armLength := armBone.Position.Distance(elbowBone.Position) + elbowBone.Position.Distance(wristBone.Position)
+		armLength := armBone.Position.Distance(elbowBone.Position)
 
 		ss.DefaultShoulderWeights[i] = int(shoulderLength / armLength * 100)
 	}
