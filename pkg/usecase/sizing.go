@@ -233,14 +233,17 @@ func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 		sizingLeftKnee, _ := sizingModel.Bones.GetKnee(pmx.BONE_DIRECTION_LEFT)
 		sizingLeftAnkle, _ := sizingModel.Bones.GetAnkle(pmx.BONE_DIRECTION_LEFT)
 		sizingLeftLegIK, _ := sizingModel.Bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
+		sizingTrunkRoot, _ := sizingModel.Bones.GetTrunkRoot()
 		originalNeckRoot, _ := originalModel.Bones.GetNeckRoot()
 		originalLeftLeg, _ := originalModel.Bones.GetLeg(pmx.BONE_DIRECTION_LEFT)
 		originalLeftKnee, _ := originalModel.Bones.GetKnee(pmx.BONE_DIRECTION_LEFT)
 		originalLeftAnkle, _ := originalModel.Bones.GetAnkle(pmx.BONE_DIRECTION_LEFT)
 		originalLeftLegIK, _ := originalModel.Bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
+		originalTrunkRoot, _ := originalModel.Bones.GetTrunkRoot()
 
 		if sizingLeftLeg == nil || sizingLeftKnee == nil || sizingLeftAnkle == nil || sizingLeftLegIK == nil ||
-			originalLeftLeg == nil || originalLeftKnee == nil || originalLeftAnkle == nil || originalLeftLegIK == nil {
+			originalLeftLeg == nil || originalLeftKnee == nil || originalLeftAnkle == nil || originalLeftLegIK == nil ||
+			sizingTrunkRoot == nil || originalTrunkRoot == nil {
 			if sizingNeckRoot != nil && originalNeckRoot != nil {
 				// 首根元までの長さ比率
 				neckLengthRatio := sizingNeckRoot.Position.Y / originalNeckRoot.Position.Y
@@ -256,14 +259,14 @@ func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 				sizingLeftKnee.Position.Distance(sizingLeftAnkle.Position)) /
 				(originalLeftLeg.Position.Distance(originalLeftKnee.Position) +
 					originalLeftKnee.Position.Distance(originalLeftAnkle.Position))
-			// 首根元までの長さ比率
-			neckLengthRatio := sizingNeckRoot.Position.Y / originalNeckRoot.Position.Y
+			// 体幹中心までの長さ比率
+			legCenterRatio := sizingTrunkRoot.Position.Y / originalTrunkRoot.Position.Y
 
 			// // 足の長さ比率(Y)
 			// legHeightRatio := sizingLeftLeg.Position.Distance(sizingLeftAnkle.Position) /
 			// 	originalLeftLeg.Position.Distance(originalLeftAnkle.Position)
 
-			scales[i] = &mmath.MVec3{X: legLengthRatio, Y: neckLengthRatio, Z: legLengthRatio}
+			scales[i] = &mmath.MVec3{X: legLengthRatio, Y: legCenterRatio, Z: legLengthRatio}
 			meanXZScale += legLengthRatio
 		}
 	}
