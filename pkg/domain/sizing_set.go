@@ -57,6 +57,8 @@ type SizingSet struct {
 	ShoulderWeight          int   `json:"shoulder_weight"` // 肩の比重
 	CompletedShoulderWeight int   `json:"-"`               // 補正完了時の肩の比重
 	DefaultShoulderWeights  []int `json:"-"`               // デフォルトの肩の比重(左右別)
+	// OriginalGravityVolumes  map[string]float64 `json:"-"`               // 元モデルの重心体積
+	// SizingGravityVolumes    map[string]float64 `json:"-"`               // サイジング先モデルの重心体積
 
 	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone,
 	originalUpperRootBone, originalUpperBone, originalUpper2Bone, originalNeckRootBone,
@@ -362,6 +364,10 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 
 	// 肩の比重を計算する
 	ss.ShoulderWeight = ss.calculateShoulderWeight()
+
+	// // 重心体積を計算する
+	// ss.OriginalGravityVolumes = calculateGravityVolume(ss.OriginalConfigModel)
+	// ss.SizingGravityVolumes = calculateGravityVolume(ss.SizingConfigModel)
 }
 
 func (ss *SizingSet) calculateShoulderWeight() int {
@@ -397,6 +403,141 @@ func (ss *SizingSet) calculateShoulderWeight() int {
 	return (ss.DefaultShoulderWeights[0] + ss.DefaultShoulderWeights[1]) / 2
 }
 
+// func calculateGravityVolume(model *pmx.PmxModel) (gravityVolumes map[string]float64) {
+// 	volumes := make(map[string]float64)
+// 	gravityVolumes = make(map[string]float64)
+
+// 	// 上半身根元
+// 	upperRootBone, _ := model.Bones.GetUpperRoot()
+// 	upperRootPosition := upperRootBone.Position
+
+// 	// 腕ボーンの幅
+// 	leftArmBone, _ := model.Bones.GetArm(pmx.BONE_DIRECTION_LEFT)
+// 	rightArmBone, _ := model.Bones.GetArm(pmx.BONE_DIRECTION_RIGHT)
+// 	leftArmPosition := leftArmBone.Position
+// 	rightArmPosition := rightArmBone.Position
+
+// 	// 腕の幅
+// 	armWidth := math.Abs(leftArmPosition.X - rightArmPosition.X)
+
+// 	// 上半身の体積
+// 	volumes[upperRootBone.Name()] =
+// 		math.Abs(armWidth) * // 腕の幅
+// 			math.Abs(mmath.Mean([]float64{leftArmPosition.Y, rightArmPosition.Y})-upperRootPosition.Y) * // 上半身の高さ
+// 			math.Abs(armWidth*0.5) // 腕の幅の半分を上半死の厚みとする
+
+// 	// --------------
+
+// 	// 下半身根元
+// 	lowerRootBone, _ := model.Bones.GetLowerRoot()
+// 	lowerRootPosition := lowerRootBone.Position
+
+// 	// 足ボーンの幅
+// 	leftLegBone, _ := model.Bones.GetLeg(pmx.BONE_DIRECTION_LEFT)
+// 	rightLegBone, _ := model.Bones.GetLeg(pmx.BONE_DIRECTION_RIGHT)
+// 	leftLegPosition := leftLegBone.Position
+// 	rightLegPosition := rightLegBone.Position
+
+// 	// 足の幅
+// 	legWidth := math.Abs(leftLegPosition.X - rightLegPosition.X)
+
+// 	// 下半身の体積
+// 	volumes[lowerRootBone.Name()] =
+// 		math.Abs(legWidth) * // 足の幅
+// 			math.Abs(mmath.Mean([]float64{leftLegPosition.Y, rightLegPosition.Y})-lowerRootPosition.Y) * // 下半身の高さ
+// 			math.Abs(legWidth*0.5) // 足の幅の半分を下半身の厚みとする
+
+// 	// --------------
+
+// 	// 頭の体積
+
+// 	neckRootBone, _ := model.Bones.GetNeckRoot()
+// 	neckRootPosition := neckRootBone.Position
+
+// 	leftEyeBone, _ := model.Bones.GetEye(pmx.BONE_DIRECTION_LEFT)
+// 	rightEyeBone, _ := model.Bones.GetEye(pmx.BONE_DIRECTION_RIGHT)
+// 	var eyeY float64
+// 	if leftEyeBone != nil {
+// 		eyeY = leftEyeBone.Position.Y
+// 	}
+// 	if rightEyeBone != nil {
+// 		eyeY = rightEyeBone.Position.Y
+// 	}
+
+// 	if eyeY > 0 {
+// 		// 首根元から目の高さの半分を半径とする球体の体積
+// 		headRadius := math.Abs(eyeY-neckRootPosition.Y) * 0.5
+// 		volumes[neckRootBone.Name()] = (4.0 / 3.0) * math.Pi * math.Pow(headRadius, 3) // 球体の体積
+// 	}
+
+// 	// --------------
+
+// 	for _, direction := range []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT} {
+// 		// 腕の体積
+// 		armBone, _ := model.Bones.GetArm(direction)
+// 		elbowBone, _ := model.Bones.GetElbow(direction)
+// 		if armBone != nil && elbowBone != nil {
+// 			// 腕の幅の0.25倍を腕の厚みとする
+// 			armRadius := armWidth * 0.25
+// 			// 腕からひじまでの長さの円柱の体積
+// 			armLength := armBone.Position.Distance(elbowBone.Position)
+// 			volumes[armBone.Name()] = math.Pi * math.Pow(armRadius, 2) * armLength // 円柱の体積
+// 		}
+
+// 		// ひじの体積
+// 		wristBone, _ := model.Bones.GetWrist(direction)
+// 		if elbowBone != nil && wristBone != nil {
+// 			// 腕の幅の0.2倍をひじの厚みとする
+// 			elbowRadius := armWidth * 0.2
+// 			// ひじから手首までの長さの円柱の体積
+// 			elbowLength := elbowBone.Position.Distance(wristBone.Position)
+// 			volumes[elbowBone.Name()] = math.Pi * math.Pow(elbowRadius, 2) * elbowLength // 円柱の体積
+
+// 			// 手首の体積
+// 			handLength := elbowLength * 0.5
+// 			volumes[wristBone.Name()] = (4.0 / 3.0) * math.Pi * math.Pow(handLength, 3) // 球体の体積
+// 		}
+
+// 		// 足の体積
+// 		legBone, _ := model.Bones.GetLeg(direction)
+// 		kneeBone, _ := model.Bones.GetKnee(direction)
+// 		if legBone != nil && kneeBone != nil {
+// 			// 足の幅の0.35倍を足の厚みとする
+// 			legRadius := legWidth * 0.35
+// 			// 足からひざまでの長さの円柱の体積
+// 			legLength := legBone.Position.Distance(kneeBone.Position)
+// 			volumes[legBone.Name()] = math.Pi * math.Pow(legRadius, 2) * legLength // 円柱の体積
+// 		}
+
+// 		// ひざの体積
+// 		ankleBone, _ := model.Bones.GetAnkle(direction)
+// 		toeBone, _ := model.Bones.GetIkTarget(pmx.TOE_IK.StringFromDirection(direction))
+// 		if kneeBone != nil && ankleBone != nil {
+// 			// 足の幅の0.25倍をひざの厚みとする
+// 			kneeRadius := legWidth * 0.25
+// 			// ひざから足首までの長さの円柱の体積
+// 			kneeLength := kneeBone.Position.Distance(ankleBone.Position)
+// 			volumes[kneeBone.Name()] = math.Pi * math.Pow(kneeRadius, 2) * kneeLength // 円柱の体積
+
+// 			// 足首(つま先までの長さの藩部の球体)
+// 			toeLength := ankleBone.Position.Distance(toeBone.Position) * 0.5
+// 			volumes[ankleBone.Name()] = (4.0 / 3.0) * math.Pi * math.Pow(toeLength, 3) // 球体の体積
+// 		}
+// 	}
+
+// 	totalVolume := 0.0
+// 	for _, v := range volumes {
+// 		totalVolume += v
+// 	}
+
+// 	for b, v := range volumes {
+// 		gravityVolumes[b] = v / totalVolume
+// 		mlog.D("重心体積[%s] %.5f -> (%.5f)", b, v, v/totalVolume)
+// 	}
+
+// 	return gravityVolumes
+// }
+
 func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.DisplaySlots) error {
 	rootBone, _ := bones.GetRoot()
 	centerBone, _ := bones.GetCenter()
@@ -406,10 +547,10 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 	for _, v := range [][]any{
 		{"先足中心", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先理想足中心", rootBone.Index(), mmath.NewMVec3(), "足02"},
-		{"元重心", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先重心", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"理想重心", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"重心センター", centerBone.ParentIndex, centerBone.Position, "足04"},
+		{"元体幹中心", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"先体幹中心", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"先理想体幹中心", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"先センター", centerBone.ParentIndex, centerBone.Position, "足04"},
 		{"左足IK補正前", rootBone.Index(), mmath.NewMVec3(), "足06_Y補正"},
 		{"左足IK理想", rootBone.Index(), mmath.NewMVec3(), "足06_Y補正"},
 		{"左IK親初期", rootBone.Index(), mmath.NewMVec3(), "足06_Y補正"},
@@ -532,7 +673,9 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 								!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右")) ||
 								(strings.Contains(bone.Name(), "下") && !strings.Contains(b.Name(), "上") &&
 									!strings.Contains(b.Name(), "左") && !strings.Contains(b.Name(), "右")) ||
-								(bone.Name() == pmx.NECK_ROOT.String() || bone.Name() == pmx.LEG_CENTER.String())) {
+								(bone.Name() == pmx.NECK_ROOT.String() ||
+									bone.Name() == pmx.LEG_CENTER.String() ||
+									bone.Name() == pmx.TRUNK_ROOT.String())) {
 							b.ParentIndex = bone.Index()
 							return true
 						}
