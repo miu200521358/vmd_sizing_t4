@@ -38,8 +38,6 @@ func SizingArmFingerStance(
 		return false, err
 	}
 
-	incrementCompletedCount()
-
 	if sizingSet.IsSizingArmStance {
 		sizingSet.CompletedSizingArmStance = true
 	}
@@ -142,6 +140,8 @@ func updateStanceRotations(
 	if mlog.IsDebug() {
 		outputVerboseMotion("足10", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
 	}
+
+	incrementCompletedCount()
 
 	return nil
 }

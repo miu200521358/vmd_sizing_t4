@@ -92,7 +92,9 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 			incrementCompletedCount := func() {
 				atomic.AddInt32(&completedProcessCount, 1)
-				cw.ProgressBar().Increment()
+				cw.Synchronize(func() {
+					cw.ProgressBar().Increment()
+				})
 			}
 
 			// 腕指スタンス補正

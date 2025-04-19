@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"sync"
 
@@ -153,28 +154,30 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 		return 0
 	}
 
+	maxFrameCount := int(math.Floor(float64(ss.OutputMotion.MaxFrame() / 1000.0)))
+
 	if ss.IsSizingLeg && !ss.CompletedSizingLeg {
-		processCount += 16
+		processCount += 14 + maxFrameCount*2*2
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
-		processCount += 8
+		processCount += 4 + maxFrameCount*2
 	}
 
 	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {
-		processCount += 8
+		processCount += 3 + maxFrameCount*2*2
 	}
 
 	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
-		processCount += 4
+		processCount += 3
 	}
 
 	if ss.IsSizingFingerStance && !ss.CompletedSizingFingerStance {
-		processCount += 4
+		processCount += 3
 	}
 
 	if ss.IsSizingWrist && !ss.CompletedSizingWrist {
-		processCount += 4
+		processCount += 0
 	}
 
 	if ss.IsSizingArmTwist && !ss.CompletedSizingArmTwist {
@@ -364,6 +367,7 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 
 	// 肩の比重を計算する
 	ss.ShoulderWeight = ss.calculateShoulderWeight()
+	ss.CompletedShoulderWeight = ss.ShoulderWeight
 
 	// // 重心体積を計算する
 	// ss.OriginalGravityVolumes = calculateGravityVolume(ss.OriginalConfigModel)

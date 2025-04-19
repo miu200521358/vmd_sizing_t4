@@ -49,14 +49,10 @@ func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCo
 		return false, err
 	}
 
-	incrementCompletedCount()
-
 	if err := updateShoulderResultMotion(sizingSet, allFrames, blockSize, sizingProcessMotion,
 		incrementCompletedCount); err != nil {
 		return false, err
 	}
-
-	incrementCompletedCount()
 
 	sizingSet.CompletedSizingShoulder = true
 	sizingSet.CompletedShoulderWeight = sizingSet.ShoulderWeight
@@ -388,6 +384,8 @@ func calculateAdjustedShoulder(
 	// 肩回転をサイジング先モーションに反映
 	updateShoulder(sizingSet, allFrames, sizingProcessMotion, shoulderResultRotations, armResultRotations)
 
+	incrementCompletedCount()
+
 	return nil
 }
 
@@ -510,10 +508,10 @@ func updateShoulderResultMotion(
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
 						prevLog = int(iFrame / 1000)
+
+						incrementCompletedCount()
 					}
 				}
-
-				incrementCompletedCount()
 			}
 
 			return nil

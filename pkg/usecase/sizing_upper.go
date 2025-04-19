@@ -62,8 +62,6 @@ func SizingUpper(
 		return false, err
 	}
 
-	incrementCompletedCount()
-
 	// sizingSet.OutputMotion = sizingProcessMotion
 	// 足補正処理の結果をサイジング先モーションに反映
 	if err = updateUpperResultMotion(sizingSet, allFrames, blockSize, sizingProcessMotion, incrementCompletedCount); err != nil {
@@ -302,6 +300,8 @@ func calculateAdjustedUpper(
 		outputVerboseMotion("上半身02", sizingSet.OutputMotionPath, motion)
 	}
 
+	incrementCompletedCount()
+
 	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)
 
 	incrementCompletedCount()
@@ -384,9 +384,9 @@ func updateUpperResultMotion(
 					"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
 					"FramesIndex": tIndex + 1}))
 				prevLog = int(iFrame / 1000)
-			}
 
-			incrementCompletedCount()
+				incrementCompletedCount()
+			}
 		}
 	}
 

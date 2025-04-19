@@ -482,11 +482,11 @@ func updateWristResultMotion(
 							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
+
+						incrementCompletedCount()
 					}
 				}
 			}
-
-			incrementCompletedCount()
 
 			return nil
 		}, nil)
