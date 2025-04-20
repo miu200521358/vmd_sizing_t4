@@ -117,7 +117,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			}
 
 			// 下半身・足補正
-			if execResult, err := SizingLeg(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+			if execResult, err := NewSizingLegUsecase().Exec(sizingSet, scales[sizingSet.Index], len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 				errorChan <- err
 				return
 			} else {
@@ -257,19 +257,15 @@ func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 			}
 		} else {
 			// 足の長さ比率(XZ)
-			legLengthRatio := (sizingLeftLeg.Position.Distance(sizingLeftKnee.Position) +
+			legLengthScale := (sizingLeftLeg.Position.Distance(sizingLeftKnee.Position) +
 				sizingLeftKnee.Position.Distance(sizingLeftAnkle.Position)) /
 				(originalLeftLeg.Position.Distance(originalLeftKnee.Position) +
 					originalLeftKnee.Position.Distance(originalLeftAnkle.Position))
 			// 体幹中心までの長さ比率
-			legCenterRatio := sizingTrunkRoot.Position.Y / originalTrunkRoot.Position.Y
+			trunkRootScale := sizingTrunkRoot.Position.Y / originalTrunkRoot.Position.Y
 
-			// // 足の長さ比率(Y)
-			// legHeightRatio := sizingLeftLeg.Position.Distance(sizingLeftAnkle.Position) /
-			// 	originalLeftLeg.Position.Distance(originalLeftAnkle.Position)
-
-			scales[i] = &mmath.MVec3{X: legLengthRatio, Y: legCenterRatio, Z: legLengthRatio}
-			meanXZScale += legLengthRatio
+			scales[i] = &mmath.MVec3{X: legLengthScale, Y: trunkRootScale, Z: legLengthScale}
+			meanXZScale += legLengthScale
 		}
 	}
 
@@ -351,6 +347,10 @@ func computeVmdDeltas(
 	return allDeltas, err
 }
 
+type ISizingUsecase interface {
+	Exec(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error)
+}
+
 // ログはCPUのサイズに応じて可変でブロッキングして出力する
 var log_block_size = runtime.NumCPU() * 50
 
@@ -360,18 +360,19 @@ var directions = []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION
 // 体幹下部ボーン名
 var trunk_lower_bone_names = []string{
 	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
-	pmx.LOWER_ROOT.String(), pmx.LOWER.String(), pmx.LEG_CENTER.String(), pmx.LEG.Left(), pmx.LEG.Right()}
+	pmx.LOWER_ROOT.String(), pmx.LOWER.String(), pmx.LEG_CENTER.String(), pmx.LEG_ROOT.Left(), pmx.LEG_ROOT.Right(),
+	pmx.LEG.Left(), pmx.LEG.Right()}
 
 // 足関連ボーン名（左右別）
 var leg_direction_bone_names = [][]string{
-	{pmx.LEG.Left(), pmx.KNEE.Left(), pmx.HEEL.Left(), pmx.ANKLE.Left(), pmx.TOE_T.Left(), pmx.TOE_P.Left(),
-		pmx.TOE_C.Left(), pmx.LEG_D.Left(), pmx.KNEE_D.Left(), pmx.HEEL_D.Left(), pmx.ANKLE_D.Left(),
-		pmx.TOE_T_D.Left(), pmx.TOE_P_D.Left(), pmx.TOE_C_D.Left(), pmx.TOE_EX.Left(),
-		pmx.LEG_IK_PARENT.Left(), pmx.LEG_IK.Left(), pmx.TOE_IK.Left()},
-	{pmx.LEG.Right(), pmx.KNEE.Right(), pmx.HEEL.Right(), pmx.ANKLE.Right(), pmx.TOE_T.Right(), pmx.TOE_P.Right(),
-		pmx.TOE_C.Right(), pmx.LEG_D.Right(), pmx.KNEE_D.Right(), pmx.HEEL_D.Right(), pmx.ANKLE_D.Right(),
-		pmx.TOE_T_D.Right(), pmx.TOE_P_D.Right(), pmx.TOE_C_D.Right(), pmx.TOE_EX.Right(),
-		pmx.LEG_IK_PARENT.Right(), pmx.LEG_IK.Right(), pmx.TOE_IK.Right()},
+	{pmx.LEG.Left(), pmx.KNEE.Left(), pmx.HEEL.Left(), pmx.ANKLE.Left(), pmx.ANKLE_GROUND.Left(),
+		pmx.TOE_T.Left(), pmx.TOE_P.Left(), pmx.TOE_C.Left(), pmx.LEG_D.Left(), pmx.KNEE_D.Left(),
+		pmx.HEEL_D.Left(), pmx.ANKLE_D.Left(), pmx.ANKLE_D_GROUND.Left(), pmx.TOE_T_D.Left(), pmx.TOE_P_D.Left(),
+		pmx.TOE_C_D.Left(), pmx.TOE_EX.Left(), pmx.LEG_IK_PARENT.Left(), pmx.LEG_IK.Left(), pmx.TOE_IK.Left()},
+	{pmx.LEG.Right(), pmx.KNEE.Right(), pmx.HEEL.Right(), pmx.ANKLE.Right(), pmx.ANKLE_GROUND.Right(),
+		pmx.TOE_T.Right(), pmx.TOE_P.Right(), pmx.TOE_C.Right(), pmx.LEG_D.Right(), pmx.KNEE_D.Right(),
+		pmx.HEEL_D.Right(), pmx.ANKLE_D.Right(), pmx.ANKLE_D_GROUND.Right(), pmx.TOE_T_D.Right(), pmx.TOE_P_D.Right(),
+		pmx.TOE_C_D.Right(), pmx.TOE_EX.Right(), pmx.LEG_IK_PARENT.Right(), pmx.LEG_IK.Right(), pmx.TOE_IK.Right()},
 }
 
 // 足関連ボーン名（両方向）
