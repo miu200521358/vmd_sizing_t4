@@ -138,7 +138,7 @@ func updateStanceRotations(
 	}
 
 	if mlog.IsDebug() {
-		outputVerboseMotion("足10", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
+		outputVerboseMotion("腕01", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
 	}
 
 	incrementCompletedCount()
