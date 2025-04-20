@@ -4,1086 +4,421 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/domain/pmx"
 )
 
-func (ss *SizingSet) OriginalCenterBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
+// GetOrFetchBone は指定されたモデルからボーンを取得するためのヘルパー関数です
+// modelがnilの場合はnilを返します
+// cachedBoneがnilの場合、fetchFuncを使用してボーンを取得しキャッシュします
+func (ss *SizingSet) getOrFetchBone(model *pmx.PmxModel, cachedBone **pmx.Bone, boneName string) *pmx.Bone {
+	if model == nil {
 		return nil
 	}
 
-	if ss.originalCenterBone == nil {
-		ss.originalCenterBone, _ = ss.OriginalConfigModel.Bones.GetCenter()
+	if *cachedBone == nil {
+		*cachedBone, _ = model.Bones.GetByName(boneName)
 	}
 
-	return ss.originalCenterBone
+	return *cachedBone
+}
+
+func (ss *SizingSet) OriginalCenterBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalCenterBone, pmx.CENTER.String())
 }
 
 func (ss *SizingSet) OriginalGrooveBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalGrooveBone == nil {
-		ss.originalGrooveBone, _ = ss.OriginalConfigModel.Bones.GetGroove()
-	}
-
-	return ss.originalGrooveBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalGrooveBone, pmx.GROOVE.String())
 }
 
 func (ss *SizingSet) OriginalTrunkRootBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalTrunkRootBone == nil {
-		ss.originalTrunkRootBone, _ = ss.OriginalConfigModel.Bones.GetTrunkRoot()
-	}
-
-	return ss.originalTrunkRootBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalTrunkRootBone, pmx.TRUNK_ROOT.String())
 }
 
 func (ss *SizingSet) OriginalUpperRootBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalUpperRootBone == nil {
-		ss.originalUpperRootBone, _ = ss.OriginalConfigModel.Bones.GetUpperRoot()
-	}
-
-	return ss.originalUpperRootBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalUpperRootBone, pmx.UPPER_ROOT.String())
 }
 
 func (ss *SizingSet) OriginalUpperBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalUpperBone == nil {
-		ss.originalUpperBone, _ = ss.OriginalConfigModel.Bones.GetUpper()
-	}
-
-	return ss.originalUpperBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalUpperBone, pmx.UPPER.String())
 }
 
 func (ss *SizingSet) OriginalUpper2Bone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalUpper2Bone == nil {
-		ss.originalUpper2Bone, _ = ss.OriginalConfigModel.Bones.GetUpper2()
-	}
-
-	return ss.originalUpper2Bone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalUpper2Bone, pmx.UPPER2.String())
 }
 
 func (ss *SizingSet) OriginalNeckRootBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalNeckRootBone, pmx.NECK_ROOT.String())
+}
 
-	if ss.originalNeckRootBone == nil {
-		ss.originalNeckRootBone, _ = ss.OriginalConfigModel.Bones.GetNeckRoot()
-	}
+func (ss *SizingSet) OriginalNeckBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalNeckBone, pmx.NECK.String())
+}
 
-	return ss.originalNeckRootBone
+func (ss *SizingSet) OriginalHeadBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalHeadBone, pmx.HEAD.String())
 }
 
 func (ss *SizingSet) OriginalLowerBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLowerBone, pmx.LOWER.String())
+}
 
-	if ss.originalLowerBone == nil {
-		ss.originalLowerBone, _ = ss.OriginalConfigModel.Bones.GetLower()
-	}
-
-	return ss.originalLowerBone
+func (ss *SizingSet) OriginalLowerRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLowerRootBone, pmx.LOWER_ROOT.String())
 }
 
 func (ss *SizingSet) OriginalLegCenterBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLegCenterBone, pmx.LEG_CENTER.String())
+}
 
-	if ss.originalLegCenterBone == nil {
-		ss.originalLegCenterBone, _ = ss.OriginalConfigModel.Bones.GetLegCenter()
-	}
+func (ss *SizingSet) OriginalLeftLegRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftLegRootBone, pmx.LEG_ROOT.Left())
+}
 
-	return ss.originalLegCenterBone
+func (ss *SizingSet) OriginalRightLegRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightLegRootBone, pmx.LEG_ROOT.Right())
 }
 
 func (ss *SizingSet) OriginalLeftLegIkParentBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftLegIkParentBone == nil {
-		ss.originalLeftLegIkParentBone, _ = ss.OriginalConfigModel.Bones.GetLegIkParent(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftLegIkParentBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftLegIkParentBone, pmx.LEG_IK_PARENT.Left())
 }
 
 func (ss *SizingSet) OriginalLeftLegIkBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftLegIkBone == nil {
-		ss.originalLeftLegIkBone, _ = ss.OriginalConfigModel.Bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftLegIkBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftLegIkBone, pmx.LEG_IK.Left())
 }
 
 func (ss *SizingSet) OriginalLeftLegBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftLegBone == nil {
-		ss.originalLeftLegBone, _ = ss.OriginalConfigModel.Bones.GetLeg(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftLegBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftLegBone, pmx.LEG.Left())
 }
 
 func (ss *SizingSet) OriginalLeftKneeBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftKneeBone == nil {
-		ss.originalLeftKneeBone, _ = ss.OriginalConfigModel.Bones.GetKnee(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftKneeBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftKneeBone, pmx.KNEE.Left())
 }
 
 func (ss *SizingSet) OriginalLeftAnkleBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftAnkleBone, pmx.ANKLE.Left())
+}
 
-	if ss.originalLeftAnkleBone == nil {
-		ss.originalLeftAnkleBone, _ = ss.OriginalConfigModel.Bones.GetAnkle(pmx.BONE_DIRECTION_LEFT)
-	}
+func (ss *SizingSet) OriginalLeftAnkleDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftAnkleDBone, pmx.ANKLE_D.Left())
+}
 
-	return ss.originalLeftAnkleBone
+func (ss *SizingSet) OriginalLeftAnkleDGroundBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftAnkleDGroundBone, pmx.ANKLE_D_GROUND.Left())
 }
 
 func (ss *SizingSet) OriginalLeftToeIkBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftToeIkBone == nil {
-		ss.originalLeftToeIkBone, _ = ss.OriginalConfigModel.Bones.GetToeIk(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftToeIkBone
-}
-
-func (ss *SizingSet) OriginalLeftToeTailBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftToeTailBone == nil {
-		ss.originalLeftToeTailBone, _ = ss.OriginalConfigModel.Bones.GetToeT(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftToeTailBone
-}
-
-func (ss *SizingSet) OriginalLeftHeelBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftHeelBone == nil {
-		ss.originalLeftHeelBone, _ = ss.OriginalConfigModel.Bones.GetHeel(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftHeelBone
-}
-
-func (ss *SizingSet) OriginalLeftToePBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftToePBone == nil {
-		ss.originalLeftToePBone, _ = ss.OriginalConfigModel.Bones.GetToeP(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftToePBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftToeIkBone, pmx.TOE_IK.Left())
 }
 
 func (ss *SizingSet) OriginalLeftToeTailDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftToeTailDBone == nil {
-		ss.originalLeftToeTailDBone, _ = ss.OriginalConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftToeTailDBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftToeTailDBone, pmx.TOE_T_D.Left())
 }
 
 func (ss *SizingSet) OriginalLeftHeelDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftHeelDBone == nil {
-		ss.originalLeftHeelDBone, _ = ss.OriginalConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftHeelDBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftHeelDBone, pmx.HEEL_D.Left())
 }
 
 func (ss *SizingSet) OriginalLeftToePDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftToePDBone, pmx.TOE_P_D.Left())
+}
 
-	if ss.originalLeftToePDBone == nil {
-		ss.originalLeftToePDBone, _ = ss.OriginalConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftToePDBone
+func (ss *SizingSet) OriginalLeftToeCDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftToeCDBone, pmx.TOE_C_D.Left())
 }
 
 func (ss *SizingSet) OriginalRightLegIkParentBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightLegIkParentBone == nil {
-		ss.originalRightLegIkParentBone, _ = ss.OriginalConfigModel.Bones.GetLegIkParent(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightLegIkParentBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightLegIkParentBone, pmx.LEG_IK_PARENT.Right())
 }
 
 func (ss *SizingSet) OriginalRightLegIkBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightLegIkBone == nil {
-		ss.originalRightLegIkBone, _ = ss.OriginalConfigModel.Bones.GetLegIk(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightLegIkBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightLegIkBone, pmx.LEG_IK.Right())
 }
 
 func (ss *SizingSet) OriginalRightLegBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightLegBone == nil {
-		ss.originalRightLegBone, _ = ss.OriginalConfigModel.Bones.GetLeg(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightLegBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightLegBone, pmx.LEG.Right())
 }
 
 func (ss *SizingSet) OriginalRightKneeBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightKneeBone == nil {
-		ss.originalRightKneeBone, _ = ss.OriginalConfigModel.Bones.GetKnee(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightKneeBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightKneeBone, pmx.KNEE.Right())
 }
 
 func (ss *SizingSet) OriginalRightAnkleBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightAnkleBone, pmx.ANKLE.Right())
+}
 
-	if ss.originalRightAnkleBone == nil {
-		ss.originalRightAnkleBone, _ = ss.OriginalConfigModel.Bones.GetAnkle(pmx.BONE_DIRECTION_RIGHT)
-	}
+func (ss *SizingSet) OriginalRightAnkleDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightAnkleDBone, pmx.ANKLE_D.Right())
+}
 
-	return ss.originalRightAnkleBone
+func (ss *SizingSet) OriginalRightAnkleDGroundBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightAnkleDGroundBone, pmx.ANKLE_D_GROUND.Right())
 }
 
 func (ss *SizingSet) OriginalRightToeIkBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightToeIkBone == nil {
-		ss.originalRightToeIkBone, _ = ss.OriginalConfigModel.Bones.GetToeIk(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightToeIkBone
-}
-
-func (ss *SizingSet) OriginalRightToeTailBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightToeTailBone == nil {
-		ss.originalRightToeTailBone, _ = ss.OriginalConfigModel.Bones.GetToeT(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightToeTailBone
-}
-
-func (ss *SizingSet) OriginalRightHeelBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightHeelBone == nil {
-		ss.originalRightHeelBone, _ = ss.OriginalConfigModel.Bones.GetHeel(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightHeelBone
-}
-
-func (ss *SizingSet) OriginalRightToePBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightToePBone == nil {
-		ss.originalRightToePBone, _ = ss.OriginalConfigModel.Bones.GetToeP(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightToePBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightToeIkBone, pmx.TOE_IK.Right())
 }
 
 func (ss *SizingSet) OriginalRightToeTailDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightToeTailDBone == nil {
-		ss.originalRightToeTailDBone, _ = ss.OriginalConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightToeTailDBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightToeTailDBone, pmx.TOE_T_D.Right())
 }
 
 func (ss *SizingSet) OriginalRightHeelDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightHeelDBone == nil {
-		ss.originalRightHeelDBone, _ = ss.OriginalConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightHeelDBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightHeelDBone, pmx.HEEL_D.Right())
 }
 
 func (ss *SizingSet) OriginalRightToePDBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightToePDBone, pmx.TOE_P_D.Right())
+}
 
-	if ss.originalRightToePDBone == nil {
-		ss.originalRightToePDBone, _ = ss.OriginalConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightToePDBone
+func (ss *SizingSet) OriginalRightToeCDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightToeCDBone, pmx.TOE_C_D.Right())
 }
 
 func (ss *SizingSet) OriginalLeftShoulderBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftShoulderBone == nil {
-		ss.originalLeftShoulderBone, _ = ss.OriginalConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftShoulderBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftShoulderBone, pmx.SHOULDER.Left())
 }
 
 func (ss *SizingSet) OriginalRightShoulderBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightShoulderBone == nil {
-		ss.originalRightShoulderBone, _ = ss.OriginalConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightShoulderBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightShoulderBone, pmx.SHOULDER.Right())
 }
 
 func (ss *SizingSet) OriginalLeftArmBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftArmBone == nil {
-		ss.originalLeftArmBone, _ = ss.OriginalConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftArmBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftArmBone, pmx.ARM.Left())
 }
 
 func (ss *SizingSet) OriginalRightArmBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightArmBone == nil {
-		ss.originalRightArmBone, _ = ss.OriginalConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightArmBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightArmBone, pmx.ARM.Right())
 }
 
 func (ss *SizingSet) OriginalLeftElbowBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftElbowBone == nil {
-		ss.originalLeftElbowBone, _ = ss.OriginalConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftElbowBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftElbowBone, pmx.ELBOW.Left())
 }
 
 func (ss *SizingSet) OriginalRightElbowBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightElbowBone == nil {
-		ss.originalRightElbowBone, _ = ss.OriginalConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightElbowBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightElbowBone, pmx.ELBOW.Right())
 }
 
 func (ss *SizingSet) OriginalLeftWristBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftWristBone == nil {
-		ss.originalLeftWristBone, _ = ss.OriginalConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftWristBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftWristBone, pmx.WRIST.Left())
 }
 
 func (ss *SizingSet) OriginalRightWristBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightWristBone == nil {
-		ss.originalRightWristBone, _ = ss.OriginalConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightWristBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightWristBone, pmx.WRIST.Right())
 }
 
 func (ss *SizingSet) OriginalLeftWristTailBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalLeftWristTailBone == nil {
-		ss.originalLeftWristTailBone, _ = ss.OriginalConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.originalLeftWristTailBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalLeftWristTailBone, pmx.WRIST_TAIL.Left())
 }
 
 func (ss *SizingSet) OriginalRightWristTailBone() *pmx.Bone {
-	if ss.OriginalConfigModel == nil {
-		return nil
-	}
-
-	if ss.originalRightWristTailBone == nil {
-		ss.originalRightWristTailBone, _ = ss.OriginalConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.originalRightWristTailBone
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalRightWristTailBone, pmx.WRIST_TAIL.Right())
 }
 
 // --------------------------------------------------------------------
 
 func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingCenterBone == nil {
-		ss.sizingCenterBone, _ = ss.SizingConfigModel.Bones.GetCenter()
-	}
-
-	return ss.sizingCenterBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingCenterBone, pmx.CENTER.String())
 }
 
 func (ss *SizingSet) SizingGrooveBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingGrooveBone == nil {
-		ss.sizingGrooveBone, _ = ss.SizingConfigModel.Bones.GetGroove()
-	}
-
-	return ss.sizingGrooveBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingGrooveBone, pmx.GROOVE.String())
 }
 
 func (ss *SizingSet) SizingTrunkRootBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingTrunkRootBone == nil {
-		ss.sizingTrunkRootBone, _ = ss.SizingConfigModel.Bones.GetTrunkRoot()
-	}
-
-	return ss.sizingTrunkRootBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingTrunkRootBone, pmx.TRUNK_ROOT.String())
 }
 
 func (ss *SizingSet) SizingUpperRootBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingUpperRootBone == nil {
-		ss.sizingUpperRootBone, _ = ss.SizingConfigModel.Bones.GetUpperRoot()
-	}
-
-	return ss.sizingUpperRootBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingUpperRootBone, pmx.UPPER_ROOT.String())
 }
 
 func (ss *SizingSet) SizingUpperBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingUpperBone == nil {
-		ss.sizingUpperBone, _ = ss.SizingConfigModel.Bones.GetUpper()
-	}
-
-	return ss.sizingUpperBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingUpperBone, pmx.UPPER.String())
 }
 
 func (ss *SizingSet) SizingUpper2Bone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingUpper2Bone == nil {
-		ss.sizingUpper2Bone, _ = ss.SizingConfigModel.Bones.GetUpper2()
-	}
-
-	return ss.sizingUpper2Bone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingUpper2Bone, pmx.UPPER2.String())
 }
 
 func (ss *SizingSet) SizingNeckRootBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingNeckRootBone, pmx.NECK_ROOT.String())
+}
 
-	if ss.sizingNeckRootBone == nil {
-		ss.sizingNeckRootBone, _ = ss.SizingConfigModel.Bones.GetNeckRoot()
-	}
+func (ss *SizingSet) SizingNeckBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingNeckBone, pmx.NECK.String())
+}
 
-	return ss.sizingNeckRootBone
+func (ss *SizingSet) SizingHeadBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingHeadBone, pmx.HEAD.String())
 }
 
 func (ss *SizingSet) SizingLowerBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLowerBone, pmx.LOWER.String())
+}
 
-	if ss.sizingLowerBone == nil {
-		ss.sizingLowerBone, _ = ss.SizingConfigModel.Bones.GetLower()
-	}
-
-	return ss.sizingLowerBone
+func (ss *SizingSet) SizingLowerRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLowerRootBone, pmx.LOWER_ROOT.String())
 }
 
 func (ss *SizingSet) SizingLegCenterBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLegCenterBone, pmx.LEG_CENTER.String())
+}
 
-	if ss.sizingLegCenterBone == nil {
-		ss.sizingLegCenterBone, _ = ss.SizingConfigModel.Bones.GetLegCenter()
-	}
+func (ss *SizingSet) SizingLeftLegRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftLegRootBone, pmx.LEG_ROOT.Left())
+}
 
-	return ss.sizingLegCenterBone
+func (ss *SizingSet) SizingRightLegRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightLegRootBone, pmx.LEG_ROOT.Right())
 }
 
 func (ss *SizingSet) SizingLeftLegIkParentBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftLegIkParentBone == nil {
-		ss.sizingLeftLegIkParentBone, _ = ss.SizingConfigModel.Bones.GetLegIkParent(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftLegIkParentBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftLegIkParentBone, pmx.LEG_IK_PARENT.Left())
 }
 
 func (ss *SizingSet) SizingLeftLegIkBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftLegIkBone == nil {
-		ss.sizingLeftLegIkBone, _ = ss.SizingConfigModel.Bones.GetLegIk(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftLegIkBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftLegIkBone, pmx.LEG_IK.Left())
 }
 
 func (ss *SizingSet) SizingLeftLegBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftLegBone == nil {
-		ss.sizingLeftLegBone, _ = ss.SizingConfigModel.Bones.GetLeg(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftLegBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftLegBone, pmx.LEG.Left())
 }
 
 func (ss *SizingSet) SizingLeftKneeBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftKneeBone == nil {
-		ss.sizingLeftKneeBone, _ = ss.SizingConfigModel.Bones.GetKnee(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftKneeBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftKneeBone, pmx.KNEE.Left())
 }
 
 func (ss *SizingSet) SizingLeftAnkleBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftAnkleBone, pmx.ANKLE.Left())
+}
 
-	if ss.sizingLeftAnkleBone == nil {
-		ss.sizingLeftAnkleBone, _ = ss.SizingConfigModel.Bones.GetAnkle(pmx.BONE_DIRECTION_LEFT)
-	}
+func (ss *SizingSet) SizingLeftAnkleDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftAnkleDBone, pmx.ANKLE_D.Left())
+}
 
-	return ss.sizingLeftAnkleBone
+func (ss *SizingSet) SizingLeftAnkleDGroundBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftAnkleDGroundBone, pmx.ANKLE_D_GROUND.Left())
 }
 
 func (ss *SizingSet) SizingLeftToeIkBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftToeIkBone == nil {
-		ss.sizingLeftToeIkBone, _ = ss.SizingConfigModel.Bones.GetToeIk(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftToeIkBone
-}
-
-func (ss *SizingSet) SizingLeftToeTailBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftToeTailBone == nil {
-		ss.sizingLeftToeTailBone, _ = ss.SizingConfigModel.Bones.GetToeT(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftToeTailBone
-}
-
-func (ss *SizingSet) SizingLeftHeelBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftHeelBone == nil {
-		ss.sizingLeftHeelBone, _ = ss.SizingConfigModel.Bones.GetHeel(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftHeelBone
-}
-
-func (ss *SizingSet) SizingLeftToePBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftToePBone == nil {
-		ss.sizingLeftToePBone, _ = ss.SizingConfigModel.Bones.GetToeP(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftToePBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftToeIkBone, pmx.TOE_IK.Left())
 }
 
 func (ss *SizingSet) SizingLeftToeTailDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftToeTailDBone == nil {
-		ss.sizingLeftToeTailDBone, _ = ss.SizingConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftToeTailDBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftToeTailDBone, pmx.TOE_T_D.Left())
 }
 
 func (ss *SizingSet) SizingLeftHeelDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftHeelDBone == nil {
-		ss.sizingLeftHeelDBone, _ = ss.SizingConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftHeelDBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftHeelDBone, pmx.HEEL_D.Left())
 }
 
 func (ss *SizingSet) SizingLeftToePDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftToePDBone, pmx.TOE_P_D.Left())
+}
 
-	if ss.sizingLeftToePDBone == nil {
-		ss.sizingLeftToePDBone, _ = ss.SizingConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftToePDBone
+func (ss *SizingSet) SizingLeftToeCDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftToeCDBone, pmx.TOE_C_D.Left())
 }
 
 func (ss *SizingSet) SizingRightLegIkParentBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightLegIkParentBone == nil {
-		ss.sizingRightLegIkParentBone, _ = ss.SizingConfigModel.Bones.GetLegIkParent(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightLegIkParentBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightLegIkParentBone, pmx.LEG_IK_PARENT.Right())
 }
 
 func (ss *SizingSet) SizingRightLegIkBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightLegIkBone == nil {
-		ss.sizingRightLegIkBone, _ = ss.SizingConfigModel.Bones.GetLegIk(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightLegIkBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightLegIkBone, pmx.LEG_IK.Right())
 }
 
 func (ss *SizingSet) SizingRightLegBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightLegBone == nil {
-		ss.sizingRightLegBone, _ = ss.SizingConfigModel.Bones.GetLeg(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightLegBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightLegBone, pmx.LEG.Right())
 }
 
 func (ss *SizingSet) SizingRightKneeBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightKneeBone == nil {
-		ss.sizingRightKneeBone, _ = ss.SizingConfigModel.Bones.GetKnee(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightKneeBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightKneeBone, pmx.KNEE.Right())
 }
 
 func (ss *SizingSet) SizingRightAnkleBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightAnkleBone, pmx.ANKLE.Right())
+}
 
-	if ss.sizingRightAnkleBone == nil {
-		ss.sizingRightAnkleBone, _ = ss.SizingConfigModel.Bones.GetAnkle(pmx.BONE_DIRECTION_RIGHT)
-	}
+func (ss *SizingSet) SizingRightAnkleDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightAnkleDBone, pmx.ANKLE_D.Right())
+}
 
-	return ss.sizingRightAnkleBone
+func (ss *SizingSet) SizingRightAnkleDGroundBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightAnkleDGroundBone, pmx.ANKLE_D_GROUND.Right())
 }
 
 func (ss *SizingSet) SizingRightToeIkBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightToeIkBone == nil {
-		ss.sizingRightToeIkBone, _ = ss.SizingConfigModel.Bones.GetToeIk(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightToeIkBone
-}
-
-func (ss *SizingSet) SizingRightToeTailBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightToeTailBone == nil {
-		ss.sizingRightToeTailBone, _ = ss.SizingConfigModel.Bones.GetToeT(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightToeTailBone
-}
-
-func (ss *SizingSet) SizingRightHeelBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightHeelBone == nil {
-		ss.sizingRightHeelBone, _ = ss.SizingConfigModel.Bones.GetHeel(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightHeelBone
-}
-
-func (ss *SizingSet) SizingRightToePBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightToePBone == nil {
-		ss.sizingRightToePBone, _ = ss.SizingConfigModel.Bones.GetToeP(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightToePBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightToeIkBone, pmx.TOE_IK.Right())
 }
 
 func (ss *SizingSet) SizingRightToeTailDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightToeTailDBone == nil {
-		ss.sizingRightToeTailDBone, _ = ss.SizingConfigModel.Bones.GetToeTD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightToeTailDBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightToeTailDBone, pmx.TOE_T_D.Right())
 }
 
 func (ss *SizingSet) SizingRightHeelDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightHeelDBone == nil {
-		ss.sizingRightHeelDBone, _ = ss.SizingConfigModel.Bones.GetHeelD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightHeelDBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightHeelDBone, pmx.HEEL_D.Right())
 }
 
 func (ss *SizingSet) SizingRightToePDBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightToePDBone, pmx.TOE_P_D.Right())
+}
 
-	if ss.sizingRightToePDBone == nil {
-		ss.sizingRightToePDBone, _ = ss.SizingConfigModel.Bones.GetToePD(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightToePDBone
+func (ss *SizingSet) SizingRightToeCDBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightToeCDBone, pmx.TOE_C_D.Right())
 }
 
 func (ss *SizingSet) SizingLeftShoulderBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftShoulderBone == nil {
-		ss.sizingLeftShoulderBone, _ = ss.SizingConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftShoulderBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftShoulderBone, pmx.SHOULDER.Left())
 }
 
 func (ss *SizingSet) SizingRightShoulderBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightShoulderBone == nil {
-		ss.sizingRightShoulderBone, _ = ss.SizingConfigModel.Bones.GetShoulder(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightShoulderBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightShoulderBone, pmx.SHOULDER.Right())
 }
 
 func (ss *SizingSet) SizingLeftArmBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftArmBone == nil {
-		ss.sizingLeftArmBone, _ = ss.SizingConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftArmBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftArmBone, pmx.ARM.Left())
 }
 
 func (ss *SizingSet) SizingRightArmBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightArmBone == nil {
-		ss.sizingRightArmBone, _ = ss.SizingConfigModel.Bones.GetArm(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightArmBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightArmBone, pmx.ARM.Right())
 }
 
 func (ss *SizingSet) SizingLeftElbowBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftElbowBone == nil {
-		ss.sizingLeftElbowBone, _ = ss.SizingConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftElbowBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftElbowBone, pmx.ELBOW.Left())
 }
 
 func (ss *SizingSet) SizingRightElbowBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightElbowBone == nil {
-		ss.sizingRightElbowBone, _ = ss.SizingConfigModel.Bones.GetElbow(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightElbowBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightElbowBone, pmx.ELBOW.Right())
 }
 
 func (ss *SizingSet) SizingLeftWristBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftWristBone == nil {
-		ss.sizingLeftWristBone, _ = ss.SizingConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftWristBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftWristBone, pmx.WRIST.Left())
 }
 
 func (ss *SizingSet) SizingRightWristBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightWristBone == nil {
-		ss.sizingRightWristBone, _ = ss.SizingConfigModel.Bones.GetWrist(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightWristBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightWristBone, pmx.WRIST.Right())
 }
 
 func (ss *SizingSet) SizingLeftWristTailBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingLeftWristTailBone == nil {
-		ss.sizingLeftWristTailBone, _ = ss.SizingConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_LEFT)
-	}
-
-	return ss.sizingLeftWristTailBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingLeftWristTailBone, pmx.WRIST_TAIL.Left())
 }
 
 func (ss *SizingSet) SizingRightWristTailBone() *pmx.Bone {
-	if ss.SizingConfigModel == nil {
-		return nil
-	}
-
-	if ss.sizingRightWristTailBone == nil {
-		ss.sizingRightWristTailBone, _ = ss.SizingConfigModel.Bones.GetWristTail(pmx.BONE_DIRECTION_RIGHT)
-	}
-
-	return ss.sizingRightWristTailBone
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingRightWristTailBone, pmx.WRIST_TAIL.Right())
 }
 
 // --------------------------------------------------------------------
 
 func (ss *SizingSet) SizingGrooveVanillaBone() *pmx.Bone {
-	if ss.SizingModel == nil {
-		return nil
-	}
-
-	if ss.sizingGrooveVanillaBone == nil {
-		ss.sizingGrooveVanillaBone, _ = ss.SizingModel.Bones.GetGroove()
-	}
-
-	return ss.sizingGrooveVanillaBone
+	return ss.getOrFetchBone(ss.SizingModel, &ss.sizingGrooveVanillaBone, pmx.GROOVE.String())
 }
 
 func (ss *SizingSet) SizingUpperVanillaBone() *pmx.Bone {
-	if ss.SizingModel == nil {
-		return nil
-	}
-
-	if ss.sizingUpperVanillaBone == nil {
-		ss.sizingUpperVanillaBone, _ = ss.SizingModel.Bones.GetUpper()
-	}
-
-	return ss.sizingUpperVanillaBone
+	return ss.getOrFetchBone(ss.SizingModel, &ss.sizingUpperVanillaBone, pmx.UPPER.String())
 }
 
 func (ss *SizingSet) SizingUpper2VanillaBone() *pmx.Bone {
-	if ss.SizingModel == nil {
-		return nil
-	}
-
-	if ss.sizingUpper2VanillaBone == nil {
-		ss.sizingUpper2VanillaBone, _ = ss.SizingModel.Bones.GetUpper2()
-	}
-
-	return ss.sizingUpper2VanillaBone
+	return ss.getOrFetchBone(ss.SizingModel, &ss.sizingUpper2VanillaBone, pmx.UPPER2.String())
 }
 
 func (ss *SizingSet) SizingNeckRootVanillaBone() *pmx.Bone {
-	if ss.SizingModel == nil {
-		return nil
-	}
-
-	if ss.sizingNeckRootVanillaBone == nil {
-		ss.sizingNeckRootVanillaBone, _ = ss.SizingModel.Bones.GetNeckRoot()
-	}
-
-	return ss.sizingNeckRootVanillaBone
+	return ss.getOrFetchBone(ss.SizingModel, &ss.sizingNeckRootVanillaBone, pmx.NECK_ROOT.String())
 }
