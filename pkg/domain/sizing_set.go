@@ -157,7 +157,7 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 	maxFrameCount := int(math.Floor(float64(ss.OutputMotion.MaxFrame() / 1000.0)))
 
 	if ss.IsSizingLeg && !ss.CompletedSizingLeg {
-		processCount += 14 + maxFrameCount*2*2
+		processCount += 16 + maxFrameCount*2*2
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
@@ -277,6 +277,12 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 				ss.insertShortageConfigBones,
 				nil); err != nil {
 				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+			} else {
+				if mlog.IsDebug() {
+					// デバッグモードの時は、サイジング用モデルを出力
+					rep := repository.NewPmxRepository(false)
+					rep.Save(mfile.CreateOutputPath(path, "Sizing"), originalConfigModel, true)
+				}
 			}
 		} else {
 			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
@@ -608,8 +614,28 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先理想体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
 		{"先センター", centerBone.ParentIndex, centerBone.Position, "足06"},
 		// 足IK補正（2回目）
-		{"左足継承", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足03"},
-		{"右足継承", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足03"},
+		{"先理左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理右足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理左つま先2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理右つま先2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結左先PD2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先結右先PD2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先左足IK", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足08"},
+		{"先右足IK", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足08"},
 		// 上半身補正
 		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
@@ -751,12 +777,16 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 			{bones.GetLegD, bones.CreateLegD},
 			{bones.GetKneeD, bones.CreateKneeD},
 			{bones.GetAnkleD, bones.CreateAnkleD},
+			{bones.GetToeT, bones.CreateToeT},
+			{bones.GetToeP, bones.CreateToeP},
+			{bones.GetToeC, bones.CreateToeC},
+			{bones.GetHeel, bones.CreateHeel},
 			{bones.GetAnkleDGround, bones.CreateAnkleDGround},
-			{bones.GetHeelD, bones.CreateHeelD},
 			{bones.GetToeEx, bones.CreateToeEx},
 			{bones.GetToeTD, bones.CreateToeTD},
 			{bones.GetToePD, bones.CreateToePD},
 			{bones.GetToeCD, bones.CreateToeCD},
+			{bones.GetHeelD, bones.CreateHeelD},
 		} {
 			getFunc := funcs[0]
 			createFunc := funcs[1]
