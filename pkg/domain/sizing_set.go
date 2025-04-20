@@ -602,16 +602,19 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結右先D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右踵D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右先PD", rootBone.Index(), mmath.NewMVec3(), "足04"},
-
+		// センター補正
+		{"元体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先理想体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先センター", centerBone.ParentIndex, centerBone.Position, "足06"},
+		// 足IK補正（2回目）
 		{"左足継承", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足03"},
 		{"右足継承", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足03"},
-		{"元体幹中心", rootBone.Index(), mmath.NewMVec3(), "足05"},
-		{"先体幹中心", rootBone.Index(), mmath.NewMVec3(), "足05"},
-		{"先理想体幹中心", rootBone.Index(), mmath.NewMVec3(), "足05"},
-		{"先センター", centerBone.ParentIndex, centerBone.Position, "足05"},
+		// 上半身補正
 		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		// 肩補正
 		{"左腕先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
 		{"左腕比率先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
 		{"左腕Y固定先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
@@ -630,6 +633,7 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"右腕結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
 		{"右ひじ結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
 		{"右手首結果先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_右"},
+		// 位置合わせ
 		{"位元左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
 		{"位元右手首", rootBone.Index(), mmath.NewMVec3(), "位置02_元"},
 		{"位先左手首", rootBone.Index(), mmath.NewMVec3(), "位置02_先"},
@@ -744,10 +748,6 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 			{bones.GetRingTail, bones.CreateRingTail},
 			{bones.GetPinkyTail, bones.CreatePinkyTail},
 			{bones.GetLegRoot, bones.CreateLegRoot},
-			// {bones.GetHeel, bones.CreateHeel},
-			// {bones.GetToeT, bones.CreateToeT},
-			// {bones.GetToeP, bones.CreateToeP},
-			// {bones.GetToeC, bones.CreateToeC},
 			{bones.GetLegD, bones.CreateLegD},
 			{bones.GetKneeD, bones.CreateKneeD},
 			{bones.GetAnkleD, bones.CreateAnkleD},
