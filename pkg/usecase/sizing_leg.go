@@ -1512,8 +1512,8 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 				continue
 			}
 			frame := float32(iFrame)
-			bf := sizingSet.OutputMotion.BoneFrames.Get(boneName).Get(frame)
-			prevBf := sizingSet.OutputMotion.BoneFrames.Get(boneName).Get(frame - 1)
+			bf := sizingSet.OriginalMotion.BoneFrames.Get(boneName).Get(frame)
+			prevBf := sizingSet.OriginalMotion.BoneFrames.Get(boneName).Get(frame - 1)
 			fixIkFlags[d][i] = bf.FilledPosition().NearEquals(prevBf.FilledPosition(), 1e-2)
 		}
 	}
@@ -1523,13 +1523,13 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 		boneName := pmx.LEG_IK.StringFromDirection(direction)
 		sizingSet.OutputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			bf.Position.Z += 0.1
-			sizingSet.OutputMotion.BoneFrames.Get(boneName).Update(bf)
 			if fixIkFlags[d][int(frame)] {
 				// 固定されている場合、前のキーフレを引き継ぐ
 				prevFrame := sizingSet.OutputMotion.BoneFrames.Get(boneName).PrevFrame(frame)
 				prevBf := sizingSet.OutputMotion.BoneFrames.Get(boneName).Get(prevFrame)
 				bf.Position = prevBf.FilledPosition().Copy()
 			}
+			sizingSet.OutputMotion.BoneFrames.Get(boneName).Update(bf)
 
 			return true
 		})
