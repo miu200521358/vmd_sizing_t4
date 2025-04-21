@@ -117,6 +117,18 @@ func (ss *SizingState) ClearOptions() {
 	ss.SizingWristCheck.SetChecked(false)
 	ss.ShoulderWeightEdit.ChangeText("")
 	ss.ShoulderWeightSlider.SetValue(0)
+	ss.Player.Reset(ss.MaxFrame())
+}
+
+func (ss *SizingState) MaxFrame() float32 {
+	maxFrame := float32(0)
+	for _, sizingSet := range ss.SizingSets {
+		if maxFrame < sizingSet.OriginalMotion.MaxFrame() {
+			maxFrame = sizingSet.OriginalMotion.MaxFrame()
+		}
+	}
+
+	return maxFrame
 }
 
 func (ss *SizingState) SetCurrentIndex(index int) {
@@ -168,6 +180,9 @@ func (ss *SizingState) LoadSet(jsonPath string) {
 func (sizingState *SizingState) LoadOriginalModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	// オプションクリア
+	sizingState.ClearOptions()
+
 	sizingState.CurrentSet().LoadOriginalModel(path)
 
 	cw.StoreModel(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalModel)
@@ -180,6 +195,9 @@ func (sizingState *SizingState) LoadOriginalModel(
 func (sizingState *SizingState) LoadSizingModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	// オプションクリア
+	sizingState.ClearOptions()
+
 	sizingState.CurrentSet().LoadSizingModel(path)
 
 	cw.StoreModel(0, sizingState.CurrentIndex(), sizingState.CurrentSet().SizingModel)
@@ -197,6 +215,9 @@ func (sizingState *SizingState) LoadSizingModel(
 func (sizingState *SizingState) LoadSizingMotion(
 	cw *controller.ControlWindow, path string,
 ) {
+	// オプションクリア
+	sizingState.ClearOptions()
+
 	sizingState.CurrentSet().LoadMotion(path)
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
