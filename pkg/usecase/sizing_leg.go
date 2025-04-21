@@ -40,7 +40,7 @@ func (su *SizingLegUsecase) Exec(
 	mlog.I(mi18n.T("足補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if err := su.checkBonesForSizingLeg(sizingSet); err != nil {
+	if err := su.checkBones(sizingSet); err != nil {
 		return false, err
 	}
 
@@ -203,7 +203,7 @@ func (su *SizingLegUsecase) Exec(
 	incrementCompletedCount()
 
 	// 足補正処理の結果をサイジング先モーションに反映
-	if err = su.updateLegResultMotion(
+	if err = su.updateOutputMotion(
 		sizingSet, allFrames, blockSize, sizingProcessMotion, "足10",
 		incrementCompletedCount,
 	); err != nil {
@@ -1379,7 +1379,7 @@ func (su *SizingLegUsecase) updateLegIkAndFk2(
 	}
 }
 
-func (su *SizingLegUsecase) updateLegResultMotion(
+func (su *SizingLegUsecase) updateOutputMotion(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
 	verboseMotionKey string, incrementCompletedCount func(),
 ) error {
@@ -1545,7 +1545,7 @@ func (su *SizingLegUsecase) createLowerBoneNames(sizingSet *domain.SizingSet) []
 	return append(all_lower_leg_bone_names, leftToeIkTargetBone.Name(), rightToeIkTargetBone.Name())
 }
 
-func (su *SizingLegUsecase) checkBonesForSizingLeg(sizingSet *domain.SizingSet) (err error) {
+func (su *SizingLegUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
 		{sizingSet.OriginalCenterBone, pmx.CENTER.String(), true},

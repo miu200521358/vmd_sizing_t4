@@ -13,7 +13,14 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/miter"
 )
 
-func SizingArmFingerStance(
+type SizingArmStanceUsecase struct {
+}
+
+func NewSizingArmStanceUsecase() *SizingArmStanceUsecase {
+	return &SizingArmStanceUsecase{}
+}
+
+func (su *SizingArmStanceUsecase) Exec(
 	sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func(),
 ) (bool, error) {
 	// 対象外の場合は何もせず終了
@@ -23,24 +30,25 @@ func SizingArmFingerStance(
 	}
 
 	// 処理対象ボーンチェック
-	if err := checkBonesForSizingArmFinger(sizingSet); err != nil {
+	if err := su.checkBones(sizingSet); err != nil {
 		return false, err
 	}
 
 	mlog.I(mi18n.T("腕指スタンス補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
-	stanceRotations, err := createArmFingerStanceRotations(sizingSet)
+	stanceRotations, err := su.createArmFingerStanceRotations(sizingSet)
 	if err != nil {
 		return false, err
 	}
 
-	if err := updateStanceRotations(sizingSet, stanceRotations, incrementCompletedCount); err != nil {
+	if err := su.updateStanceRotations(sizingSet, stanceRotations, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
 	if sizingSet.IsSizingArmStance {
 		sizingSet.CompletedSizingArmStance = true
 	}
+
 	if sizingSet.IsSizingFingerStance {
 		sizingSet.CompletedSizingFingerStance = true
 	}
@@ -48,7 +56,7 @@ func SizingArmFingerStance(
 	return true, nil
 }
 
-func updateStanceRotations(
+func (su *SizingArmStanceUsecase) updateStanceRotations(
 	sizingSet *domain.SizingSet, stanceRotations map[int][]*mmath.MMat4, incrementCompletedCount func(),
 ) (err error) {
 	count := int(sizingSet.OutputMotion.MaxFrame()) + 1
@@ -146,7 +154,7 @@ func updateStanceRotations(
 	return nil
 }
 
-func createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotations map[int][]*mmath.MMat4, err error) {
+func (su *SizingArmStanceUsecase) createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotations map[int][]*mmath.MMat4, err error) {
 	stanceRotations = make(map[int][]*mmath.MMat4)
 
 	for i, direction := range directions {
@@ -261,7 +269,7 @@ func createArmFingerStanceRotations(sizingSet *domain.SizingSet) (stanceRotation
 	return stanceRotations, nil
 }
 
-func checkBonesForSizingArmFinger(sizingSet *domain.SizingSet) (err error) {
+func (su *SizingArmStanceUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
 		{sizingSet.OriginalLeftShoulderBone, pmx.SHOULDER.Left(), true},

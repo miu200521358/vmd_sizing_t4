@@ -15,8 +15,15 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
+type SizingShoulderUsecase struct {
+}
+
+func NewSizingShoulderUsecase() *SizingShoulderUsecase {
+	return &SizingShoulderUsecase{}
+}
+
 // SizingShoulder は肩補正処理を行います。
-func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error) {
+func (su *SizingShoulderUsecase) Exec(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error) {
 	// 対象外の場合は何もせず終了
 	if !sizingSet.IsSizingShoulder || sizingSet.CompletedSizingShoulder {
 		return false, nil
@@ -31,7 +38,7 @@ func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCo
 	mlog.I(mi18n.T("肩補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if err := checkBonesForSizingShoulder(sizingSet); err != nil {
+	if err := su.checkBones(sizingSet); err != nil {
 		return false, err
 	}
 
@@ -45,11 +52,11 @@ func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCo
 
 	incrementCompletedCount()
 
-	if err := calculateAdjustedShoulder(sizingSet, allFrames, blockSize, sizingAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
+	if err := su.calculateAdjustedShoulder(sizingSet, allFrames, blockSize, sizingAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
-	if err := updateShoulderResultMotion(sizingSet, allFrames, blockSize, sizingProcessMotion,
+	if err := su.updateOutputMotion(sizingSet, allFrames, blockSize, sizingProcessMotion,
 		incrementCompletedCount); err != nil {
 		return false, err
 	}
@@ -60,7 +67,7 @@ func SizingShoulder(sizingSet *domain.SizingSet, sizingSetCount int, incrementCo
 	return true, nil
 }
 
-func createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+func (su *SizingShoulderUsecase) createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
 	// 肩IK
 	shoulderBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.SHOULDER.StringFromDirection(direction))
 	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
@@ -91,7 +98,7 @@ func createShoulderIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirecti
 	return ikBone
 }
 
-func createElbowIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+func (su *SizingShoulderUsecase) createElbowIk(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
 	// ひじIK
 	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
 	elbowBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
@@ -122,7 +129,7 @@ func createElbowIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.Bon
 	return ikBone
 }
 
-func createWristIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+func (su *SizingShoulderUsecase) createWristIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
 	// 手首IK
 	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
 	wristBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.WRIST.StringFromDirection(direction))
@@ -153,7 +160,7 @@ func createWristIkBoneForShoulder(sizingSet *domain.SizingSet, direction pmx.Bon
 	return ikBone
 }
 
-func calculateAdjustedShoulder(
+func (su *SizingShoulderUsecase) calculateAdjustedShoulder(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	sizingAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
@@ -164,9 +171,9 @@ func calculateAdjustedShoulder(
 	elbowIkBones := make([]*pmx.Bone, 2)
 	wristIkBones := make([]*pmx.Bone, 2)
 	for i, direction := range directions {
-		shoulderIkBones[i] = createShoulderIkBone(sizingSet, direction)
-		elbowIkBones[i] = createElbowIkBoneForShoulder(sizingSet, direction)
-		wristIkBones[i] = createWristIkBoneForShoulder(sizingSet, direction)
+		shoulderIkBones[i] = su.createShoulderIkBone(sizingSet, direction)
+		elbowIkBones[i] = su.createElbowIk(sizingSet, direction)
+		wristIkBones[i] = su.createWristIkBone(sizingSet, direction)
 	}
 
 	armPositions := make([][]*mmath.MVec3, 2)
@@ -382,7 +389,7 @@ func calculateAdjustedShoulder(
 	incrementCompletedCount()
 
 	// 肩回転をサイジング先モーションに反映
-	updateShoulder(sizingSet, allFrames, sizingProcessMotion, shoulderResultRotations, armResultRotations)
+	su.updateShoulder(sizingSet, allFrames, sizingProcessMotion, shoulderResultRotations, armResultRotations)
 
 	incrementCompletedCount()
 
@@ -390,7 +397,7 @@ func calculateAdjustedShoulder(
 }
 
 // updateShoulder は、補正した下半身回転をサイジング先モーションに反映します。
-func updateShoulder(
+func (su *SizingShoulderUsecase) updateShoulder(
 	sizingSet *domain.SizingSet, allFrames []int, sizingProcessMotion *vmd.VmdMotion,
 	shoulderRotations, armRotations [][]*mmath.MQuaternion,
 ) {
@@ -419,7 +426,7 @@ func updateShoulder(
 	}
 }
 
-func updateShoulderResultMotion(
+func (su *SizingShoulderUsecase) updateOutputMotion(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
 ) error {
@@ -527,7 +534,7 @@ func updateShoulderResultMotion(
 	return err
 }
 
-func checkBonesForSizingShoulder(sizingSet *domain.SizingSet) (err error) {
+func (su *SizingShoulderUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
 		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String(), false},

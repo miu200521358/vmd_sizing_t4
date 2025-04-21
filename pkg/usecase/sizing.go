@@ -98,7 +98,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 			}
 
 			// 腕指スタンス補正
-			if execResult, err := SizingArmFingerStance(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+			if execResult, err := NewSizingArmStanceUsecase().Exec(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 				errorChan <- err
 				return
 			} else {
@@ -135,12 +135,12 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				}
 			}
 
-			for _, funcUsecase := range []func(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error){
-				SizingUpper,    // 上半身補正
-				SizingShoulder, // 肩補正
-				SizingWrist,    // 手首位置合わせ
+			for _, uc := range []ISizingUsecase{
+				NewSizingUpperUsecase(),    // 上半身補正
+				NewSizingShoulderUsecase(), // 肩補正
+				NewSizingAlignUsecase(),    // 手首位置合わせ
 			} {
-				if execResult, err := funcUsecase(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
+				if execResult, err := uc.Exec(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 					errorChan <- err
 					return
 				} else {

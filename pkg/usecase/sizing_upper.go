@@ -15,7 +15,14 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
-func SizingUpper(
+type SizingUpperUsecase struct {
+}
+
+func NewSizingUpperUsecase() *SizingUpperUsecase {
+	return &SizingUpperUsecase{}
+}
+
+func (su *SizingUpperUsecase) Exec(
 	sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func(),
 ) (bool, error) {
 	// 対象外の場合は何もせず終了
@@ -32,7 +39,7 @@ func SizingUpper(
 	mlog.I(mi18n.T("上半身補正開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if err := checkBonesForSizingUpper(sizingSet); err != nil {
+	if err := su.checkBones(sizingSet); err != nil {
 		return false, err
 	}
 
@@ -56,7 +63,7 @@ func SizingUpper(
 	incrementCompletedCount()
 
 	// サイジング先の上半身回転情報を取得(全フレーム処理してズレ検知用)
-	if err := calculateAdjustedUpper(
+	if err := su.calculateAdjustedUpper(
 		sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas,
 		sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
@@ -64,7 +71,7 @@ func SizingUpper(
 
 	// sizingSet.OutputMotion = sizingProcessMotion
 	// 足補正処理の結果をサイジング先モーションに反映
-	if err = updateUpperResultMotion(sizingSet, allFrames, blockSize, sizingProcessMotion, incrementCompletedCount); err != nil {
+	if err = su.updateOutputMotion(sizingSet, allFrames, blockSize, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
@@ -73,7 +80,7 @@ func SizingUpper(
 	return true, nil
 }
 
-func updateUpper(
+func (su *SizingUpperUsecase) updateUpper(
 	sizingSet *domain.SizingSet, allFrames []int, sizingProcessMotion *vmd.VmdMotion,
 	upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations []*mmath.MQuaternion,
 ) {
@@ -120,7 +127,7 @@ func updateUpper(
 	}
 }
 
-func calculateUpperDistanceRange(bones *pmx.Bones, upperRootIndex, neckRootIndex int) float64 {
+func (su *SizingUpperUsecase) calculateUpperDistanceRange(bones *pmx.Bones, upperRootIndex, neckRootIndex int) float64 {
 	distance := 0.0
 
 	startIndex := neckRootIndex
@@ -159,12 +166,12 @@ func calculateUpperDistanceRange(bones *pmx.Bones, upperRootIndex, neckRootIndex
 	// return upperRootBone.Position.Distance(neckRootBone.Position)
 }
 
-func calculateUpperDistance(sizingSet *domain.SizingSet) (float64, error) {
+func (su *SizingUpperUsecase) calculateUpperDistance(sizingSet *domain.SizingSet) (float64, error) {
 	// 上半身のスケールを取得
-	originalDistance := calculateUpperDistanceRange(sizingSet.OriginalConfigModel.Bones,
+	originalDistance := su.calculateUpperDistanceRange(sizingSet.OriginalConfigModel.Bones,
 		sizingSet.OriginalUpperRootBone().Index(), sizingSet.OriginalNeckRootBone().Index())
 
-	sizingDistance := calculateUpperDistanceRange(sizingSet.SizingConfigModel.Bones,
+	sizingDistance := su.calculateUpperDistanceRange(sizingSet.SizingConfigModel.Bones,
 		sizingSet.SizingUpperRootBone().Index(), sizingSet.SizingNeckRootBone().Index())
 
 	if originalDistance == 0 || sizingDistance == 0 {
@@ -174,7 +181,7 @@ func calculateUpperDistance(sizingSet *domain.SizingSet) (float64, error) {
 	return sizingDistance / originalDistance, nil
 }
 
-func createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
+func (su *SizingUpperUsecase) createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 	upperBones := make([]*pmx.Bone, 0)
 	if sizingSet.SizingUpper2Bone() != nil {
 		upperBones = append(upperBones, sizingSet.SizingUpper2Bone())
@@ -199,7 +206,7 @@ func createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 	return upperIkBone
 }
 
-func calculateAdjustedUpper(
+func (su *SizingUpperUsecase) calculateAdjustedUpper(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
@@ -209,7 +216,7 @@ func calculateAdjustedUpper(
 	}
 
 	var upperDistance float64
-	upperDistance, err := calculateUpperDistance(sizingSet)
+	upperDistance, err := su.calculateUpperDistance(sizingSet)
 	if err != nil {
 		return err
 	}
@@ -219,7 +226,7 @@ func calculateAdjustedUpper(
 	upperCancelRotations := make([]*mmath.MQuaternion, len(allFrames))
 	upper2CancelRotations := make([]*mmath.MQuaternion, len(allFrames))
 
-	upperIkBone := createUpperIkBone(sizingSet)
+	upperIkBone := su.createUpperIkBone(sizingSet)
 
 	actualUpperRootPositions := make([]*mmath.MVec3, len(allFrames))
 	actualNeckRootPositions := make([]*mmath.MVec3, len(allFrames))
@@ -302,14 +309,14 @@ func calculateAdjustedUpper(
 
 	incrementCompletedCount()
 
-	updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)
+	su.updateUpper(sizingSet, allFrames, sizingProcessMotion, upperRotations, upper2Rotations, upperCancelRotations, upper2CancelRotations)
 
 	incrementCompletedCount()
 
 	return nil
 }
 
-func updateUpperResultMotion(
+func (su *SizingUpperUsecase) updateOutputMotion(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(),
 ) error {
 	// 足補正処理の結果をサイジング先モーションに反映
@@ -397,7 +404,7 @@ func updateUpperResultMotion(
 	return nil
 }
 
-func checkBonesForSizingUpper(sizingSet *domain.SizingSet) (err error) {
+func (su *SizingUpperUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
 		{sizingSet.OriginalCenterBone, pmx.CENTER.String(), true},

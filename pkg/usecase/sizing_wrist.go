@@ -18,8 +18,15 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
-// SizingWrist は手首位置合わせ処理を行います。
-func SizingWrist(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error) {
+type SizingAlignUsecase struct {
+}
+
+func NewSizingAlignUsecase() *SizingAlignUsecase {
+	return &SizingAlignUsecase{}
+}
+
+// Exec は手首位置合わせ処理を行います。
+func (su *SizingAlignUsecase) Exec(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompletedCount func()) (bool, error) {
 	// 対象外の場合は何もせず終了
 	if !sizingSet.IsSizingWrist || sizingSet.CompletedSizingWrist {
 		return false, nil
@@ -34,7 +41,7 @@ func SizingWrist(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompl
 	mlog.I(mi18n.T("手首位置合わせ開始", map[string]interface{}{"No": sizingSet.Index + 1}))
 
 	// 処理対象ボーンチェック
-	if err := checkBonesForSizingWrist(sizingSet); err != nil {
+	if err := su.checkBones(sizingSet); err != nil {
 		return false, err
 	}
 
@@ -56,13 +63,13 @@ func SizingWrist(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompl
 
 	incrementCompletedCount()
 
-	if err := calculateAdjustedWrist(sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
+	if err := su.calculateAdjustedWrist(sizingSet, allFrames, blockSize, sizingAllDeltas, originalAllDeltas, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
 
-	if err := updateWristResultMotion(sizingSet, allFrames, blockSize, sizingProcessMotion, incrementCompletedCount); err != nil {
+	if err := su.updateOutputMotion(sizingSet, allFrames, blockSize, sizingProcessMotion, incrementCompletedCount); err != nil {
 		return false, err
 	}
 
@@ -73,7 +80,7 @@ func SizingWrist(sizingSet *domain.SizingSet, sizingSetCount int, incrementCompl
 	return true, nil
 }
 
-func calculateAdjustedWrist(
+func (su *SizingAlignUsecase) calculateAdjustedWrist(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int,
 	sizingAllDeltas, originalAllDeltas []*delta.VmdDeltas, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
@@ -84,7 +91,7 @@ func calculateAdjustedWrist(
 
 	armIkBones := make([]*pmx.Bone, 2)
 	for i, direction := range directions {
-		armIkBones[i] = createArmIkBone(sizingSet, direction)
+		armIkBones[i] = su.createArmIkBone(sizingSet, direction)
 	}
 
 	if mlog.IsDebug() {
@@ -324,12 +331,12 @@ func calculateAdjustedWrist(
 	incrementCompletedCount()
 
 	// 肩回転をサイジング先モーションに反映
-	updateWrist(sizingSet, allFrames, sizingProcessMotion, sizingArmRotations, sizingElbowRotations, sizingWristRotations)
+	su.updateWrist(sizingSet, allFrames, sizingProcessMotion, sizingArmRotations, sizingElbowRotations, sizingWristRotations)
 
 	return nil
 }
 
-func createArmIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
+func (su *SizingAlignUsecase) createArmIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *pmx.Bone {
 	// 腕IK
 	armBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ARM.StringFromDirection(direction))
 	elbowBone, _ := sizingSet.SizingConfigModel.Bones.GetByName(pmx.ELBOW.StringFromDirection(direction))
@@ -363,7 +370,7 @@ func createArmIkBone(sizingSet *domain.SizingSet, direction pmx.BoneDirection) *
 }
 
 // updateWrist は、補正した下半身回転をサイジング先モーションに反映します。
-func updateWrist(
+func (su *SizingAlignUsecase) updateWrist(
 	sizingSet *domain.SizingSet, allFrames []int, sizingProcessMotion *vmd.VmdMotion,
 	sizingArmRotations, sizingElbowRotations, sizingWristRotations [][]*mmath.MQuaternion,
 ) {
@@ -397,7 +404,7 @@ func updateWrist(
 	}
 }
 
-func updateWristResultMotion(
+func (su *SizingAlignUsecase) updateOutputMotion(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
 	incrementCompletedCount func(),
 ) error {
@@ -501,7 +508,7 @@ func updateWristResultMotion(
 	return err
 }
 
-func checkBonesForSizingWrist(sizingSet *domain.SizingSet) (err error) {
+func (su *SizingAlignUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
 
 	for _, v := range [][]interface{}{
 		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String(), false},
