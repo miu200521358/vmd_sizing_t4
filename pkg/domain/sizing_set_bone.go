@@ -19,12 +19,19 @@ func (ss *SizingSet) getOrFetchBone(model *pmx.PmxModel, cachedBone **pmx.Bone, 
 	return *cachedBone
 }
 
+// --------------------------------------------------------------------
+// OriginalConfigModel からボーンを取得するためのメソッド群
+
 func (ss *SizingSet) OriginalCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalCenterBone, pmx.CENTER.String())
 }
 
 func (ss *SizingSet) OriginalGrooveBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalGrooveBone, pmx.GROOVE.String())
+}
+
+func (ss *SizingSet) OriginalBodyAxisBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, &ss.originalBodyAxisBone, pmx.BODY_AXIS.String())
 }
 
 func (ss *SizingSet) OriginalTrunkRootBone() *pmx.Bone {
@@ -212,6 +219,7 @@ func (ss *SizingSet) OriginalRightWristTailBone() *pmx.Bone {
 }
 
 // --------------------------------------------------------------------
+// SizingConfigModel からボーンを取得するためのメソッド群
 
 func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingCenterBone, pmx.CENTER.String())
@@ -219,6 +227,10 @@ func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
 
 func (ss *SizingSet) SizingGrooveBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingGrooveBone, pmx.GROOVE.String())
+}
+
+func (ss *SizingSet) SizingBodyAxisBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, &ss.sizingBodyAxisBone, pmx.BODY_AXIS.String())
 }
 
 func (ss *SizingSet) SizingTrunkRootBone() *pmx.Bone {
@@ -406,6 +418,7 @@ func (ss *SizingSet) SizingRightWristTailBone() *pmx.Bone {
 }
 
 // --------------------------------------------------------------------
+// SizingModel からボーンを取得するためのメソッド群
 
 func (ss *SizingSet) SizingGrooveVanillaBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingModel, &ss.sizingGrooveVanillaBone, pmx.GROOVE.String())
