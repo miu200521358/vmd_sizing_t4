@@ -2,7 +2,6 @@ package domain
 
 import (
 	"fmt"
-	"math"
 	"sync"
 
 	"github.com/miu200521358/mlib_go/pkg/config/merr"
@@ -60,7 +59,7 @@ type SizingSet struct {
 	// OriginalGravityVolumes  map[string]float64 `json:"-"`               // 元モデルの重心体積
 	// SizingGravityVolumes    map[string]float64 `json:"-"`               // サイジング先モデルの重心体積
 
-	originalCenterBone, originalGrooveBone, originalTrunkRootBone, originalLowerBone, originalLowerRootBone,
+	originalCenterBone, originalGrooveBone, originalBodyAxisBone, originalTrunkRootBone, originalLowerBone, originalLowerRootBone,
 	originalUpperRootBone, originalUpperBone, originalUpper2Bone, originalNeckRootBone,
 	originalLegCenterBone, originalLeftLegIkParentBone, originalLeftLegIkBone, originalLeftLegRootBone,
 	originalLeftLegBone, originalLeftKneeBone, originalLeftAnkleBone, originalLeftToeIkBone,
@@ -74,7 +73,7 @@ type SizingSet struct {
 	originalRightShoulderBone, originalRightArmBone, originalRightElbowBone, originalRightWristBone,
 	originalLeftWristTailBone, originalRightWristTailBone, originalNeckBone, originalHeadBone *pmx.Bone // 元モデルのボーン情報
 
-	sizingCenterBone, sizingGrooveBone, sizingTrunkRootBone, sizingLowerBone, sizingLowerRootBone,
+	sizingCenterBone, sizingGrooveBone, sizingBodyAxisBone, sizingTrunkRootBone, sizingLowerBone, sizingLowerRootBone,
 	sizingUpperRootBone, sizingUpperBone, sizingUpper2Bone, sizingNeckRootBone,
 	sizingLegCenterBone, sizingLeftLegIkParentBone, sizingLeftLegIkBone, sizingLeftLegRootBone,
 	sizingLeftLegBone, sizingLeftKneeBone, sizingLeftAnkleBone, sizingLeftToeIkBone,
@@ -154,18 +153,22 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 		return 0
 	}
 
-	maxFrameCount := int(math.Floor(float64(ss.OutputMotion.MaxFrame() / 1000.0)))
+	maxFrame := int(ss.OutputMotion.MaxFrame())
 
 	if ss.IsSizingLeg && !ss.CompletedSizingLeg {
-		processCount += 16 + maxFrameCount*2*2
+		// 6: computeVmdDeltas
+		// 2: computeMorphVmdDeltas
+		// 5*2: calculate系 / update系
+		// 2*2: updateOutputMotion (active / full)
+		processCount += maxFrame * (6 + 2 + 5*2 + 2*2 + 1)
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
-		processCount += 4 + maxFrameCount*2
+		processCount += 4 + maxFrame*2
 	}
 
 	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {
-		processCount += 3 + maxFrameCount*2*2
+		processCount += 3 + maxFrame*2*2
 	}
 
 	if ss.IsSizingArmStance && !ss.CompletedSizingArmStance {
@@ -583,7 +586,6 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先今左足首D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今左踵D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今左先D", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左先PD", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右足", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右膝", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右足首", rootBone.Index(), mmath.NewMVec3(), "足04"},
@@ -591,7 +593,6 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先今右足首D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右踵D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右先D", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右先PD", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左足", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左膝", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左足首", rootBone.Index(), mmath.NewMVec3(), "足04"},
@@ -599,7 +600,6 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結左足首D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左先D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左踵D", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左先PD", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右足", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右膝", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右足首", rootBone.Index(), mmath.NewMVec3(), "足04"},
@@ -607,11 +607,10 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結右足首D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右先D", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右踵D", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右先PD", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		// センター補正
-		{"元体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
-		{"先体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
-		{"先理想体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"元体軸", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先体軸", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先理想体軸", rootBone.Index(), mmath.NewMVec3(), "足06"},
 		{"先センター", centerBone.ParentIndex, centerBone.Position, "足06"},
 		// 足IK補正（2回目）
 		{"先理左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
@@ -716,6 +715,7 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 	// 体幹系
 	for _, funcs := range [][]func() (*pmx.Bone, error){
 		{bones.GetRoot, bones.CreateRoot},
+		{bones.GetBodyAxis, bones.CreateBodyAxis},
 		{bones.GetTrunkRoot, bones.CreateTrunkRoot},
 		{bones.GetLowerRoot, bones.CreateLowerRoot},
 		{bones.GetLegCenter, bones.CreateLegCenter},
