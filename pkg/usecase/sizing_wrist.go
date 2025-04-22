@@ -49,14 +49,14 @@ func (su *SizingAlignUsecase) Exec(sizingSet *domain.SizingSet, sizingSetCount i
 	blockSize, _ := miter.GetBlockSize(len(allFrames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
-	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "手首位置合わせ01")
+	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "手首位置合わせ01", incrementCompletedCount)
 	if err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
 
-	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "手首位置合わせ01")
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "手首位置合わせ01", incrementCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -438,7 +438,7 @@ func (su *SizingAlignUsecase) updateOutputMotion(
 		func(dIndex int, direction pmx.BoneDirection) error {
 			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
 				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-					sizingModel, sizingProcessMotion, sizingSet, true, all_arm_bone_names[dIndex], "位補正01")
+					sizingModel, sizingProcessMotion, sizingSet, true, all_arm_bone_names[dIndex], "位補正01", incrementCompletedCount)
 				if err != nil {
 					return err
 				}
@@ -451,7 +451,7 @@ func (su *SizingAlignUsecase) updateOutputMotion(
 
 					// 現時点の結果
 					resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-						sizingModel, outputMotion, sizingSet, true, all_arm_bone_names[dIndex], "")
+						sizingModel, outputMotion, sizingSet, true, all_arm_bone_names[dIndex], "", nil)
 					if err != nil {
 						return err
 					}
@@ -486,7 +486,7 @@ func (su *SizingAlignUsecase) updateOutputMotion(
 						mlog.I(mi18n.T("位置補正04", map[string]interface{}{
 							"No":          sizingSet.Index + 1,
 							"IterIndex":   fmt.Sprintf("%04d", iFrame),
-							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
+							"AllCount":    fmt.Sprintf("%04d", allFrames[len(allFrames)-1]),
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
 

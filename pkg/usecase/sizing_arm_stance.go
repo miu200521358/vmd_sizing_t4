@@ -118,6 +118,7 @@ func (su *SizingArmStanceUsecase) updateStanceRotations(
 	}
 
 	for boneName, rotations := range boneRotations {
+		maxFrame := int(sizingSet.OutputMotion.BoneFrames.Get(boneName).MaxFrame())
 		sizingSet.OutputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			if sizingSet.IsTerminate {
 				return false
@@ -137,7 +138,7 @@ func (su *SizingArmStanceUsecase) updateStanceRotations(
 					"No":        sizingSet.Index + 1,
 					"BoneName":  boneName,
 					"IterIndex": fmt.Sprintf("%04d", iFrame),
-					"AllCount":  fmt.Sprintf("%02d", len(rotations)),
+					"AllCount":  fmt.Sprintf("%04d", maxFrame),
 				}))
 			}
 
@@ -160,12 +161,12 @@ func (su *SizingArmStanceUsecase) createArmFingerStanceRotations(sizingSet *doma
 	for i, direction := range directions {
 		stanceBoneNames := make([][]string, 0)
 
-		originalVmdDeltas, err := computeVmdDeltas([]int{0}, 1, sizingSet.OriginalConfigModel, vmd.InitialMotion, sizingSet, true, all_arm_stance_bone_names[i], "腕指スタンス補正01")
+		originalVmdDeltas, err := computeVmdDeltas([]int{0}, 1, sizingSet.OriginalConfigModel, vmd.InitialMotion, sizingSet, true, all_arm_stance_bone_names[i], "", nil)
 		if err != nil {
 			return nil, err
 		}
 
-		sizingVmdDeltas, err := computeVmdDeltas([]int{0}, 1, sizingSet.SizingConfigModel, vmd.InitialMotion, sizingSet, true, all_arm_stance_bone_names[i], "腕指スタンス補正01")
+		sizingVmdDeltas, err := computeVmdDeltas([]int{0}, 1, sizingSet.SizingConfigModel, vmd.InitialMotion, sizingSet, true, all_arm_stance_bone_names[i], "", nil)
 
 		if sizingSet.IsSizingArmStance {
 			// 腕スタンス補正対象

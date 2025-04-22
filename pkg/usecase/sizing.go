@@ -324,6 +324,7 @@ func computeVmdDeltas(
 	model *pmx.PmxModel, motion *vmd.VmdMotion,
 	sizingSet *domain.SizingSet,
 	isCalcIk bool, target_bone_names []string, logKey string,
+	incrementCompletedCount func(),
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
@@ -337,6 +338,45 @@ func computeVmdDeltas(
 			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
 			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalcIk, data, target_bone_names)
 			allDeltas[index] = vmdDeltas
+
+			if incrementCompletedCount != nil {
+				incrementCompletedCount()
+			}
+
+			return nil
+		},
+		func(iterIndex, allCount int) {
+			if logKey != "" {
+				processLog(logKey, sizingSet.Index, iterIndex, allCount)
+			}
+		})
+	return allDeltas, err
+}
+
+// computeVmdDeltas は、各フレームごとのボーンモーフだけのデフォーム結果を並列処理で取得します。
+func computeMorphVmdDeltas(
+	frames []int, blockSize int,
+	model *pmx.PmxModel, motion *vmd.VmdMotion,
+	sizingSet *domain.SizingSet, target_bone_names []string, logKey string,
+	incrementCompletedCount func(),
+) ([]*delta.VmdDeltas, error) {
+	allDeltas := make([]*delta.VmdDeltas, len(frames))
+	err := miter.IterParallelByList(frames, blockSize, log_block_size,
+		func(index, data int) error {
+			if sizingSet.IsTerminate {
+				return merr.TerminateError
+			}
+
+			frame := float32(data)
+			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
+			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
+			vmdDeltas.Bones = deform.DeformBone(model, vmd.InitialMotion, false, data, target_bone_names)
+			allDeltas[index] = vmdDeltas
+
+			if incrementCompletedCount != nil {
+				incrementCompletedCount()
+			}
+
 			return nil
 		},
 		func(iterIndex, allCount int) {

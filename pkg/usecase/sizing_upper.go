@@ -48,14 +48,14 @@ func (su *SizingUpperUsecase) Exec(
 	blockSize, _ := miter.GetBlockSize(len(allFrames) * sizingSetCount)
 
 	// 元モデルのデフォーム結果を並列処理で取得
-	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01")
+	originalAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel, originalMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01", incrementCompletedCount)
 	if err != nil {
 		return false, err
 	}
 
 	incrementCompletedCount()
 
-	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01")
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01", incrementCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -344,7 +344,7 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 
 	for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
 		processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-			sizingSet.SizingModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01")
+			sizingSet.SizingModel, sizingProcessMotion, sizingSet, true, trunk_upper_bone_names, "上半身補正01", incrementCompletedCount)
 
 		if err != nil {
 			return err
@@ -360,7 +360,7 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 
 			// 現時点の結果
 			resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-				sizingSet.SizingModel, outputMotion, sizingSet, true, trunk_upper_bone_names, "")
+				sizingSet.SizingModel, outputMotion, sizingSet, true, trunk_upper_bone_names, "", nil)
 			if err != nil {
 				return err
 			}
@@ -388,7 +388,7 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 				mlog.I(mi18n.T("上半身補正04", map[string]interface{}{
 					"No":          sizingSet.Index + 1,
 					"IterIndex":   fmt.Sprintf("%04d", iFrame),
-					"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
+					"AllCount":    fmt.Sprintf("%04d", allFrames[len(allFrames)-1]),
 					"FramesIndex": tIndex + 1}))
 				prevLog = int(iFrame / 1000)
 

@@ -45,7 +45,7 @@ func (su *SizingShoulderUsecase) Exec(sizingSet *domain.SizingSet, sizingSetCoun
 	allFrames := mmath.IntRanges(int(originalMotion.MaxFrame()) + 1)
 	blockSize, _ := miter.GetBlockSize(len(allFrames) * sizingSetCount)
 
-	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "肩補正01")
+	sizingAllDeltas, err := computeVmdDeltas(allFrames, blockSize, sizingSet.SizingConfigModel, sizingProcessMotion, sizingSet, true, append(all_arm_bone_names[0], all_arm_bone_names[1]...), "肩補正01", incrementCompletedCount)
 	if err != nil {
 		return false, err
 	}
@@ -460,7 +460,7 @@ func (su *SizingShoulderUsecase) updateOutputMotion(
 		func(dIndex int, direction pmx.BoneDirection) error {
 			for tIndex, targetFrames := range [][]int{activeFrames, allFrames} {
 				processAllDeltas, err := computeVmdDeltas(targetFrames, blockSize,
-					sizingModel, sizingProcessMotion, sizingSet, true, all_arm_bone_names[dIndex], "肩補正01")
+					sizingModel, sizingProcessMotion, sizingSet, true, all_arm_bone_names[dIndex], "肩補正01", incrementCompletedCount)
 				if err != nil {
 					return err
 				}
@@ -475,7 +475,7 @@ func (su *SizingShoulderUsecase) updateOutputMotion(
 
 					// 現時点の結果
 					resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-						sizingModel, outputMotion, sizingSet, true, all_arm_bone_names[dIndex], "")
+						sizingModel, outputMotion, sizingSet, true, all_arm_bone_names[dIndex], "", nil)
 					if err != nil {
 						return err
 					}
@@ -511,7 +511,7 @@ func (su *SizingShoulderUsecase) updateOutputMotion(
 						mlog.I(mi18n.T("肩補正04", map[string]interface{}{
 							"No":          sizingSet.Index + 1,
 							"IterIndex":   fmt.Sprintf("%04d", iFrame),
-							"AllCount":    fmt.Sprintf("%02d", len(targetFrames)),
+							"AllCount":    fmt.Sprintf("%04d", allFrames[len(allFrames)-1]),
 							"Direction":   direction.String(),
 							"FramesIndex": tIndex + 1}))
 						prevLog = int(iFrame / 1000)
