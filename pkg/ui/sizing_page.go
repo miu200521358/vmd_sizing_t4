@@ -361,19 +361,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 									// changeSizingCheck(mWidgets.Window(), sizingState)
 								},
 							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.AdoptSizingCheck,
-								Text:        mi18n.T("即時反映"),
-								ToolTipText: mi18n.T("即時反映説明"),
-								Checked:     true,
-							},
-							declarative.CheckBox{
-								AssignTo:    &sizingState.AdoptAllCheck,
-								Text:        mi18n.T("全セット反映"),
-								ToolTipText: mi18n.T("全セット反映説明"),
-								Checked:     true,
-							},
-							sizingState.TerminateButton.Widgets(),
 						},
 					},
 					declarative.VSeparator{},
@@ -411,6 +398,25 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 								},
 								ColumnSpan: 5,
 							},
+						},
+					},
+					declarative.VSeparator{},
+					declarative.Composite{
+						Layout: declarative.Grid{Columns: 3},
+						Children: []declarative.Widget{
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptSizingCheck,
+								Text:        mi18n.T("即時反映"),
+								ToolTipText: mi18n.T("即時反映説明"),
+								Checked:     true,
+							},
+							declarative.CheckBox{
+								AssignTo:    &sizingState.AdoptAllCheck,
+								Text:        mi18n.T("全セット反映"),
+								ToolTipText: mi18n.T("全セット反映説明"),
+								Checked:     true,
+							},
+							sizingState.TerminateButton.Widgets(),
 						},
 					},
 					declarative.VSeparator{},
