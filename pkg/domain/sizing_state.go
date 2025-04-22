@@ -116,14 +116,14 @@ func (ss *SizingState) ClearOptions() {
 	ss.SizingArmTwistCheck.SetChecked(false)
 	ss.SizingWristCheck.SetChecked(false)
 	ss.ShoulderWeightEdit.ChangeText("")
-	ss.ShoulderWeightSlider.SetValue(0)
+	ss.ShoulderWeightSlider.ChangeValue(0)
 	ss.Player.Reset(ss.MaxFrame())
 }
 
 func (ss *SizingState) MaxFrame() float32 {
 	maxFrame := float32(0)
 	for _, sizingSet := range ss.SizingSets {
-		if maxFrame < sizingSet.OriginalMotion.MaxFrame() {
+		if sizingSet.OriginalMotion != nil && maxFrame < sizingSet.OriginalMotion.MaxFrame() {
 			maxFrame = sizingSet.OriginalMotion.MaxFrame()
 		}
 	}
