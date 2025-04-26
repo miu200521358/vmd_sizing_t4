@@ -115,6 +115,9 @@ func (ss *SizingSet) CreateOutputMotionPath() string {
 	_, fileName, _ := mfile.SplitPath(ss.SizingModelPath)
 
 	suffix := ""
+	if ss.IsSizingArmStance {
+		suffix += "A"
+	}
 	if ss.IsSizingLeg {
 		suffix += "L"
 	}
@@ -124,20 +127,17 @@ func (ss *SizingSet) CreateOutputMotionPath() string {
 	if ss.IsSizingShoulder {
 		suffix += "S"
 	}
-	if ss.IsSizingArmStance {
-		suffix += "A"
-	}
 	if ss.IsSizingFingerStance {
 		suffix += "F"
 	}
 	if ss.IsSizingArmTwist {
 		suffix += "W"
 	}
-	if ss.IsSizingReduction {
-		suffix += "R"
-	}
 	if ss.IsSizingWrist {
 		suffix += "P"
+	}
+	if ss.IsSizingReduction {
+		suffix += "R"
 	}
 	if len(suffix) > 0 {
 		suffix = fmt.Sprintf("_%s", suffix)

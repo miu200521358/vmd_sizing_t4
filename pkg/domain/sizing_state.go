@@ -30,7 +30,8 @@ type SizingState struct {
 	AdoptAllCheck           *walk.CheckBox       // 全セット反映チェック
 	TerminateButton         *widget.MPushButton  // 終了ボタン
 	SaveButton              *widget.MPushButton  // 保存ボタン
-	SizingBasicCheck        *walk.CheckBox       // 基本チェック
+	SizingArmStanceCheck    *walk.CheckBox       // 腕スタンスチェック
+	SizingLegCheck          *walk.CheckBox       // 足チェック
 	SizingUpperCheck        *walk.CheckBox       // 上半身チェック
 	SizingShoulderCheck     *walk.CheckBox       // 肩チェック
 	SizingFingerStanceCheck *walk.CheckBox       // 指チェック
@@ -97,7 +98,8 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 	ss.OutputModelPicker.ChangePath(ss.CurrentSet().OutputModelPath)
 
 	// サイジングオプションの情報を表示
-	ss.SizingBasicCheck.SetChecked(ss.CurrentSet().IsSizingLeg || ss.CurrentSet().IsSizingArmStance)
+	ss.SizingArmStanceCheck.SetChecked(ss.CurrentSet().IsSizingArmStance)
+	ss.SizingLegCheck.SetChecked(ss.CurrentSet().IsSizingLeg)
 	ss.SizingUpperCheck.SetChecked(ss.CurrentSet().IsSizingUpper)
 	ss.SizingShoulderCheck.SetChecked(ss.CurrentSet().IsSizingShoulder)
 	ss.SizingFingerStanceCheck.SetChecked(ss.CurrentSet().IsSizingFingerStance)
@@ -109,7 +111,8 @@ func (ss *SizingState) ChangeCurrentAction(index int) {
 }
 
 func (ss *SizingState) ClearOptions() {
-	ss.SizingBasicCheck.SetChecked(false)
+	ss.SizingArmStanceCheck.SetChecked(false)
+	ss.SizingLegCheck.SetChecked(false)
 	ss.SizingUpperCheck.SetChecked(false)
 	ss.SizingShoulderCheck.SetChecked(false)
 	ss.SizingFingerStanceCheck.SetChecked(false)
@@ -254,7 +257,8 @@ func (sizingState *SizingState) SetSizingOptionEnabled(enabled bool) {
 	sizingState.TerminateButton.SetEnabled(enabled)
 	sizingState.SaveButton.SetEnabled(enabled)
 
-	sizingState.SizingBasicCheck.SetEnabled(enabled)
+	sizingState.SizingArmStanceCheck.SetEnabled(enabled)
+	sizingState.SizingLegCheck.SetEnabled(enabled)
 	sizingState.SizingUpperCheck.SetEnabled(enabled)
 	sizingState.SizingShoulderCheck.SetEnabled(enabled)
 	sizingState.SizingFingerStanceCheck.SetEnabled(enabled)
