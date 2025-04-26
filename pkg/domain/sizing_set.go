@@ -159,8 +159,8 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 		// 6: computeVmdDeltas
 		// 2: computeMorphVmdDeltas
 		// 5*2: calculate系 / update系
-		// 2*2: updateOutputMotion (active / full)
-		processCount += maxFrame * (6 + 2 + 5*2 + 2*2 + 1)
+		// 3*2: updateOutputMotion (active / interval / full)
+		processCount += maxFrame * (6 + 2 + 5*2 + 3*2 + 1)
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
@@ -301,6 +301,10 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 
 	// 元モデル設定
 	ss.setOriginalModel(originalModel, originalConfigModel)
+
+	// 肩の比重を計算する
+	ss.ShoulderWeight = ss.calculateShoulderWeight()
+	ss.CompletedShoulderWeight = ss.ShoulderWeight
 
 	// 出力パスを設定
 	ss.OutputModelPath = ss.CreateOutputModelPath()
@@ -572,50 +576,20 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結左足", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先結右足", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		// 足IK補正
-		{"元今左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"元今左足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"元今左足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今左足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今左足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先理左先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"先理左足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"元今右足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"元今右足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先今右足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先理右先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右膝1", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"先理右足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右足首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右膝D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結右足首D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右先D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右踵D1", rootBone.Index(), mmath.NewMVec3(), "足04"},
 		{"先結左足IK1", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足04"},
 		{"先結右足IK1", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足04"},
 		// センター補正
@@ -624,33 +598,25 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先理想体軸", rootBone.Index(), mmath.NewMVec3(), "足06"},
 		{"先センター", centerBone.ParentIndex, centerBone.Position, "足06"},
 		// 足IK補正（2回目）
-		{"先今左足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先今左膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先今左膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今左足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今左踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今左先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先理左先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結左足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結左膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理左踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結左足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結左膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結左足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結左先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結左踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先今右足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先今右膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今右足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先今右膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今右足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今右踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先今右先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理右足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先理右先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結右足2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結右膝2", rootBone.Index(), mmath.NewMVec3(), "足08"},
+		{"先理右踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結右足首2", rootBone.Index(), mmath.NewMVec3(), "足08"},
-		{"先結右膝D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結右足首D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結右先D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"先結右踵D2", rootBone.Index(), mmath.NewMVec3(), "足08"},
@@ -918,6 +884,11 @@ func (ss *SizingSet) LoadMotion(path string) {
 
 	ss.setMotion(originalMotion, sizingMotion)
 
+	// 肩の比重を計算する
+	ss.ShoulderWeight = ss.calculateShoulderWeight()
+	ss.CompletedShoulderWeight = ss.ShoulderWeight
+
+	// 出力パスを設定
 	outputPath := ss.CreateOutputMotionPath()
 	ss.OutputMotionPath = outputPath
 }
