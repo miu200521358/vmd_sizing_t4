@@ -363,7 +363,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 							},
 						},
 					},
-					declarative.VSeparator{},
 					declarative.Composite{
 						Layout: declarative.Grid{Columns: 8},
 						Children: []declarative.Widget{
