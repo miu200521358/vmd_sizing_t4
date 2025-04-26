@@ -860,16 +860,6 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 			sizingTrunkRootInitialLocalPosition := sizingMorphCenterParentDelta.FilledGlobalMatrix().Inverted().MulVec3(
 				sizingMorphTrunkRootDelta.FilledGlobalPosition())
 
-			// // 足のベクトル
-			// originalInitialLeftLegDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Left())
-			// originalInitialLeftKneeDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.KNEE.Left())
-			// originalInitialLeftLegVector := originalInitialLeftKneeDelta.FilledGlobalPosition().Subed(
-			// 	originalInitialLeftLegDelta.FilledGlobalPosition()).Normalized()
-			// originalInitialRightLegDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Right())
-			// originalInitialRightKneeDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.KNEE.Right())
-			// originalInitialRightLegVector := originalInitialRightKneeDelta.FilledGlobalPosition().Subed(
-			// 	originalInitialRightLegDelta.FilledGlobalPosition()).Normalized()
-
 			// --------------------------------
 
 			// 元の体幹中心
@@ -882,23 +872,6 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 
 			// 体幹中心のローカル位置の高さが、元の体幹中心の高さに対してどのくらいの比率か
 			trunkRootYRatio := originalTrunkRootLocalPosition.Y / originalInitialTrunkRootY
-
-			// // 元の左足のベクトル内積
-			// originalLeftLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.Left())
-			// originalLeftKneeDelta := originalAllDeltas[index].Bones.GetByName(pmx.KNEE.Left())
-			// originalLeftLegVector := originalLeftKneeDelta.FilledGlobalPosition().Subed(originalLeftLegDelta.FilledGlobalPosition()).Normalized()
-			// originalLeftLegDot := originalLeftLegVector.Dot(originalInitialLeftLegVector)
-
-			// // 元の右足のベクトル内積
-			// originalRightLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.Right())
-			// originalRightKneeDelta := originalAllDeltas[index].Bones.GetByName(pmx.KNEE.Right())
-			// originalRightLegVector := originalRightKneeDelta.FilledGlobalPosition().Subed(originalRightLegDelta.FilledGlobalPosition()).Normalized()
-			// originalRightLegDot := originalRightLegVector.Dot(originalInitialRightLegVector)
-
-			// // 比率に足のベクトルを加味する
-			// // 足のベクトルが前を向いているほど、体幹中心の高さを上げる
-			// yRatio := mmath.Lerp(trunkRootYRatio*sizingInitialTrunkRootY/originalInitialTrunkRootY,
-			// 	trunkRootYRatio, math.Max(originalLeftLegDot, originalRightLegDot))
 
 			// 先の体幹中心の高さに、その比率をかける
 			sizingTrunkRootY := sizingInitialTrunkRootY * trunkRootYRatio
@@ -1466,54 +1439,12 @@ func (su *SizingLegUsecase) updateOutputMotion(
 					resultHeelDelta := resultAllVmdDeltas[0].Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
 					processHeelDelta := processAllDeltas[fIndex].Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
 
-					if resultLegDelta.FilledGlobalPosition().Distance(processLegDelta.FilledGlobalPosition()) > legThreshold {
-						boneName := pmx.LOWER.String()
-						processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-						resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
-						resultBf.Rotation = processBf.FilledRotation().Copy()
-						outputMotion.InsertBoneFrame(boneName, resultBf)
+					if resultLegDelta.FilledGlobalPosition().Distance(processLegDelta.FilledGlobalPosition()) > legThreshold ||
+						resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold ||
+						resultAnkleDelta.FilledGlobalPosition().Distance(processAnkleDelta.FilledGlobalPosition()) > ankleThreshold ||
+						resultHeelDelta.FilledGlobalPosition().Distance(processHeelDelta.FilledGlobalPosition()) > heelThreshold {
 
-						// 現時点の結果を取り直す
-						resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-							sizingModel, outputMotion, sizingSet, true, leg_direction_bone_names[dIndex], "", nil)
-						if err != nil {
-							return err
-						}
-
-						// 各関節の位置を取り直す
-						resultKneeDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.KNEE_D.StringFromDirection(direction))
-						resultAnkleDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.ANKLE_D.StringFromDirection(direction))
-						resultHeelDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
-					}
-
-					// 各関節位置がズレている場合、元の回転を焼き込む
-					if resultKneeDelta.FilledGlobalPosition().Distance(processKneeDelta.FilledGlobalPosition()) > kneeThreshold ||
-						resultAnkleDelta.FilledGlobalPosition().Distance(processAnkleDelta.FilledGlobalPosition()) > ankleThreshold {
-
-						for _, name := range []pmx.StandardBoneName{pmx.LEG, pmx.KNEE, pmx.LEG_IK} {
-							boneName := name.StringFromDirection(direction)
-							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
-							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
-							resultBf.Position = processBf.FilledPosition().Copy()
-							resultBf.Rotation = processBf.FilledRotation().Copy()
-							outputMotion.InsertBoneFrame(boneName, resultBf)
-						}
-
-						// 現時点の結果を取り直す
-						resultAllVmdDeltas, err := computeVmdDeltas([]int{iFrame}, 1,
-							sizingModel, outputMotion, sizingSet, true, leg_direction_bone_names[dIndex], "", nil)
-						if err != nil {
-							return err
-						}
-
-						// 各関節の位置を取り直す
-						resultKneeDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.KNEE_D.StringFromDirection(direction))
-						resultAnkleDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.ANKLE_D.StringFromDirection(direction))
-						resultHeelDelta = resultAllVmdDeltas[0].Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
-					}
-
-					if resultHeelDelta.FilledGlobalPosition().Distance(processHeelDelta.FilledGlobalPosition()) > heelThreshold {
-						for _, name := range []pmx.StandardBoneName{pmx.ANKLE, pmx.LEG_IK} {
+						for _, name := range []pmx.StandardBoneName{pmx.LEG, pmx.KNEE, pmx.ANKLE, pmx.LEG_IK} {
 							boneName := name.StringFromDirection(direction)
 							processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 							resultBf := outputMotion.BoneFrames.Get(boneName).Get(frame)
@@ -1596,6 +1527,7 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 			})
 		}
 		{
+			// あえて足ボーンを少し動かす
 			boneName := pmx.LEG.StringFromDirection(direction)
 			offsetQUat := mmath.NewMQuaternionFromDegrees(3, 0, 0)
 			sizingSet.OutputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
