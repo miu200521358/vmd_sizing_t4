@@ -57,7 +57,7 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
 		mi18n.T("サイジング対象モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadSizingMotion(cw, path)
+			sizingState.LoadSizingMotion(cw, path, true)
 		},
 	)
 
