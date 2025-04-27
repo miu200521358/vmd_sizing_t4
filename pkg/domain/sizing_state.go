@@ -216,10 +216,12 @@ func (sizingState *SizingState) LoadSizingModel(
 
 // LoadSizingMotion サイジングモーションを読み込む
 func (sizingState *SizingState) LoadSizingMotion(
-	cw *controller.ControlWindow, path string,
+	cw *controller.ControlWindow, path string, isClear bool,
 ) {
 	// オプションクリア
-	sizingState.ClearOptions()
+	if isClear {
+		sizingState.ClearOptions()
+	}
 
 	sizingState.CurrentSet().LoadMotion(path)
 
