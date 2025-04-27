@@ -51,7 +51,7 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 
 			// オリジナルモーションをサイジング先モーションとして読み直し
 			sizingState.SetCurrentIndex(sizingSet.Index)
-			sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath)
+			sizingState.LoadSizingMotion(cw, sizingSet.OriginalMotionPath, false)
 		}
 	}
 
@@ -435,7 +435,7 @@ var all_gravity_lower_leg_bone_names = append(all_lower_leg_bone_names, gravity_
 var trunk_upper_bone_names = []string{
 	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
 	pmx.UPPER_ROOT.String(), pmx.UPPER.String(), pmx.UPPER2.String(), pmx.NECK_ROOT.String(),
-	pmx.SHOULDER.Left(), pmx.SHOULDER.Right(), pmx.NECK.String()}
+	pmx.SHOULDER.Left(), pmx.SHOULDER.Right(), pmx.ARM.Left(), pmx.ARM.Right(), pmx.NECK.String()}
 
 // 腕系ボーン名（左右別）
 var all_arm_stance_bone_names = [][]string{
