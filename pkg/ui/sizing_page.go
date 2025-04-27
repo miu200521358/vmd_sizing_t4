@@ -2,7 +2,6 @@ package ui
 
 import (
 	"miu200521358/vmd_sizing_t4/pkg/domain"
-	"miu200521358/vmd_sizing_t4/pkg/usecase"
 	"path/filepath"
 	"strconv"
 
@@ -19,7 +18,7 @@ import (
 
 func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	var sizingTab *walk.TabPage
-	sizingState := new(domain.SizingState)
+	sizingState := new(SizingState)
 
 	sizingState.Player = widget.NewMotionPlayer()
 
@@ -442,59 +441,4 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			sizingState.Player.Widgets(),
 		},
 	}
-}
-
-func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingState) {
-	startIndex := 0
-	endIndex := len(sizingState.SizingSets)
-	if !sizingState.AdoptAllCheck.Checked() {
-		// 現在のインデックスのみ
-		startIndex = sizingState.CurrentIndex()
-		endIndex = min(len(sizingState.SizingSets), startIndex+1)
-	}
-
-	for _, sizingSet := range sizingState.SizingSets[startIndex:endIndex] {
-		sizingSet.IsSizingLeg = sizingState.SizingLegCheck.Checked()
-		sizingSet.IsSizingUpper = sizingState.SizingUpperCheck.Checked()
-		sizingSet.IsSizingShoulder = sizingState.SizingShoulderCheck.Checked()
-		sizingSet.IsSizingArmStance = sizingState.SizingArmStanceCheck.Checked()
-		sizingSet.IsSizingFingerStance = sizingState.SizingFingerStanceCheck.Checked()
-		sizingSet.IsSizingArmTwist = sizingState.SizingArmTwistCheck.Checked()
-		sizingSet.IsSizingWrist = sizingState.SizingWristCheck.Checked()
-		sizingSet.ShoulderWeight = sizingState.ShoulderWeightSlider.Value()
-
-		outputPath := sizingSet.CreateOutputMotionPath()
-		if outputPath != "" {
-			sizingSet.OutputMotionPath = outputPath
-			if sizingSet.Index == sizingState.CurrentIndex() {
-				sizingState.OutputMotionPicker.SetPath(outputPath)
-			}
-		}
-	}
-
-	if !sizingState.AdoptSizingCheck.Checked() {
-		// 即時反映がOFFの場合は、サイジングを実行しない
-		return
-	}
-
-	// エラーを受け取るためのチャネルを作成
-	errCh := make(chan error, 1)
-
-	// goroutineで処理を実行し、エラーをチャネル経由で返す
-	go func() {
-		err := usecase.ExecSizing(cw, sizingState)
-		errCh <- err // エラーがnilでも送信
-	}()
-
-	// UIスレッドでエラーを受け取る
-	go func() {
-		if err := <-errCh; err != nil {
-			// UIスレッドでエラーを表示する
-			cw.Synchronize(func() {
-				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
-					sizingState.SetSizingEnabled(true)
-				}
-			})
-		}
-	}()
 }

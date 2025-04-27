@@ -939,6 +939,8 @@ func (ss *SizingSet) insertShortageConfigBones(
 						thumb1.ParentIndex = thumb0.Index()
 					}
 					bones.Setup()
+				} else if err == merr.ParentNotFoundError {
+					// 何もしない
 				} else {
 					return err
 				}

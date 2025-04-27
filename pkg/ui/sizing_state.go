@@ -1,8 +1,9 @@
-package domain
+package ui
 
 import (
 	"encoding/json"
 	"fmt"
+	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"os"
 	"path/filepath"
 	"strings"
@@ -40,7 +41,7 @@ type SizingState struct {
 	ShoulderWeightSlider    *walk.Slider         // 肩の重みスライダー
 	ShoulderWeightEdit      *walk.TextEdit       // 肩の重みエディット
 	Player                  *widget.MotionPlayer // モーションプレイヤー
-	SizingSets              []*SizingSet         `json:"sizing_sets"` // サイジングセット
+	SizingSets              []*domain.SizingSet  `json:"sizing_sets"` // サイジングセット
 }
 
 func (ss *SizingState) AddAction() {
@@ -72,11 +73,11 @@ func (ss *SizingState) ResetSet() {
 		ss.NavToolBar.Actions().RemoveAt(index)
 	}
 
-	ss.SizingSets = make([]*SizingSet, 0)
+	ss.SizingSets = make([]*domain.SizingSet, 0)
 	ss.currentIndex = -1
 
 	// 1セット追加
-	ss.SizingSets = append(ss.SizingSets, NewSizingSet(len(ss.SizingSets)))
+	ss.SizingSets = append(ss.SizingSets, domain.NewSizingSet(len(ss.SizingSets)))
 	ss.AddAction()
 }
 
@@ -142,7 +143,7 @@ func (ss *SizingState) CurrentIndex() int {
 	return ss.currentIndex
 }
 
-func (ss *SizingState) CurrentSet() *SizingSet {
+func (ss *SizingState) CurrentSet() *domain.SizingSet {
 	return ss.SizingSets[ss.currentIndex]
 }
 
