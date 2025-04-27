@@ -183,6 +183,8 @@ func (ss *SizingState) LoadSet(jsonPath string) {
 func (sizingState *SizingState) LoadOriginalModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	sizingState.SetSizingEnabled(false)
+
 	// オプションクリア
 	sizingState.ClearOptions()
 
@@ -192,12 +194,16 @@ func (sizingState *SizingState) LoadOriginalModel(
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
+
+	sizingState.SetSizingEnabled(true)
 }
 
 // LoadSizingModel サイジング先モデルを読み込む
 func (sizingState *SizingState) LoadSizingModel(
 	cw *controller.ControlWindow, path string,
 ) {
+	sizingState.SetSizingEnabled(false)
+
 	// オプションクリア
 	sizingState.ClearOptions()
 
@@ -212,12 +218,16 @@ func (sizingState *SizingState) LoadSizingModel(
 	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
 	sizingState.ShoulderWeightEdit.ChangeText(fmt.Sprintf("%d", sizingState.CurrentSet().ShoulderWeight))
 	sizingState.ShoulderWeightSlider.ChangeValue(sizingState.CurrentSet().ShoulderWeight)
+
+	sizingState.SetSizingEnabled(true)
 }
 
 // LoadSizingMotion サイジングモーションを読み込む
 func (sizingState *SizingState) LoadSizingMotion(
 	cw *controller.ControlWindow, path string, isClear bool,
 ) {
+	sizingState.SetSizingEnabled(false)
+
 	// オプションクリア
 	if isClear {
 		sizingState.ClearOptions()
@@ -233,6 +243,8 @@ func (sizingState *SizingState) LoadSizingMotion(
 	}
 
 	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
+
+	sizingState.SetSizingEnabled(true)
 }
 
 // SetSizingEnabled サイジング有効無効設定
