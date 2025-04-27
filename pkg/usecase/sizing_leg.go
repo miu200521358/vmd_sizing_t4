@@ -294,8 +294,8 @@ func (su *SizingLegUsecase) createLowerIkBone(sizingSet *domain.SizingSet, direc
 	ikBone.Position = ikTargetBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = ikTargetBone.Index()
-	ikBone.Ik.LoopCount = 100
-	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.LoopCount = 10
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 1, Y: 0.0, Z: 0.0}
 	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
 	for _, parentBoneIndex := range ikTargetBone.ParentBoneIndexes {
 		link := pmx.NewIkLink()
@@ -523,8 +523,8 @@ func (su *SizingLegUsecase) createLegDIkBone(sizingSet *domain.SizingSet, direct
 	ikBone.Position = tailBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = tailBone.Index()
-	ikBone.Ik.LoopCount = 10
-	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.LoopCount = 100
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
 	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
 
 	for _, boneName := range []string{
@@ -1014,8 +1014,8 @@ func (su *SizingLegUsecase) createFullAnkleIkBone(sizingSet *domain.SizingSet, d
 	ikBone.Position = tailBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = tailBone.Index()
-	ikBone.Ik.LoopCount = 100
-	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.LoopCount = 1000
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.01, Y: 0.0, Z: 0.0}
 	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
 
 	for _, boneName := range []string{
