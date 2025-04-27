@@ -160,11 +160,16 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 		// 2: computeMorphVmdDeltas
 		// 5*2: calculate系 / update系
 		// 3*2: updateOutputMotion (active / interval / full)
+		// 1: updateLegIkOffset
 		processCount += maxFrame * (6 + 2 + 5*2 + 3*2 + 1)
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
-		processCount += 4 + maxFrame*2
+		// 2: computeVmdDeltas
+		// 2: computeMorphVmdDeltas
+		// 1*2: calculate系 / update系
+		// 3*2: updateOutputMotion (active / interval / full)
+		processCount += maxFrame * (2 + 2 + 1*2 + 3*2)
 	}
 
 	if ss.IsSizingShoulder && !ss.CompletedSizingShoulder {
@@ -623,9 +628,25 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結左足IK2", leftLegIkBone.ParentIndex, leftLegIkBone.Position, "足08"},
 		{"先結右足IK2", rightLegIkBone.ParentIndex, rightLegIkBone.Position, "足08"},
 		// 上半身補正
-		{"上半身Root", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
-		{"上半身Tgt", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
-		{"上半身IK", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今上半身", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今上半身2", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今首根元", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今首", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今左腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"元今右腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今上半身", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今上半身2", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今首根元", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今首", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今左腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先今右腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先理首根元", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結上半身", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結上半身2", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結首根元", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結首", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結左腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
+		{"先結右腕", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		// 肩補正
 		{"左腕先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
 		{"左腕比率先肩", rootBone.Index(), mmath.NewMVec3(), "肩02_左"},
