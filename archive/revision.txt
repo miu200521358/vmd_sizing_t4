@@ -451,9 +451,9 @@ VmdSizing_6.0.0_beta_62 (2025/04/27)
 - UI
   - モデルやモーション読み込み時に、一旦EnabledをOFFにして、読み込み後にONにするよう修正
 - 足補正
-  - 足IK親とかキーフレの更新時にUpdateを使っていたのをInsertを使うよう修正（なければ追加する）
+  - 足IK親とかキーフレの更新時にUpdateを使っていたのをInsertBoneFrameを使うよう修正（あればUpdateなければInsert）
 - 上半身補正
-  - 上半身とかキーフレの更新時にUpdateを使っていたのをInsertを使うよう修正（なければ追加する）
+  - 上半身とかキーフレの更新時にUpdateを使っていたのをInsertBoneFrameを使うよう修正（あればUpdateなければInsert）
 
 
 TODO

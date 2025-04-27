@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
+	"github.com/miu200521358/mlib_go/pkg/config/merr"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
 	"github.com/miu200521358/mlib_go/pkg/infrastructure/repository"
@@ -32,7 +33,10 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			}
 
 			if err := rep.Save(path, motion, false); err != nil {
-				mlog.ET(mi18n.T("保存失敗"), err.Error())
+				mlog.ET(mi18n.T("保存失敗"), err, "")
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
 			}
 		},
 	)
@@ -47,7 +51,10 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			}
 
 			if err := rep.Save(path, model, false); err != nil {
-				mlog.ET(mi18n.T("保存失敗"), err.Error())
+				mlog.ET(mi18n.T("保存失敗"), err, "")
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
 			}
 		},
 	)
@@ -57,7 +64,11 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("サイジング対象モーション(Vmd/Vpd)"),
 		mi18n.T("サイジング対象モーションツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadSizingMotion(cw, path, true)
+			if err := sizingState.LoadSizingMotion(cw, path, true); err != nil {
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
+			}
 		},
 	)
 
@@ -66,7 +77,11 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("モーション作成元モデル(Pmx/Json)"),
 		mi18n.T("モーション作成元モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadOriginalModel(cw, path)
+			if err := sizingState.LoadOriginalModel(cw, path); err != nil {
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
+			}
 		},
 	)
 
@@ -75,7 +90,11 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		mi18n.T("サイジング先モデル(Pmx)"),
 		mi18n.T("サイジング先モデルツールチップ"),
 		func(cw *controller.ControlWindow, rep repository.IRepository, path string) {
-			sizingState.LoadSizingModel(cw, path)
+			if err := sizingState.LoadSizingModel(cw, path); err != nil {
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
+			}
 		},
 	)
 
@@ -216,7 +235,10 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 			if sizingSet.OutputMotionPath != "" && sizingSet.OutputMotion != nil {
 				rep := repository.NewVmdRepository(true)
 				if err := rep.Save(sizingSet.OutputMotionPath, sizingSet.OutputMotion, false); err != nil {
-					mlog.ET(mi18n.T("保存失敗"), err.Error())
+					mlog.ET(mi18n.T("保存失敗"), err, "")
+					if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+						sizingState.SetSizingEnabled(true)
+					}
 				}
 			}
 		}
@@ -455,5 +477,24 @@ func changeSizingCheck(cw *controller.ControlWindow, sizingState *domain.SizingS
 		return
 	}
 
-	go usecase.ExecSizing(cw, sizingState)
+	// エラーを受け取るためのチャネルを作成
+	errCh := make(chan error, 1)
+
+	// goroutineで処理を実行し、エラーをチャネル経由で返す
+	go func() {
+		err := usecase.ExecSizing(cw, sizingState)
+		errCh <- err // エラーがnilでも送信
+	}()
+
+	// UIスレッドでエラーを受け取る
+	go func() {
+		if err := <-errCh; err != nil {
+			// UIスレッドでエラーを表示する
+			cw.Synchronize(func() {
+				if ok := merr.ShowErrorDialog(cw.AppConfig(), err); ok {
+					sizingState.SetSizingEnabled(true)
+				}
+			})
+		}
+	}()
 }

@@ -22,12 +22,12 @@ import (
 	"github.com/miu200521358/mlib_go/pkg/usecase/deform"
 )
 
-func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
+func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) error {
 	if !sizingState.AdoptSizingCheck.Checked() ||
 		(sizingState.CurrentSet().OriginalModel == nil &&
 			sizingState.CurrentSet().SizingConfigModel == nil &&
 			sizingState.CurrentSet().OutputMotion == nil) {
-		return
+		return nil
 	}
 
 	for _, sizingSet := range sizingState.SizingSets {
@@ -173,8 +173,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 				break
 			} else {
 				mlog.E(mi18n.T("サイジングエラー", map[string]interface{}{
-					"Error": err.Error(), "AppName": cw.AppConfig().Name, "AppVersion": cw.AppConfig().Version}))
-				panic(err)
+					"AppName": cw.AppConfig().Name, "AppVersion": cw.AppConfig().Version}), err, "")
+				return err
 			}
 		}
 	}
@@ -212,6 +212,8 @@ func ExecSizing(cw *controller.ControlWindow, sizingState *domain.SizingState) {
 	// 最初に戻す(読み直しとかでINDEXがズレた時用)
 	sizingState.ChangeCurrentAction(0)
 	controller.Beep()
+
+	return nil
 }
 
 func generateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3) {

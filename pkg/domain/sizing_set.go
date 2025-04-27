@@ -248,16 +248,17 @@ func (ss *SizingSet) setSizingModel(sizingModel, sizingConfigModel *pmx.PmxModel
 
 // LoadOriginalModel サイジング元モデルを読み込む
 // TODO json の場合はフィッティングあり
-func (ss *SizingSet) LoadOriginalModel(path string) {
+func (ss *SizingSet) LoadOriginalModel(path string) error {
 	if path == "" {
 		ss.setOriginalModel(nil, nil)
-		return
+		return nil
 	}
 
 	var wg sync.WaitGroup
 	var originalModel, originalConfigModel *pmx.PmxModel
 
 	wg.Add(1)
+	errChan := make(chan error, 2)
 	go func() {
 		defer wg.Done()
 
@@ -266,10 +267,12 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 			originalModel = data.(*pmx.PmxModel)
 
 			if err := originalModel.Bones.InsertShortageOverrideBones(); err != nil {
-				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err, "")
+				errChan <- err
 			}
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
@@ -284,7 +287,8 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 				originalConfigModel,
 				ss.insertShortageConfigBones,
 				nil); err != nil {
-				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err, "")
+				errChan <- err
 			} else {
 				if mlog.IsDebug() {
 					// デバッグモードの時は、サイジング用モデルを出力
@@ -293,15 +297,20 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 				}
 			}
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
 	wg.Wait()
 
-	if originalModel == nil || originalConfigModel == nil {
-		ss.setOriginalModel(nil, nil)
-		return
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			ss.setOriginalModel(nil, nil)
+			return err
+		}
 	}
 
 	// 元モデル設定
@@ -313,17 +322,21 @@ func (ss *SizingSet) LoadOriginalModel(path string) {
 
 	// 出力パスを設定
 	ss.OutputModelPath = ss.CreateOutputModelPath()
+
+	return nil
 }
 
 // LoadSizingModel サイジング先モデルを読み込む
-func (ss *SizingSet) LoadSizingModel(path string) {
+func (ss *SizingSet) LoadSizingModel(path string) error {
 	if path == "" {
 		ss.setSizingModel(nil, nil)
-		return
+		return nil
 	}
 
 	var wg sync.WaitGroup
 	var sizingModel, sizingConfigModel *pmx.PmxModel
+
+	errChan := make(chan error, 2)
 
 	wg.Add(1)
 	go func() {
@@ -333,10 +346,12 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 		if data, err := pmxRep.Load(path); err == nil {
 			sizingModel = data.(*pmx.PmxModel)
 			if err := sizingModel.Bones.InsertShortageOverrideBones(); err != nil {
-				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err, "")
+				errChan <- err
 			}
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
@@ -356,7 +371,8 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 				sizingConfigModel,
 				ss.insertShortageConfigBones,
 				insertDebugBones); err != nil {
-				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err.Error())
+				mlog.ET(mi18n.T("システム用ボーン追加失敗"), err, "")
+				errChan <- err
 			} else {
 				if mlog.IsDebug() {
 					// デバッグモードの時は、サイジング用モデルを出力
@@ -365,15 +381,19 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 				}
 			}
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
 	wg.Wait()
+	close(errChan)
 
-	if sizingModel == nil || sizingConfigModel == nil {
-		ss.setSizingModel(nil, nil)
-		return
+	for err := range errChan {
+		if err != nil {
+			ss.setSizingModel(nil, nil)
+			return err
+		}
 	}
 
 	// サイジングモデル設定
@@ -390,6 +410,8 @@ func (ss *SizingSet) LoadSizingModel(path string) {
 	// // 重心体積を計算する
 	// ss.OriginalGravityVolumes = calculateGravityVolume(ss.OriginalConfigModel)
 	// ss.SizingGravityVolumes = calculateGravityVolume(ss.SizingConfigModel)
+
+	return nil
 }
 
 func (ss *SizingSet) calculateShoulderWeight() int {
@@ -786,6 +808,8 @@ func (ss *SizingSet) insertShortageConfigBones(
 						return true
 					})
 				}
+			} else if err == merr.ParentNotFoundError {
+				// 何もしない
 			} else {
 				return err
 			}
@@ -894,6 +918,8 @@ func (ss *SizingSet) insertShortageConfigBones(
 							return true
 						})
 					}
+				} else if err == merr.ParentNotFoundError {
+					// 何もしない
 				} else {
 					return err
 				}
@@ -926,14 +952,15 @@ func (ss *SizingSet) insertShortageConfigBones(
 }
 
 // LoadMotion サイジング対象モーションを読み込む
-func (ss *SizingSet) LoadMotion(path string) {
+func (ss *SizingSet) LoadMotion(path string) error {
 	if path == "" {
 		ss.setMotion(nil, nil)
-		return
+		return nil
 	}
 
 	var wg sync.WaitGroup
 	var originalMotion, sizingMotion *vmd.VmdMotion
+	errChan := make(chan error, 2)
 
 	wg.Add(1)
 	go func() {
@@ -943,7 +970,8 @@ func (ss *SizingSet) LoadMotion(path string) {
 		if data, err := vmdRep.Load(path); err == nil {
 			originalMotion = data.(*vmd.VmdMotion)
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
@@ -955,11 +983,19 @@ func (ss *SizingSet) LoadMotion(path string) {
 		if data, err := vmdRep.Load(path); err == nil {
 			sizingMotion = data.(*vmd.VmdMotion)
 		} else {
-			mlog.ET(mi18n.T("読み込み失敗"), err.Error())
+			mlog.ET(mi18n.T("読み込み失敗"), err, "")
+			errChan <- err
 		}
 	}()
 
 	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
 
 	ss.setMotion(originalMotion, sizingMotion)
 
@@ -970,6 +1006,8 @@ func (ss *SizingSet) LoadMotion(path string) {
 	// 出力パスを設定
 	outputPath := ss.CreateOutputMotionPath()
 	ss.OutputMotionPath = outputPath
+
+	return nil
 }
 
 func (ss *SizingSet) Delete() {

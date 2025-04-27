@@ -147,7 +147,7 @@ func (ss *SizingState) CurrentSet() *SizingSet {
 }
 
 // SaveSet セット情報を保存
-func (ss *SizingState) SaveSet(jsonPath string) {
+func (ss *SizingState) SaveSet(jsonPath string) error {
 	if strings.ToLower(filepath.Ext(jsonPath)) != ".json" {
 		// 拡張子が.jsonでない場合は付与
 		jsonPath += ".json"
@@ -158,37 +158,47 @@ func (ss *SizingState) SaveSet(jsonPath string) {
 		if err := os.WriteFile(jsonPath, output, 0644); err == nil {
 			mlog.I(mi18n.T("サイジングセット保存成功", map[string]any{"Path": jsonPath}))
 		} else {
-			mlog.E(mi18n.T("サイジングセット保存失敗エラー", map[string]any{"Error": err.Error()}))
+			mlog.E(mi18n.T("サイジングセット保存失敗エラー"), err, "")
+			return err
 		}
 	} else {
-		mlog.E(mi18n.T("サイジングセット保存失敗エラー", map[string]any{"Error": err.Error()}))
+		mlog.E(mi18n.T("サイジングセット保存失敗エラー"), err, "")
+		return err
 	}
+
+	return nil
 }
 
 // LoadSet セット情報を読み込む
-func (ss *SizingState) LoadSet(jsonPath string) {
+func (ss *SizingState) LoadSet(jsonPath string) error {
 	// セット情報をJSONから読み込んでセット情報を更新
 	if input, err := os.ReadFile(jsonPath); err == nil && len(input) > 0 {
 		if err := json.Unmarshal(input, &ss.SizingSets); err == nil {
 			mlog.I(mi18n.T("サイジングセット読込成功", map[string]any{"Path": jsonPath}))
 		} else {
-			mlog.E(mi18n.T("サイジングセット読込失敗エラー", map[string]any{"Error": err.Error()}))
+			mlog.E(mi18n.T("サイジングセット読込失敗エラー"), err, "")
+			return err
 		}
 	} else {
-		mlog.E(mi18n.T("サイジングセット読込失敗エラー", map[string]any{"Error": err.Error()}))
+		mlog.E(mi18n.T("サイジングセット読込失敗エラー"), err, "")
+		return err
 	}
+
+	return nil
 }
 
 // LoadOriginalModel 元モデルを読み込む
 func (sizingState *SizingState) LoadOriginalModel(
 	cw *controller.ControlWindow, path string,
-) {
+) error {
 	sizingState.SetSizingEnabled(false)
 
 	// オプションクリア
 	sizingState.ClearOptions()
 
-	sizingState.CurrentSet().LoadOriginalModel(path)
+	if err := sizingState.CurrentSet().LoadOriginalModel(path); err != nil {
+		return err
+	}
 
 	cw.StoreModel(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalModel)
 
@@ -196,18 +206,22 @@ func (sizingState *SizingState) LoadOriginalModel(
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
 
 	sizingState.SetSizingEnabled(true)
+
+	return nil
 }
 
 // LoadSizingModel サイジング先モデルを読み込む
 func (sizingState *SizingState) LoadSizingModel(
 	cw *controller.ControlWindow, path string,
-) {
+) error {
 	sizingState.SetSizingEnabled(false)
 
 	// オプションクリア
 	sizingState.ClearOptions()
 
-	sizingState.CurrentSet().LoadSizingModel(path)
+	if err := sizingState.CurrentSet().LoadSizingModel(path); err != nil {
+		return err
+	}
 
 	cw.StoreModel(0, sizingState.CurrentIndex(), sizingState.CurrentSet().SizingModel)
 
@@ -220,12 +234,14 @@ func (sizingState *SizingState) LoadSizingModel(
 	sizingState.ShoulderWeightSlider.ChangeValue(sizingState.CurrentSet().ShoulderWeight)
 
 	sizingState.SetSizingEnabled(true)
+
+	return nil
 }
 
 // LoadSizingMotion サイジングモーションを読み込む
 func (sizingState *SizingState) LoadSizingMotion(
 	cw *controller.ControlWindow, path string, isClear bool,
-) {
+) error {
 	sizingState.SetSizingEnabled(false)
 
 	// オプションクリア
@@ -233,7 +249,9 @@ func (sizingState *SizingState) LoadSizingMotion(
 		sizingState.ClearOptions()
 	}
 
-	sizingState.CurrentSet().LoadMotion(path)
+	if err := sizingState.CurrentSet().LoadMotion(path); err != nil {
+		return err
+	}
 
 	cw.StoreMotion(0, sizingState.CurrentIndex(), sizingState.CurrentSet().OutputMotion)
 	cw.StoreMotion(1, sizingState.CurrentIndex(), sizingState.CurrentSet().OriginalMotion)
@@ -245,6 +263,8 @@ func (sizingState *SizingState) LoadSizingMotion(
 	sizingState.OutputMotionPicker.SetPath(sizingState.CurrentSet().OutputMotionPath)
 
 	sizingState.SetSizingEnabled(true)
+
+	return nil
 }
 
 // SetSizingEnabled サイジング有効無効設定
