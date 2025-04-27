@@ -219,7 +219,7 @@ func (su *SizingUpperUsecase) Exec(
 
 func (su *SizingUpperUsecase) createUpperIkBone(sizingSet *domain.SizingSet) *pmx.Bone {
 	upperBone := sizingSet.SizingUpperBone()
-	upper2Bone := sizingSet.SizingUpper2Bone()
+	// upper2Bone := sizingSet.SizingUpper2Bone()
 	ikTargetBone := sizingSet.SizingNeckRootBone()
 
 	// 上半身IK
@@ -227,14 +227,14 @@ func (su *SizingUpperUsecase) createUpperIkBone(sizingSet *domain.SizingSet) *pm
 	ikBone.Position = ikTargetBone.Position.Copy()
 	ikBone.Ik = pmx.NewIk()
 	ikBone.Ik.BoneIndex = ikTargetBone.Index()
-	ikBone.Ik.LoopCount = 100
-	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 0.1, Y: 0.0, Z: 0.0}
+	ikBone.Ik.LoopCount = 10
+	ikBone.Ik.UnitRotation = &mmath.MVec3{X: 1, Y: 0.0, Z: 0.0}
 	ikBone.Ik.Links = make([]*pmx.IkLink, 0)
 	for _, parentBoneIndex := range ikTargetBone.ParentBoneIndexes {
 		link := pmx.NewIkLink()
 		link.BoneIndex = parentBoneIndex
-		if parentBoneIndex != upperBone.Index() && (upper2Bone != nil && parentBoneIndex != upper2Bone.Index()) {
-			// 上半身, 上半身2以外は動かさない
+		if parentBoneIndex != upperBone.Index() {
+			// 上半身以外は動かさない
 			link.AngleLimit = true
 		}
 		ikBone.Ik.Links = append(ikBone.Ik.Links, link)
