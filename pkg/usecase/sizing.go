@@ -132,16 +132,12 @@ func computeVmdDeltas(
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
-		func(index, data int) error {
+		func(index, iFrame int) error {
 			if sizingSet.IsTerminate {
 				return merr.TerminateError
 			}
 
-			frame := float32(data)
-			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
-			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
-			vmdDeltas.Bones = deform.DeformBone(model, motion, isCalcIk, data, target_bone_names)
-			allDeltas[index] = vmdDeltas
+			allDeltas[index] = deform.DeformBone(model, motion, motion, isCalcIk, iFrame, target_bone_names)
 
 			if incrementCompletedCount != nil {
 				incrementCompletedCount()
@@ -166,16 +162,12 @@ func computeMorphVmdDeltas(
 ) ([]*delta.VmdDeltas, error) {
 	allDeltas := make([]*delta.VmdDeltas, len(frames))
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
-		func(index, data int) error {
+		func(index, iFrame int) error {
 			if sizingSet.IsTerminate {
 				return merr.TerminateError
 			}
 
-			frame := float32(data)
-			vmdDeltas := delta.NewVmdDeltas(frame, model.Bones, model.Hash(), motion.Hash())
-			vmdDeltas.Morphs = deform.DeformBoneMorph(model, motion.MorphFrames, frame, nil)
-			vmdDeltas.Bones = deform.DeformBone(model, vmd.InitialMotion, false, data, target_bone_names)
-			allDeltas[index] = vmdDeltas
+			allDeltas[index] = deform.DeformBone(model, motion, vmd.InitialMotion, true, iFrame, target_bone_names)
 
 			if incrementCompletedCount != nil {
 				incrementCompletedCount()
