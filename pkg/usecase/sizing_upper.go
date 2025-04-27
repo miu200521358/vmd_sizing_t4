@@ -573,7 +573,7 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 		outputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 			bf.Rotation = processBf.FilledRotation().Copy()
-			outputMotion.BoneFrames.Get(boneName).Update(bf)
+			outputMotion.InsertBoneFrame(boneName, bf)
 			return true
 		})
 	}

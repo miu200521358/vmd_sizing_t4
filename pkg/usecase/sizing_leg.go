@@ -1382,7 +1382,7 @@ func (su *SizingLegUsecase) updateOutputMotion(
 			processBf := sizingProcessMotion.BoneFrames.Get(boneName).Get(frame)
 			bf.Position = processBf.FilledPosition().Copy()
 			bf.Rotation = processBf.FilledRotation().Copy()
-			outputMotion.BoneFrames.Get(boneName).Update(bf)
+			outputMotion.InsertBoneFrame(boneName, bf)
 			return true
 		})
 	}
