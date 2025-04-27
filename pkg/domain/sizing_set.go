@@ -718,7 +718,9 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 }
 
 // InsertShortageSizingConfigBones サイジング用不足ボーン作成
-func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pmx.Bones) error {
+func (ss *SizingSet) insertShortageConfigBones(
+	vertices *pmx.Vertices, bones *pmx.Bones, displaySlots *pmx.DisplaySlots,
+) error {
 
 	// 体幹系
 	for _, funcs := range [][]func() (*pmx.Bone, error){
@@ -755,6 +757,34 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 
 					// 再セットアップ
 					bones.Setup()
+
+					if !bone.IsVisible() {
+						continue
+					}
+					config := bone.Config()
+					if config == nil {
+						continue
+					}
+					configDisplaySlot := config.DisplaySlot
+					if configDisplaySlot == "" {
+						continue
+					}
+					displaySlotBoneName := configDisplaySlot.StringFromDirection(bone.Direction())
+					displaySlots.ForEach(func(index int, ds *pmx.DisplaySlot) bool {
+						for _, r := range ds.References {
+							if r.DisplayType != pmx.DISPLAY_TYPE_BONE {
+								continue
+							}
+							if b, err := bones.Get(r.DisplayIndex); err == nil && b != nil {
+								if b.Name() == displaySlotBoneName {
+									// 想定ボーンと同じ表示枠に追加する
+									ds.References = append(ds.References, pmx.NewDisplaySlotReferenceByValues(pmx.DISPLAY_TYPE_BONE, bone.Index()))
+									return false
+								}
+							}
+						}
+						return true
+					})
 				}
 			} else {
 				return err
@@ -835,6 +865,34 @@ func (ss *SizingSet) insertShortageConfigBones(vertices *pmx.Vertices, bones *pm
 
 						// 再セットアップ
 						bones.Setup()
+
+						if !bone.IsVisible() {
+							continue
+						}
+						config := bone.Config()
+						if config == nil {
+							continue
+						}
+						configDisplaySlot := config.DisplaySlot
+						if configDisplaySlot == "" {
+							continue
+						}
+						displaySlotBoneName := configDisplaySlot.StringFromDirection(bone.Direction())
+						displaySlots.ForEach(func(index int, ds *pmx.DisplaySlot) bool {
+							for _, r := range ds.References {
+								if r.DisplayType != pmx.DISPLAY_TYPE_BONE {
+									continue
+								}
+								if b, err := bones.Get(r.DisplayIndex); err == nil && b != nil {
+									if b.Name() == displaySlotBoneName {
+										// 想定ボーンと同じ表示枠に追加する
+										ds.References = append(ds.References, pmx.NewDisplaySlotReferenceByValues(pmx.DISPLAY_TYPE_BONE, bone.Index()))
+										return false
+									}
+								}
+							}
+							return true
+						})
 					}
 				} else {
 					return err
