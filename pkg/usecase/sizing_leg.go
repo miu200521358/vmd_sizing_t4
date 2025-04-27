@@ -56,8 +56,6 @@ func (su *SizingLegUsecase) Exec(
 		return false, err
 	}
 
-	incrementCompletedCount()
-
 	// 元モデルのモーフデフォーム結果を並列処理で取得
 	originalMorphAllDeltas, err := computeMorphVmdDeltas(allFrames, blockSize, sizingSet.OriginalConfigModel,
 		originalMotion, sizingSet, all_lower_leg_bone_names, "足補正01", incrementCompletedCount)
