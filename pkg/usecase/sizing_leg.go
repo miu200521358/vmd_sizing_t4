@@ -655,43 +655,34 @@ func (su *SizingLegUsecase) calculateAdjustedLegIK(
 					pmx.ANKLE.StringFromDirection(direction))
 
 				originalLegLength := originalMorphLegDelta.FilledGlobalPosition().Distance(
-					originalMorphKneeDelta.FilledGlobalPosition())
-				originalKneeLength := originalMorphKneeDelta.FilledGlobalPosition().Distance(
-					originalMorphAnkleDelta.FilledGlobalPosition())
-
+					originalMorphKneeDelta.FilledGlobalPosition()) +
+					originalMorphKneeDelta.FilledGlobalPosition().Distance(
+						originalMorphAnkleDelta.FilledGlobalPosition())
 				sizingLegLength := sizingMorphLegDelta.FilledGlobalPosition().Distance(
-					sizingMorphKneeDelta.FilledGlobalPosition())
-				sizingKneeLength := sizingMorphKneeDelta.FilledGlobalPosition().Distance(
-					sizingMorphAnkleDelta.FilledGlobalPosition())
+					sizingMorphKneeDelta.FilledGlobalPosition()) +
+					sizingMorphKneeDelta.FilledGlobalPosition().Distance(
+						sizingMorphAnkleDelta.FilledGlobalPosition())
 
 				legScale := sizingLegLength / originalLegLength
-				kneeScale := sizingKneeLength / originalKneeLength
 
 				// -------------------------------
 
 				originalLegDelta := originalAllDeltas[index].Bones.GetByName(
 					pmx.LEG.StringFromDirection(direction))
-				originalKneeDelta := originalAllDeltas[index].Bones.GetByName(
-					pmx.KNEE.StringFromDirection(direction))
-				originalAnkleDelta := originalAllDeltas[index].Bones.GetByName(
-					pmx.ANKLE.StringFromDirection(direction))
+				originalAnkleDDelta := originalAllDeltas[index].Bones.GetByName(
+					pmx.ANKLE_D.StringFromDirection(direction))
 
 				sizingLegDelta := sizingAllDeltas[index].Bones.GetByName(
 					pmx.LEG.StringFromDirection(direction))
 
-				// 足ボーンから見たひざまでの相対位置（角度を見たくないのでグローバルの差分で）
-				originalKneeRelativePosition := originalKneeDelta.FilledGlobalPosition().Subed(
+				// 足根元ボーンから見た足首Dまでの相対位置（角度を見たくないのでグローバルの差分で）
+				originalAnkleDRelativePosition := originalAnkleDDelta.FilledGlobalPosition().Subed(
 					originalLegDelta.FilledGlobalPosition())
-				// スケール差を考慮した先のひざボーンのローカル位置
-				sizingKneeRelativePosition := originalKneeRelativePosition.MuledScalar(legScale)
 
-				// ひざボーンから見た足首までの相対位置（角度を見たくないのでグローバルの差分で）
-				originalAnkleRelativePosition := originalAnkleDelta.FilledGlobalPosition().Subed(
-					originalKneeDelta.FilledGlobalPosition())
-				// スケール差を考慮した先の足首ボーンのローカル位置
-				sizingAnkleRelativePosition := originalAnkleRelativePosition.MuledScalar(kneeScale)
+				// スケール差を考慮した先の足首Dボーンのローカル位置
+				sizingAnkleDRelativePosition := originalAnkleDRelativePosition.MuledScalar(legScale)
 
-				sizingAnkleDIdealPosition := sizingLegDelta.FilledGlobalPosition().Added(sizingKneeRelativePosition).Added(sizingAnkleRelativePosition)
+				sizingAnkleDIdealPosition := sizingLegDelta.FilledGlobalPosition().Added(sizingAnkleDRelativePosition)
 
 				// つま先ターゲットの理想位置を求める
 				sizingToeTargetInitialGlobalPosition := sizingAllDeltas[index].Bones.Get(toeIkTargetBones[d].Index()).FilledGlobalPosition()
