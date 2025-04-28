@@ -207,9 +207,12 @@ func (su *SizingLegUsecase) Exec(
 	// [結果出力] -----------------------
 
 	{
+		// あにまさミクを基準に、近似値のスケールを求める
+		legScale := sizingSet.SizingLegCenterBone().Position.Y / 10
+
 		// 足補正処理の結果をサイジング先モーションに反映
 		if err = su.updateOutputMotion(
-			sizingSet, allFrames, blockSize, sizingProcessMotion, "足10",
+			sizingSet, allFrames, blockSize, sizingProcessMotion, legScale, "足10",
 			incrementCompletedCount,
 		); err != nil {
 			return false, err
@@ -220,7 +223,7 @@ func (su *SizingLegUsecase) Exec(
 		}
 
 		// 足IKのオフセットを元に戻す
-		su.updateLegIkOffset(sizingSet, allFrames)
+		su.updateLegIkOffset(sizingSet, allFrames, legScale)
 
 		if mlog.IsDebug() {
 			outputVerboseMotion("足12", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
@@ -1352,7 +1355,7 @@ func (su *SizingLegUsecase) updateLegIkAndFk2(
 
 func (su *SizingLegUsecase) updateOutputMotion(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, sizingProcessMotion *vmd.VmdMotion,
-	verboseMotionKey string, incrementCompletedCount func(),
+	legScale float64, verboseMotionKey string, incrementCompletedCount func(),
 ) error {
 	// 足補正処理の結果をサイジング先モーションに反映
 	sizingModel := sizingSet.SizingConfigModel
@@ -1388,9 +1391,6 @@ func (su *SizingLegUsecase) updateOutputMotion(
 	if mlog.IsDebug() {
 		outputVerboseMotion(verboseMotionKey, sizingSet.OutputMotionPath, outputMotion)
 	}
-
-	// あにまさミクを基準に、近似値のスケールを求める
-	legScale := sizingSet.SizingLegCenterBone().Position.Y / 10
 
 	// 中間キーフレのズレをチェック
 	legThreshold := 0.2 * legScale
@@ -1469,11 +1469,6 @@ func (su *SizingLegUsecase) updateOutputMotion(
 
 					prevFrame = iFrame
 				}
-
-				if mlog.IsDebug() {
-					outputVerboseMotion(fmt.Sprintf("%s_%s%d", verboseMotionKey, direction, tIndex),
-						sizingSet.OutputMotionPath, outputMotion)
-				}
 			}
 
 			return nil
@@ -1485,10 +1480,7 @@ func (su *SizingLegUsecase) updateOutputMotion(
 	return nil
 }
 
-func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFrames []int) {
-	// あにまさミクを基準に、近似値のスケールを求める
-	legScale := sizingSet.SizingLegCenterBone().Position.Y / 10
-
+func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFrames []int, legScale float64) {
 	// 元モーションのIKが動いていない区間を取得
 	fixIkFlags := make([][]bool, len(directions))
 	for i, iFrame := range allFrames {
