@@ -1389,11 +1389,14 @@ func (su *SizingLegUsecase) updateOutputMotion(
 		outputVerboseMotion(verboseMotionKey, sizingSet.OutputMotionPath, outputMotion)
 	}
 
+	// あにまさミクを基準に、近似値のスケールを求める
+	legScale := sizingSet.SizingLegCenterBone().Position.Y / 10
+
 	// 中間キーフレのズレをチェック
-	legThreshold := 0.2
-	kneeThreshold := 0.4
-	ankleThreshold := 0.3
-	heelThreshold := 0.3
+	legThreshold := 0.2 * legScale
+	kneeThreshold := 0.4 * legScale
+	ankleThreshold := 0.3 * legScale
+	heelThreshold := 0.3 * legScale
 
 	err := miter.IterParallelByList(directions, 1, 1,
 		func(dIndex int, direction pmx.BoneDirection) error {
@@ -1483,6 +1486,9 @@ func (su *SizingLegUsecase) updateOutputMotion(
 }
 
 func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFrames []int) {
+	// あにまさミクを基準に、近似値のスケールを求める
+	legScale := sizingSet.SizingLegCenterBone().Position.Y / 10
+
 	// 元モーションのIKが動いていない区間を取得
 	fixIkFlags := make([][]bool, len(directions))
 	for i, iFrame := range allFrames {
@@ -1498,7 +1504,7 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 			frame := float32(iFrame)
 			bf := sizingSet.OriginalMotion.BoneFrames.Get(boneName).Get(frame)
 			prevBf := sizingSet.OriginalMotion.BoneFrames.Get(boneName).Get(frame - 1)
-			fixIkFlags[d][i] = bf.FilledPosition().NearEquals(prevBf.FilledPosition(), 1e-2)
+			fixIkFlags[d][i] = bf.FilledPosition().NearEquals(prevBf.FilledPosition(), 1e-2*legScale)
 		}
 
 		if i > 0 && i%1000 == 0 {
