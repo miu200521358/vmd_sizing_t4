@@ -197,15 +197,15 @@ var directions = []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION
 var trunk_lower_bone_names = []string{
 	pmx.ROOT.String(), pmx.TRUNK_ROOT.String(), pmx.CENTER.String(), pmx.GROOVE.String(), pmx.WAIST.String(),
 	pmx.LOWER_ROOT.String(), pmx.LOWER.String(), pmx.LEG_CENTER.String(), pmx.LEG_ROOT.Left(), pmx.LEG_ROOT.Right(),
-	pmx.LEG.Left(), pmx.LEG.Right()}
+	pmx.HIP.Left(), pmx.HIP.Right(), pmx.LEG.Left(), pmx.LEG.Right()}
 
 // 足関連ボーン名（左右別）
 var leg_direction_bone_names = [][]string{
-	{pmx.LEG.Left(), pmx.KNEE.Left(), pmx.HEEL.Left(), pmx.ANKLE.Left(), pmx.ANKLE_GROUND.Left(),
+	{pmx.HIP.Left(), pmx.LEG.Left(), pmx.KNEE.Left(), pmx.HEEL.Left(), pmx.ANKLE.Left(), pmx.ANKLE_GROUND.Left(),
 		pmx.TOE_T.Left(), pmx.TOE_P.Left(), pmx.TOE_C.Left(), pmx.LEG_D.Left(), pmx.KNEE_D.Left(),
 		pmx.HEEL_D.Left(), pmx.ANKLE_D.Left(), pmx.ANKLE_D_GROUND.Left(), pmx.TOE_T_D.Left(), pmx.TOE_P_D.Left(),
 		pmx.TOE_C_D.Left(), pmx.TOE_EX.Left(), pmx.LEG_IK_PARENT.Left(), pmx.LEG_IK.Left(), pmx.TOE_IK.Left()},
-	{pmx.LEG.Right(), pmx.KNEE.Right(), pmx.HEEL.Right(), pmx.ANKLE.Right(), pmx.ANKLE_GROUND.Right(),
+	{pmx.HIP.Right(), pmx.LEG.Right(), pmx.KNEE.Right(), pmx.HEEL.Right(), pmx.ANKLE.Right(), pmx.ANKLE_GROUND.Right(),
 		pmx.TOE_T.Right(), pmx.TOE_P.Right(), pmx.TOE_C.Right(), pmx.LEG_D.Right(), pmx.KNEE_D.Right(),
 		pmx.HEEL_D.Right(), pmx.ANKLE_D.Right(), pmx.ANKLE_D_GROUND.Right(), pmx.TOE_T_D.Right(), pmx.TOE_P_D.Right(),
 		pmx.TOE_C_D.Right(), pmx.TOE_EX.Right(), pmx.LEG_IK_PARENT.Right(), pmx.LEG_IK.Right(), pmx.TOE_IK.Right()},
@@ -216,16 +216,6 @@ var leg_all_direction_bone_names = append(leg_direction_bone_names[0], leg_direc
 
 // 全ての下半身ボーン名
 var all_lower_leg_bone_names = append(trunk_lower_bone_names, leg_all_direction_bone_names...)
-
-// 重心計算対象ボーン名（つま先とか指先は入っていない）
-var gravity_bone_names = []string{
-	pmx.HEAD.String(), pmx.NECK_ROOT.String(), pmx.ARM.Left(), pmx.ARM.Right(), pmx.ELBOW.Left(), pmx.ELBOW.Right(),
-	pmx.WRIST.Left(), pmx.WRIST.Right(), pmx.UPPER_ROOT.String(), pmx.LOWER_ROOT.String(), pmx.LEG_CENTER.String(),
-	pmx.LEG_D.Left(), pmx.LEG_D.Right(), pmx.KNEE_D.Left(), pmx.KNEE_D.Right(), pmx.HEEL_D.Left(), pmx.HEEL_D.Right(),
-}
-
-// 下半身系 + 重力計算対象ボーン名
-var all_gravity_lower_leg_bone_names = append(all_lower_leg_bone_names, gravity_bone_names...)
 
 // 上半身系ボーン名
 var trunk_upper_bone_names = []string{
