@@ -99,6 +99,10 @@ func (ss *SizingSet) OriginalKneeBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.KNEE.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) OriginalKneeDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.KNEE_D.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) OriginalAnkleBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE.StringFromDirection(direction))
 }
@@ -224,6 +228,10 @@ func (ss *SizingSet) SizingLegBone(direction pmx.BoneDirection) *pmx.Bone {
 
 func (ss *SizingSet) SizingKneeBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.KNEE.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) SizingKneeDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.KNEE_D.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) SizingAnkleBone(direction pmx.BoneDirection) *pmx.Bone {
