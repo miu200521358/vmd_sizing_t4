@@ -263,7 +263,7 @@ func (su *SizingAlignUsecase) calculateAdjustedWrist(
 
 				// ------------
 
-				sizingWristDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+				sizingWristDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
 					sizingAllDeltas[index], float32(data),
 					[]*pmx.Bone{armIkBones[i]}, []*pmx.Bone{wristBone},
 					[]*mmath.MVec3{sizingWristIdealPosition}, all_arm_bone_names[i], 1, false, false)

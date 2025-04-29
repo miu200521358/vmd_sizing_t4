@@ -285,7 +285,7 @@ func (su *SizingShoulderUsecase) calculateAdjustedShoulder(
 					wristPositions[i][index] = sizingWristPosition.Copy()
 				}
 
-				sizingShoulderDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+				sizingShoulderDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
 					sizingAllDeltas[index], frame, []*pmx.Bone{shoulderIkBones[i], elbowIkBones[i], wristIkBones[i]},
 					[]*pmx.Bone{armBone, elbowBone, wristBone},
 					[]*mmath.MVec3{sizingArmIdealPosition, sizingElbowPosition, sizingWristPosition},

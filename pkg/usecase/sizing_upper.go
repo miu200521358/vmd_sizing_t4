@@ -415,7 +415,7 @@ func (su *SizingUpperUsecase) calculateAdjustedUpper(
 			}
 
 			// IK解決
-			sizingUpperDeltas := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
+			sizingUpperDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingAllDeltas[index], float32(data),
 				[]*pmx.Bone{upperIkBone},
 				[]*pmx.Bone{sizingSet.SizingNeckRootBone()},
