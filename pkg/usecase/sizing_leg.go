@@ -363,10 +363,11 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 	lowerIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_TRUNK)
 
 	err = miter.IterParallelByList(allFrames, blockSize, log_block_size,
-		func(index, data int) error {
+		func(index, iFrame int) error {
 			if sizingSet.IsTerminate {
 				return merr.NewTerminateError("manual terminate")
 			}
+			frame := float32(iFrame)
 
 			// 下半身から足中心の傾き
 			originalMorphLowerDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
@@ -460,7 +461,7 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 
 			// IK解決
 			sizingLowerDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
-				sizingAllDeltas[index], float32(data),
+				sizingAllDeltas[index], frame,
 				[]*pmx.Bone{lowerIkBone},
 				[]*pmx.Bone{sizingSet.SizingLegCenterBone()},
 				[]*mmath.MVec3{sizingLegCenterIdealGlobalPosition},
@@ -471,6 +472,7 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 
 			if mlog.IsDebug() {
 				sizingLowerResultPositions[index] = sizingLowerResultDelta.FilledGlobalPosition().Copy()
+				sizingLowerResultRotations[index] = sizingLowerResultDelta.FilledFrameRotation().Copy()
 
 				sizingLegCenterResultPositions[index] = sizingLowerDeltas.Bones.GetByName(pmx.LEG_CENTER.String()).FilledGlobalPosition().Copy()
 				sizingLeftLegResultPositions[index] = sizingLowerDeltas.Bones.GetByName(pmx.LEG.Left()).FilledGlobalPosition().Copy()
@@ -606,38 +608,18 @@ func (su *SizingLegUsecase) calculateAdjustedLegIK(
 	legRotations = make([][]*mmath.MQuaternion, 2)
 	ankleRotations = make([][]*mmath.MQuaternion, 2)
 
-	originalInitialPositions := make(map[string][][]*mmath.MVec3)
-	sizingInitialPositions := make(map[string][][]*mmath.MVec3)
-	sizingIdealPositions := make(map[string][][]*mmath.MVec3)
-	sizingResultPositions := make(map[string][][]*mmath.MVec3)
-
 	debugBoneNames := []pmx.StandardBoneName{
 		pmx.LEG_CENTER, pmx.HIP, pmx.LEG, pmx.ANKLE,
 	}
 
-	for _, debugBoneName := range debugBoneNames {
-		for _, direction := range directions {
-			boneName := debugBoneName.StringFromDirection(direction)
-
-			originalInitialPositions[boneName] = make([][]*mmath.MVec3, 2)
-			sizingInitialPositions[boneName] = make([][]*mmath.MVec3, 2)
-			sizingIdealPositions[boneName] = make([][]*mmath.MVec3, 2)
-			sizingResultPositions[boneName] = make([][]*mmath.MVec3, 2)
-
-			for i := range directions {
-				legIkParentPositions[i] = make([]*mmath.MVec3, len(allFrames))
-				legIkPositions[i] = make([]*mmath.MVec3, len(allFrames))
-				legIkParentRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
-				legIkRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
-				legRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
-				ankleRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
-
-				originalInitialPositions[boneName][i] = make([]*mmath.MVec3, len(allFrames))
-				sizingInitialPositions[boneName][i] = make([]*mmath.MVec3, len(allFrames))
-				sizingIdealPositions[boneName][i] = make([]*mmath.MVec3, len(allFrames))
-				sizingResultPositions[boneName][i] = make([]*mmath.MVec3, len(allFrames))
-			}
-		}
+	debugPositions, debugRotations := newDebugData(allFrames, debugBoneNames)
+	for i := range directions {
+		legIkParentPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		legIkPositions[i] = make([]*mmath.MVec3, len(allFrames))
+		legIkParentRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		legIkRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		legRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
+		ankleRotations[i] = make([]*mmath.MQuaternion, len(allFrames))
 	}
 
 	legDIkBones := make([]*pmx.Bone, 2)
@@ -735,23 +717,12 @@ func (su *SizingLegUsecase) calculateAdjustedLegIK(
 				sizingToeTargetIdealGlobalPosition := sizingAnkleIdealGlobalPosition.Added(sizingToeTargetRelativePosition)
 
 				if mlog.IsDebug() {
-					for _, debugBoneName := range debugBoneNames {
-						for _, direction := range directions {
-							boneName := debugBoneName.StringFromDirection(direction)
+					recordDebugData(index, debugBoneNames, originalAllDeltas[index],
+						debugTargetOriginal, debugTypeInitial, debugPositions, debugRotations)
+					recordDebugData(index, debugBoneNames, sizingAllDeltas[index],
+						debugTargetSizing, debugTypeInitial, debugPositions, debugRotations)
 
-							for _, v := range [][]any{
-								{originalAllDeltas[index], originalInitialPositions},
-								{sizingAllDeltas[index], sizingInitialPositions},
-							} {
-								boneDelta := v[0].(*delta.VmdDeltas).Bones.GetByName(boneName)
-								if boneDelta == nil {
-									continue
-								}
-								v[1].(map[string][][]*mmath.MVec3)[boneName][d][index] = boneDelta.FilledGlobalPosition().Copy()
-							}
-						}
-					}
-					sizingIdealPositions[pmx.ANKLE.StringFromDirection(direction)][d][index] = sizingAnkleIdealGlobalPosition.Copy()
+					debugPositions[debugTargetSizing][debugTypeIdeal][pmx.ANKLE.StringFromDirection(direction)][index] = sizingAnkleIdealGlobalPosition.Copy()
 				}
 
 				// IK解決
@@ -763,21 +734,8 @@ func (su *SizingLegUsecase) calculateAdjustedLegIK(
 					leg_direction_bone_names[d], 1, false, false)
 
 				if mlog.IsDebug() {
-					for _, debugBoneName := range debugBoneNames {
-						for _, direction := range directions {
-							boneName := debugBoneName.StringFromDirection(direction)
-
-							for _, v := range [][]any{
-								{sizingLegDeltas, sizingResultPositions},
-							} {
-								boneDelta := v[0].(*delta.VmdDeltas).Bones.GetByName(boneName)
-								if boneDelta == nil {
-									continue
-								}
-								v[1].(map[string][][]*mmath.MVec3)[boneName][d][index] = boneDelta.FilledGlobalPosition().Copy()
-							}
-						}
-					}
+					recordDebugData(index, debugBoneNames, sizingLegDeltas,
+						debugTargetSizing, debugTypeResult, debugPositions, debugRotations)
 				}
 
 				// 足IK親が有効な場合、足IK親のローカル位置を比率ベースで求め直す
@@ -827,41 +785,7 @@ func (su *SizingLegUsecase) calculateAdjustedLegIK(
 	}
 
 	if mlog.IsDebug() {
-		motion := vmd.NewVmdMotion("")
-		initialRotations := make([]*mmath.MQuaternion, len(allFrames))
-
-		for _, debugBoneName := range debugBoneNames {
-			for d, direction := range directions {
-				boneName := debugBoneName.StringFromDirection(direction)
-				config := pmx.BoneConfigFromName(boneName)
-				keyName := config.Abbreviation.StringFromDirection(direction)
-
-				for i, iFrame := range allFrames {
-					frame := float32(iFrame)
-
-					for _, v := range [][]any{
-						{originalInitialPositions[boneName][d], initialRotations, "元今%s4"},
-						{sizingInitialPositions[boneName][d], initialRotations, "先今%s4"},
-						{sizingIdealPositions[boneName][d], initialRotations, "先理%s4"},
-						{sizingResultPositions[boneName][d], initialRotations, "先結%s4"},
-					} {
-						boneFrameName := fmt.Sprintf(v[2].(string), keyName)
-						if !sizingSet.SizingConfigModel.Bones.ContainsByName(boneFrameName) {
-							continue
-						}
-
-						positions := v[0].([]*mmath.MVec3)
-						rotations := v[1].([]*mmath.MQuaternion)
-						bf := vmd.NewBoneFrame(frame)
-						bf.Position = positions[i]
-						bf.Rotation = rotations[i]
-						motion.InsertBoneFrame(boneFrameName, bf)
-					}
-				}
-			}
-		}
-
-		outputVerboseMotion(verboseMotionKey, sizingSet.OutputMotionPath, motion)
+		outputDebugData(allFrames, debugBoneNames, verboseMotionKey, sizingSet.OutputMotionPath, sizingSet.SizingConfigModel, debugPositions, debugRotations)
 	}
 
 	return legIkParentPositions, legIkPositions, legIkParentRotations, legIkRotations, legRotations, ankleRotations, nil
@@ -910,7 +834,7 @@ func (su *SizingLegUsecase) updateLegIkAndFk(
 func (su *SizingLegUsecase) calculateAdjustedCenter(
 	sizingSet *domain.SizingSet, allFrames []int, blockSize int, moveScale *mmath.MVec3,
 	originalAllDeltas, sizingAllDeltas, originalMorphAllDeltas, sizingMorphAllDeltas []*delta.VmdDeltas,
-	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(), verboseMotionName string,
+	sizingProcessMotion *vmd.VmdMotion, incrementCompletedCount func(), debugMotionName string,
 ) (
 	rootPositions, centerPositions, groovePositions []*mmath.MVec3,
 	err error,
@@ -1041,7 +965,7 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 			}
 		}
 
-		outputVerboseMotion(verboseMotionName, sizingSet.OutputMotionPath, motion)
+		outputVerboseMotion(debugMotionName, sizingSet.OutputMotionPath, motion)
 	}
 
 	return rootPositions, centerPositions, groovePositions, nil

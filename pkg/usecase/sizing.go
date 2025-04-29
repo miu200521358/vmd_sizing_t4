@@ -183,6 +183,100 @@ func computeMorphVmdDeltas(
 	return allDeltas, err
 }
 
+type debugTarget int
+
+const (
+	debugTargetOriginal debugTarget = iota
+	debugTargetSizing
+)
+
+type debugType int
+
+const (
+	debugTypeInitial debugType = iota
+	debugTypeIdeal
+	debugTypeResult
+)
+
+// newDebugData デバッグデータを初期化する
+func newDebugData(
+	allFrames []int, debugBoneNames []pmx.StandardBoneName,
+) (positions [][]map[string][]*mmath.MVec3, rotations [][]map[string][]*mmath.MQuaternion) {
+
+	for i := range 2 {
+		positions = append(positions, make([]map[string][]*mmath.MVec3, 3))
+		rotations = append(rotations, make([]map[string][]*mmath.MQuaternion, 3))
+		for j := range 3 {
+			positions[i][j] = make(map[string][]*mmath.MVec3)
+			rotations[i][j] = make(map[string][]*mmath.MQuaternion)
+
+			for _, debugBoneName := range debugBoneNames {
+				for _, direction := range directions {
+					boneName := debugBoneName.StringFromDirection(direction)
+
+					positions[i][j][boneName] = make([]*mmath.MVec3, len(allFrames))
+					rotations[i][j][boneName] = make([]*mmath.MQuaternion, len(allFrames))
+				}
+			}
+		}
+	}
+
+	return positions, rotations
+}
+
+// recordDebugData デバッグデータを記録する
+func recordDebugData(
+	index int, debugBoneNames []pmx.StandardBoneName,
+	vmdDeltas *delta.VmdDeltas, debugTarget debugTarget, debugType debugType,
+	positions [][]map[string][]*mmath.MVec3, rotations [][]map[string][]*mmath.MQuaternion,
+) {
+	for _, debugBoneName := range debugBoneNames {
+		for _, direction := range directions {
+			boneName := debugBoneName.StringFromDirection(direction)
+			boneDelta := vmdDeltas.Bones.GetByName(boneName)
+			if boneDelta == nil {
+				continue
+			}
+			positions[debugTarget][debugType][boneName][index] = boneDelta.FilledGlobalPosition().Copy()
+			rotations[debugTarget][debugType][boneName][index] = boneDelta.FilledFrameRotation().Copy()
+		}
+	}
+}
+
+// outputDebugData デバッグデータの出力
+func outputDebugData(
+	allFrames []int, debugBoneNames []pmx.StandardBoneName, motionKey, outputPath string, model *pmx.PmxModel,
+	positions [][]map[string][]*mmath.MVec3, rotations [][]map[string][]*mmath.MQuaternion,
+) {
+	motion := vmd.NewVmdMotion("")
+	for debugTargetIndex, debugTargetName := range []string{"元", "先"} {
+		for debugTypeIndex, debugTypeName := range []string{"今", "理", "結"} {
+			for _, debugBoneName := range debugBoneNames {
+				for _, direction := range directions {
+					boneName := debugBoneName.StringFromDirection(direction)
+					config := pmx.BoneConfigFromName(boneName)
+					// 出力用ボーン名
+					outputBoneName := fmt.Sprintf("%s%s%s%s", debugTargetName, debugTypeName, config.Abbreviation.StringFromDirection(direction), motionKey[len(motionKey)-1:])
+					// 出力用ボーン名が存在しない場合はスキップ
+					if !model.Bones.ContainsByName(outputBoneName) {
+						continue
+					}
+
+					for _, iFrame := range allFrames {
+						frame := float32(iFrame)
+						bf := vmd.NewBoneFrame(frame)
+						bf.Position = positions[debugTargetIndex][debugTypeIndex][boneName][iFrame]
+						bf.Rotation = rotations[debugTargetIndex][debugTypeIndex][boneName][iFrame]
+						motion.InsertBoneFrame(outputBoneName, bf)
+					}
+				}
+			}
+		}
+	}
+
+	outputVerboseMotion(motionKey, outputPath, motion)
+}
+
 func checkBones(
 	sizingSet *domain.SizingSet,
 	originalTrunkChecks []domain.CheckTrunkBoneType,
