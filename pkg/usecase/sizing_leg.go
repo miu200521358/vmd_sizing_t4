@@ -1511,10 +1511,12 @@ func (su *SizingLegUsecase) updateOutputMotion(
 func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFrames []int, legScale float64) {
 	// 元モーションのIKが動いていない区間を取得
 	fixIkFlags := make([][]bool, len(directions))
+	fixIkFlags[0] = make([]bool, len(allFrames))
+	fixIkFlags[1] = make([]bool, len(allFrames))
+
 	for i, iFrame := range allFrames {
 		for d, direction := range directions {
 			boneName := pmx.LEG_IK.StringFromDirection(direction)
-			fixIkFlags[d] = make([]bool, len(allFrames))
 
 			if i == 0 {
 				fixIkFlags[d][i] = false
@@ -1558,7 +1560,7 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 		{
 			// あえて足ボーンを少し動かす
 			boneName := pmx.LEG.StringFromDirection(direction)
-			offsetQUat := mmath.NewMQuaternionFromDegrees(3, 0, 0)
+			offsetQUat := mmath.NewMQuaternionFromDegrees(1, 0, 0)
 			sizingSet.OutputMotion.BoneFrames.Get(boneName).ForEach(func(frame float32, bf *vmd.BoneFrame) bool {
 				bf.Rotation.Mul(offsetQUat)
 				sizingSet.OutputMotion.BoneFrames.Get(boneName).Update(bf)
