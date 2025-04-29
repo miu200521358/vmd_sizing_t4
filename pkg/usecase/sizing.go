@@ -153,6 +153,36 @@ func computeVmdDeltas(
 	return allDeltas, err
 }
 
+// computeVmdDeltasWithDeltas は、各フレームごとのデフォーム結果を並列処理で取得します。
+func computeVmdDeltasWithDeltas(
+	frames []int, blockSize int,
+	model *pmx.PmxModel, motion *vmd.VmdMotion, allDeltas []*delta.VmdDeltas,
+	sizingSet *domain.SizingSet,
+	isCalcIk bool, target_bone_names []string, logKey string,
+	incrementCompletedCount func(),
+) ([]*delta.VmdDeltas, error) {
+	err := miter.IterParallelByList(frames, blockSize, log_block_size,
+		func(index, iFrame int) error {
+			if sizingSet.IsTerminate {
+				return merr.NewTerminateError("manual terminate")
+			}
+
+			allDeltas[index] = deform.DeformBoneWithDeltas(model, motion, allDeltas[index], isCalcIk, iFrame, target_bone_names)
+
+			if incrementCompletedCount != nil {
+				incrementCompletedCount()
+			}
+
+			return nil
+		},
+		func(iterIndex, allCount int) {
+			if logKey != "" {
+				processLog(logKey, sizingSet.Index, iterIndex, allCount)
+			}
+		})
+	return allDeltas, err
+}
+
 // computeVmdDeltas は、各フレームごとのボーンモーフだけのデフォーム結果を並列処理で取得します。
 func computeMorphVmdDeltas(
 	frames []int, blockSize int,
@@ -259,6 +289,7 @@ func outputDebugData(
 					outputBoneName := fmt.Sprintf("%s%s%s%s", debugTargetName, debugTypeName, config.Abbreviation.StringFromDirection(direction), motionKey[len(motionKey)-1:])
 					// 出力用ボーン名が存在しない場合はスキップ
 					if !model.Bones.ContainsByName(outputBoneName) {
+						// mlog.D("[%s] 出力スキップ: %s", motionKey, outputBoneName)
 						continue
 					}
 
