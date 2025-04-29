@@ -501,10 +501,8 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先理足中2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先結足中2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先今左足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
-		{"先理左足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先結左足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先今右足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
-		{"先理右足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先結右足2", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		// 足IK補正
 		{"元今足中4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
@@ -530,9 +528,9 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先理右足首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
 		{"先結右足首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
 		// センター補正
-		{"元今体幹6", rootBone.Index(), mmath.NewMVec3(), "足06"},
-		{"先今体幹6", rootBone.Index(), mmath.NewMVec3(), "足06"},
-		{"先結体幹6", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"元今体軸6", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先今体軸6", rootBone.Index(), mmath.NewMVec3(), "足06"},
+		{"先結体軸6", rootBone.Index(), mmath.NewMVec3(), "足06"},
 		// 足IK補正（2回目）
 		{"元今左足首D8", rootBone.Index(), mmath.NewMVec3(), "足08"},
 		{"元今右足首D8", rootBone.Index(), mmath.NewMVec3(), "足08"},
