@@ -65,10 +65,10 @@ func GenerateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 				sizingLeftKnee.Position.Distance(sizingLeftAnkle.Position)) /
 				(originalLeftLeg.Position.Distance(originalLeftKnee.Position) +
 					originalLeftKnee.Position.Distance(originalLeftAnkle.Position))
-			// 体幹中心までの長さ比率
-			trunkRootScale := sizingTrunkRoot.Position.Y / originalTrunkRoot.Position.Y
+			// // 体幹中心までの長さ比率
+			// trunkRootScale := sizingTrunkRoot.Position.Y / originalTrunkRoot.Position.Y
 
-			scales[i] = &mmath.MVec3{X: legLengthScale, Y: trunkRootScale, Z: legLengthScale}
+			scales[i] = &mmath.MVec3{X: legLengthScale, Y: legLengthScale, Z: legLengthScale}
 			meanXZScale += legLengthScale
 		}
 	}
