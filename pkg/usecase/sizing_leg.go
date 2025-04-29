@@ -332,6 +332,8 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 	sizingLowerResultRotations = make([]*mmath.MQuaternion, len(allFrames))
 
 	lowerIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_TRUNK)
+	leftLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_LEFT)
+	rightLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_RIGHT)
 
 	debugBoneNames := []pmx.StandardBoneName{
 		pmx.LOWER, pmx.LEG_CENTER, pmx.LEG,
@@ -348,47 +350,44 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			// 下半身から足中心の傾き
 			originalMorphLowerDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
 			originalMorphLegCenterDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG_CENTER.String())
+			originalMorphLeftLegDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Left())
+			originalMorphRightLegDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Right())
 			sizingMorphLowerDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
 			sizingMorphLegCenterDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.LEG_CENTER.String())
+			sizingMorphLeftLegDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Left())
+			sizingMorphRightLegDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Right())
 
 			// 下半身と足中心の相対位置
-			originalMorphLegCenterLocalPosition := originalMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				originalMorphLegCenterDelta.FilledGlobalPosition())
-			sizingMorphLegCenterLocalPosition := sizingMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				sizingMorphLegCenterDelta.FilledGlobalPosition())
-
-			originalMorphLeftLegLocalPosition := originalMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Left()).FilledGlobalPosition())
-			sizingMorphLeftLegLocalPosition := sizingMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				sizingMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Left()).FilledGlobalPosition())
-
-			originalMorphRightLegLocalPosition := originalMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				originalMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Right()).FilledGlobalPosition())
-			sizingMorphRightLegLocalPosition := sizingMorphLowerDelta.FilledGlobalMatrix().Inverted().MulVec3(
-				sizingMorphAllDeltas[index].Bones.GetByName(pmx.LEG.Right()).FilledGlobalPosition())
+			originalMorphLegCenterRelativePosition := originalMorphLegCenterDelta.FilledGlobalPosition().Subed(
+				originalMorphLowerDelta.FilledGlobalPosition())
+			// sizingMorphLegCenterRelativePosition := sizingMorphLegCenterDelta.FilledGlobalPosition().Subed(
+			// sizingMorphLowerDelta.FilledGlobalPosition())
 
 			// 真下から足中心までの傾き
-			originalLegSlope := mmath.NewMQuaternionRotate(mmath.MVec3UnitYNeg, originalMorphLegCenterLocalPosition.Normalized())
-			sizingLegSlope := mmath.NewMQuaternionRotate(mmath.MVec3UnitYNeg, sizingMorphLegCenterLocalPosition.Normalized())
+			originalLegSlope := mmath.NewMQuaternionRotate(mmath.MVec3UnitYNeg, originalMorphLegCenterRelativePosition.Normalized())
+			// sizingLegSlope := mmath.NewMQuaternionRotate(mmath.MVec3UnitYNeg, sizingMorphLegCenterRelativePosition.Normalized())
 
-			// 下半身根元から足までの真っ直ぐにしたときの長さ差
-			originalLegCenterVerticalDiff := originalLegSlope.Inverted().MulVec3(originalMorphLegCenterLocalPosition).Truncate(1e-3)
-
-			sizingLegCenterVerticalDiff := sizingLegSlope.Inverted().MulVec3(sizingMorphLegCenterLocalPosition).Truncate(1e-3)
-
-			legCenterFromLowerScale := sizingLegCenterVerticalDiff.Dived(originalLegCenterVerticalDiff).Effective().One()
+			// 下半身の長さ
+			originalLowerHeight := originalMorphLowerDelta.FilledGlobalPosition().Distance(originalMorphLegCenterDelta.FilledGlobalPosition())
+			sizingLowerHeight := sizingMorphLowerDelta.FilledGlobalPosition().Distance(sizingMorphLegCenterDelta.FilledGlobalPosition())
 
 			// 足幅
-			originalLegWidth := originalMorphLeftLegLocalPosition.Distance(originalMorphRightLegLocalPosition)
-			sizingLegWidth := sizingMorphLeftLegLocalPosition.Distance(sizingMorphRightLegLocalPosition)
+			originalLegWidth := originalMorphLeftLegDelta.FilledGlobalPosition().Distance(originalMorphRightLegDelta.FilledGlobalPosition())
+			sizingLegWidth := sizingMorphLeftLegDelta.FilledGlobalPosition().Distance(sizingMorphRightLegDelta.FilledGlobalPosition())
 
-			legCenterFromLowerScale.X = sizingLegWidth / originalLegWidth
+			legCenterFromLowerScale := &mmath.MVec3{
+				X: sizingLegWidth / originalLegWidth,
+				Y: sizingLowerHeight / originalLowerHeight,
+				Z: 1.0,
+			}
 
 			// -------------------------
 
 			originalLowerRootDelta := originalAllDeltas[index].Bones.GetByName(pmx.LOWER_ROOT.String())
 			originalLowerDelta := originalAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
 			originalLegCenterDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG_CENTER.String())
+			originalLeftLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.Left())
+			originalRightLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.Right())
 
 			// 下半身の軸回転を取得
 			lowerTwistQuat, _ := originalLowerDelta.FilledFrameRotation().SeparateTwistByAxis(mmath.MVec3UnitYNeg)
@@ -397,18 +396,32 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			// 下半身根元に下半身の軸回転を加えたところから見た足ボーンのローカル位置
 			originalLegCenterLocalPosition := originalLowerRootDelta.FilledGlobalMatrix().Copy().Muled(
 				lowerTwistMat).Inverted().MulVec3(originalLegCenterDelta.FilledGlobalPosition())
+			originalLeftLegLocalPosition := originalLowerRootDelta.FilledGlobalMatrix().Copy().Muled(
+				lowerTwistMat).Inverted().MulVec3(originalLeftLegDelta.FilledGlobalPosition())
+			originalRightLegLocalPosition := originalLowerRootDelta.FilledGlobalMatrix().Copy().Muled(
+				lowerTwistMat).Inverted().MulVec3(originalRightLegDelta.FilledGlobalPosition())
 
 			// 真っ直ぐにしたときのローカル位置
 			originalLegCenterVerticalLocalPosition := originalLegSlope.Inverted().MulVec3(originalLegCenterLocalPosition).Truncate(1e-3)
+			originalLeftLegVerticalLocalPosition := originalLegSlope.Inverted().MulVec3(originalLeftLegLocalPosition).Truncate(1e-3)
+			originalRightLegVerticalLocalPosition := originalLegSlope.Inverted().MulVec3(originalRightLegLocalPosition).Truncate(1e-3)
 
 			// スケール差を考慮した先の足ボーンのローカル位置
 			sizingLegCenterVerticalLocalPosition := originalLegCenterVerticalLocalPosition.Muled(legCenterFromLowerScale)
+			sizingLeftLegVerticalLocalPosition := originalLeftLegVerticalLocalPosition.Muled(legCenterFromLowerScale)
+			sizingRightLegVerticalLocalPosition := originalRightLegVerticalLocalPosition.Muled(legCenterFromLowerScale)
 
-			sizingLegCenterLocalPosition := sizingLegSlope.MulVec3(sizingLegCenterVerticalLocalPosition)
+			sizingLegCenterLocalPosition := originalLegSlope.MulVec3(sizingLegCenterVerticalLocalPosition)
+			sizingLeftLegLocalPosition := originalLegSlope.MulVec3(sizingLeftLegVerticalLocalPosition)
+			sizingRightLegLocalPosition := originalLegSlope.MulVec3(sizingRightLegVerticalLocalPosition)
 
 			sizingLowerRootDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LOWER_ROOT.String())
 			sizingLegCenterIdealGlobalPosition := sizingLowerRootDelta.FilledGlobalMatrix().Muled(
 				lowerTwistMat).MulVec3(sizingLegCenterLocalPosition)
+			sizingLeftLegIdealGlobalPosition := sizingLowerRootDelta.FilledGlobalMatrix().Muled(
+				lowerTwistMat).MulVec3(sizingLeftLegLocalPosition)
+			sizingRightLegIdealGlobalPosition := sizingLowerRootDelta.FilledGlobalMatrix().Muled(
+				lowerTwistMat).MulVec3(sizingRightLegLocalPosition)
 
 			if mlog.IsDebug() {
 				recordDebugData(index, debugBoneNames, originalAllDeltas[index],
@@ -417,15 +430,21 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 					debugTargetSizing, debugTypeInitial, debugPositions, debugRotations)
 
 				debugPositions[debugTargetSizing][debugTypeIdeal][pmx.LEG_CENTER.String()][index] = sizingLegCenterIdealGlobalPosition.Copy()
+				debugPositions[debugTargetSizing][debugTypeIdeal][pmx.LEG.Left()][index] = sizingLeftLegIdealGlobalPosition.Copy()
+				debugPositions[debugTargetSizing][debugTypeIdeal][pmx.LEG.Right()][index] = sizingRightLegIdealGlobalPosition.Copy()
 			}
 
 			// IK解決
 			sizingLowerDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingAllDeltas[index], frame,
-				[]*pmx.Bone{lowerIkBone},
-				[]*pmx.Bone{sizingSet.SizingLegCenterBone()},
-				[]*mmath.MVec3{sizingLegCenterIdealGlobalPosition},
-				trunk_lower_bone_names, 1, false, false)
+				[]*pmx.Bone{leftLegIkBone, rightLegIkBone, lowerIkBone},
+				[]*pmx.Bone{sizingSet.SizingLegBone(pmx.BONE_DIRECTION_LEFT),
+					sizingSet.SizingLegBone(pmx.BONE_DIRECTION_RIGHT),
+					sizingSet.SizingLegCenterBone()},
+				[]*mmath.MVec3{sizingLeftLegIdealGlobalPosition,
+					sizingRightLegIdealGlobalPosition,
+					sizingLegCenterIdealGlobalPosition},
+				trunk_lower_bone_names, 2, false, false)
 
 			sizingLowerResultDelta := sizingLowerDeltas.Bones.GetByName(pmx.LOWER.String())
 			sizingLowerResultRotations[index] = sizingLowerResultDelta.FilledFrameRotation().Copy()
