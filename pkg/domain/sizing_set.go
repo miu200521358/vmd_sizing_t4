@@ -135,7 +135,8 @@ func (ss *SizingSet) GetProcessCount() (processCount int) {
 		// 5*2: calculate系 / update系
 		// 3*2: updateOutputMotion (active / interval / full)
 		// 1: updateLegIkOffset
-		processCount += maxFrame * (6 + 2 + 5*2 + 3*2 + 1)
+		// 1: 足IK親更新
+		processCount += maxFrame * (6 + 2 + 5*2 + 3*2 + 1 + 1 + 1)
 	}
 
 	if ss.IsSizingUpper && !ss.CompletedSizingUpper {
