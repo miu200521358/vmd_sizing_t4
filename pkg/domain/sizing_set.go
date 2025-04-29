@@ -508,26 +508,24 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先結左足", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		{"先結右足", rootBone.Index(), mmath.NewMVec3(), "足02"},
 		// 足IK補正
-		{"元今足中1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左腰1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今左首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右腰1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"元今右首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今足中1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左腰1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右腰1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右足1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今左首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先理左首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結左首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先今右首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先理右首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
-		{"先結右首1", rootBone.Index(), mmath.NewMVec3(), "足04"},
+		{"元今足中4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今左腰4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今右腰4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今左足4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今右足4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今左首4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"元今右首4", rootBone.Index(), mmath.NewMVec3(), "足04元"},
+		{"先今足中4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今左腰4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今右腰4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今左足4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今右足4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今左首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先理左首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先結左首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先今右首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先理右首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
+		{"先結右首4", rootBone.Index(), mmath.NewMVec3(), "足04先"},
 		// センター補正
 		{"元体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
 		{"先体幹中心", rootBone.Index(), mmath.NewMVec3(), "足06"},
@@ -665,7 +663,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 		getFunc := funcs[0]
 		createFunc := funcs[1]
 
-		if bone, err := getFunc(); err != nil && err == merr.NameNotFoundError && bone == nil {
+		if bone, err := getFunc(); err != nil && merr.IsNameNotFoundError(err) && bone == nil {
 			if bone, err := createFunc(); err == nil && bone != nil {
 				bone.IsSystem = true
 				if err := bones.Insert(bone); err != nil {
@@ -715,7 +713,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 						return true
 					})
 				}
-			} else if err == merr.ParentNotFoundError {
+			} else if merr.IsParentNotFoundError(err) {
 				// 何もしない
 			} else {
 				return err
@@ -761,7 +759,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 			getFunc := funcs[0]
 			createFunc := funcs[1]
 
-			if bone, err := getFunc(direction); err != nil && err == merr.NameNotFoundError && bone == nil {
+			if bone, err := getFunc(direction); err != nil && merr.IsNameNotFoundError(err) && bone == nil {
 				if bone, err := createFunc(direction); err == nil && bone != nil {
 					bone.IsSystem = true
 
@@ -826,7 +824,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 							return true
 						})
 					}
-				} else if err == merr.ParentNotFoundError {
+				} else if merr.IsParentNotFoundError(err) {
 					// 何もしない
 				} else {
 					return err
@@ -838,7 +836,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 
 		{
 			// 親指0
-			if bone, err := bones.GetThumb(direction, 0); err != nil && err == merr.NameNotFoundError && bone == nil {
+			if bone, err := bones.GetThumb(direction, 0); err != nil && merr.IsNameNotFoundError(err) && bone == nil {
 				if thumb0, err := bones.CreateThumb0(direction); err == nil && thumb0 != nil {
 					if err := bones.Insert(thumb0); err != nil {
 						return err
@@ -847,7 +845,7 @@ func (ss *SizingSet) insertShortageConfigBones(
 						thumb1.ParentIndex = thumb0.Index()
 					}
 					bones.Setup()
-				} else if err == merr.ParentNotFoundError {
+				} else if merr.IsParentNotFoundError(err) {
 					// 何もしない
 				} else {
 					return err

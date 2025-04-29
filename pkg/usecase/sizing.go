@@ -82,7 +82,7 @@ func GenerateSizingScales(sizingSets []*domain.SizingSet) (scales []*mmath.MVec3
 
 	for i, sizingSet := range sizingSets {
 		if sizingSet.IsSizingLeg && !sizingSet.CompletedSizingLeg {
-			mlog.I(mi18n.T("移動補正スケール", map[string]interface{}{
+			mlog.I(mi18n.T("移動補正スケール", map[string]any{
 				"No": i + 1, "XZ": fmt.Sprintf("%.3f", newXZScale),
 				"OrgXZ": fmt.Sprintf("%.3f", scales[i].X), "Y": fmt.Sprintf("%.3f", scales[i].Y)}))
 		}
@@ -109,7 +109,7 @@ func getFrames(motion *vmd.VmdMotion, boneNames []string) []int {
 
 // processLog 処理ログを出力する
 func processLog(key string, index, iterIndex, allCount int) {
-	mlog.I(mi18n.T(key, map[string]interface{}{
+	mlog.I(mi18n.T(key, map[string]any{
 		"No":        index + 1,
 		"IterIndex": fmt.Sprintf("%04d", iterIndex),
 		"AllCount":  fmt.Sprintf("%02d", allCount),
@@ -134,7 +134,7 @@ func computeVmdDeltas(
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
 		func(index, iFrame int) error {
 			if sizingSet.IsTerminate {
-				return merr.TerminateError
+				return merr.NewTerminateError("manual terminate")
 			}
 
 			allDeltas[index] = deform.DeformBone(model, motion, motion, isCalcIk, iFrame, target_bone_names)
@@ -164,7 +164,7 @@ func computeMorphVmdDeltas(
 	err := miter.IterParallelByList(frames, blockSize, log_block_size,
 		func(index, iFrame int) error {
 			if sizingSet.IsTerminate {
-				return merr.TerminateError
+				return merr.NewTerminateError("manual terminate")
 			}
 
 			allDeltas[index] = deform.DeformBone(model, motion, vmd.InitialMotion, true, iFrame, target_bone_names)
@@ -181,6 +181,79 @@ func computeMorphVmdDeltas(
 			}
 		})
 	return allDeltas, err
+}
+
+func checkBones(
+	sizingSet *domain.SizingSet,
+	originalTrunkChecks []domain.CheckTrunkBoneType,
+	originalDirectionChecks []domain.CheckDirectionBoneType,
+	sizingTrunkChecks []domain.CheckTrunkBoneType,
+	sizingDirectionChecks []domain.CheckDirectionBoneType,
+) error {
+	var err error
+	errorMessage := make([]string, 0)
+
+	for _, v := range originalTrunkChecks {
+		if v.CheckFunk() == nil {
+			keyName := "ボーン不足エラー"
+			if !v.IsStandard() {
+				keyName = "検証ボーン不足エラー"
+			}
+			message := mi18n.T(keyName, map[string]any{
+				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1,
+				"ModelType": "元モデル", "BoneName": v.BoneName.String()})
+			mlog.WT(mi18n.T("ボーン不足"), message)
+			errorMessage = append(errorMessage, message)
+		}
+	}
+
+	for _, v := range originalDirectionChecks {
+		for _, direction := range directions {
+			if v.CheckFunk(direction) == nil {
+				keyName := "ボーン不足エラー"
+				if !v.IsStandard(direction) {
+					keyName = "検証ボーン不足エラー"
+				}
+				message := mi18n.T(keyName, map[string]any{
+					"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1,
+					"ModelType": "元モデル", "BoneName": v.BoneName.StringFromDirection(direction)})
+				mlog.WT(mi18n.T("ボーン不足"), message)
+				errorMessage = append(errorMessage, message)
+			}
+		}
+	}
+
+	for _, v := range sizingTrunkChecks {
+		if v.CheckFunk() == nil {
+			keyName := "ボーン不足エラー"
+			if !v.IsStandard() {
+				keyName = "検証ボーン不足エラー"
+			}
+			message := mi18n.T(keyName, map[string]any{
+				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1,
+				"ModelType": "先モデル", "BoneName": v.BoneName.String()})
+			mlog.WT(mi18n.T("ボーン不足"), message)
+			errorMessage = append(errorMessage, message)
+		}
+	}
+
+	for _, v := range sizingDirectionChecks {
+		for _, direction := range directions {
+			if v.CheckFunk(direction) == nil {
+				keyName := "ボーン不足エラー"
+				if !v.IsStandard(direction) {
+					keyName = "検証ボーン不足エラー"
+				}
+				message := mi18n.T(keyName, map[string]any{
+					"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1,
+					"ModelType": "先モデル", "BoneName": v.BoneName.StringFromDirection(direction)})
+				mlog.WT(mi18n.T("ボーン不足"), message)
+				errorMessage = append(errorMessage, message)
+			}
+		}
+	}
+
+	return err
 }
 
 type ISizingUsecase interface {

@@ -79,148 +79,76 @@ func (ss *SizingSet) OriginalLegCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_CENTER.String())
 }
 
-func (ss *SizingSet) OriginalLeftLegRootBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_ROOT.Left())
+func (ss *SizingSet) OriginalLegRootBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_ROOT.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalRightLegRootBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_ROOT.Right())
+func (ss *SizingSet) OriginalLegIkParentBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK_PARENT.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftLegIkParentBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK_PARENT.Left())
+func (ss *SizingSet) OriginalLegIkBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftLegIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK.Left())
+func (ss *SizingSet) OriginalLegBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftLegBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG.Left())
+func (ss *SizingSet) OriginalKneeBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.KNEE.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftKneeBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.KNEE.Left())
+func (ss *SizingSet) OriginalAnkleBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftAnkleBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE.Left())
+func (ss *SizingSet) OriginalAnkleDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftAnkleDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D.Left())
+func (ss *SizingSet) OriginalAnkleDGroundBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D_GROUND.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftAnkleDGroundBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D_GROUND.Left())
+func (ss *SizingSet) OriginalToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_IK.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftToeIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_IK.Left())
+func (ss *SizingSet) OriginalToeTailDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftToeTailDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T_D.Left())
+func (ss *SizingSet) OriginalHeelDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HEEL_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftHeelDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HEEL_D.Left())
+func (ss *SizingSet) OriginalToePDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_P_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftToePDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_P_D.Left())
+func (ss *SizingSet) OriginalToeCDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_C_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalLeftToeCDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_C_D.Left())
+func (ss *SizingSet) OriginalShoulderBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.SHOULDER.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalRightLegIkParentBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK_PARENT.Right())
+func (ss *SizingSet) OriginalArmBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ARM.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalRightLegIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK.Right())
+func (ss *SizingSet) OriginalElbowBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ELBOW.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalRightLegBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG.Right())
+func (ss *SizingSet) OriginalWristBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) OriginalRightKneeBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.KNEE.Right())
-}
-
-func (ss *SizingSet) OriginalRightAnkleBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE.Right())
-}
-
-func (ss *SizingSet) OriginalRightAnkleDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D.Right())
-}
-
-func (ss *SizingSet) OriginalRightAnkleDGroundBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ANKLE_D_GROUND.Right())
-}
-
-func (ss *SizingSet) OriginalRightToeIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_IK.Right())
-}
-
-func (ss *SizingSet) OriginalRightToeTailDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T_D.Right())
-}
-
-func (ss *SizingSet) OriginalRightHeelDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HEEL_D.Right())
-}
-
-func (ss *SizingSet) OriginalRightToePDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_P_D.Right())
-}
-
-func (ss *SizingSet) OriginalRightToeCDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_C_D.Right())
-}
-
-func (ss *SizingSet) OriginalLeftShoulderBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.SHOULDER.Left())
-}
-
-func (ss *SizingSet) OriginalRightShoulderBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.SHOULDER.Right())
-}
-
-func (ss *SizingSet) OriginalLeftArmBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ARM.Left())
-}
-
-func (ss *SizingSet) OriginalRightArmBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ARM.Right())
-}
-
-func (ss *SizingSet) OriginalLeftElbowBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ELBOW.Left())
-}
-
-func (ss *SizingSet) OriginalRightElbowBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ELBOW.Right())
-}
-
-func (ss *SizingSet) OriginalLeftWristBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST.Left())
-}
-
-func (ss *SizingSet) OriginalRightWristBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST.Right())
-}
-
-func (ss *SizingSet) OriginalLeftWristTailBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST_TAIL.Left())
-}
-
-func (ss *SizingSet) OriginalRightWristTailBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST_TAIL.Right())
+func (ss *SizingSet) OriginalWristTailBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.WRIST_TAIL.StringFromDirection(direction))
 }
 
 // --------------------------------------------------------------------
@@ -278,148 +206,76 @@ func (ss *SizingSet) SizingLegCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_CENTER.String())
 }
 
-func (ss *SizingSet) SizingLeftLegRootBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_ROOT.Left())
+func (ss *SizingSet) SizingLegRootBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_ROOT.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingRightLegRootBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_ROOT.Right())
+func (ss *SizingSet) SizingLegIkParentBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK_PARENT.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftLegIkParentBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK_PARENT.Left())
+func (ss *SizingSet) SizingLegIkBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftLegIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK.Left())
+func (ss *SizingSet) SizingLegBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftLegBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG.Left())
+func (ss *SizingSet) SizingKneeBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.KNEE.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftKneeBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.KNEE.Left())
+func (ss *SizingSet) SizingAnkleBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftAnkleBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE.Left())
+func (ss *SizingSet) SizingAnkleDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftAnkleDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D.Left())
+func (ss *SizingSet) SizingAnkleDGroundBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D_GROUND.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftAnkleDGroundBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D_GROUND.Left())
+func (ss *SizingSet) SizingToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_IK.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftToeIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_IK.Left())
+func (ss *SizingSet) SizingToeTailDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_T_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftToeTailDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_T_D.Left())
+func (ss *SizingSet) SizingHeelDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HEEL_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftHeelDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HEEL_D.Left())
+func (ss *SizingSet) SizingToePDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_P_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftToePDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_P_D.Left())
+func (ss *SizingSet) SizingToeCDBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_C_D.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingLeftToeCDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_C_D.Left())
+func (ss *SizingSet) SizingShoulderBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.SHOULDER.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingRightLegIkParentBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK_PARENT.Right())
+func (ss *SizingSet) SizingArmBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ARM.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingRightLegIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK.Right())
+func (ss *SizingSet) SizingElbowBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ELBOW.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingRightLegBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG.Right())
+func (ss *SizingSet) SizingWristBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST.StringFromDirection(direction))
 }
 
-func (ss *SizingSet) SizingRightKneeBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.KNEE.Right())
-}
-
-func (ss *SizingSet) SizingRightAnkleBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE.Right())
-}
-
-func (ss *SizingSet) SizingRightAnkleDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D.Right())
-}
-
-func (ss *SizingSet) SizingRightAnkleDGroundBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ANKLE_D_GROUND.Right())
-}
-
-func (ss *SizingSet) SizingRightToeIkBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_IK.Right())
-}
-
-func (ss *SizingSet) SizingRightToeTailDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_T_D.Right())
-}
-
-func (ss *SizingSet) SizingRightHeelDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HEEL_D.Right())
-}
-
-func (ss *SizingSet) SizingRightToePDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_P_D.Right())
-}
-
-func (ss *SizingSet) SizingRightToeCDBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_C_D.Right())
-}
-
-func (ss *SizingSet) SizingLeftShoulderBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.SHOULDER.Left())
-}
-
-func (ss *SizingSet) SizingRightShoulderBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.SHOULDER.Right())
-}
-
-func (ss *SizingSet) SizingLeftArmBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ARM.Left())
-}
-
-func (ss *SizingSet) SizingRightArmBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ARM.Right())
-}
-
-func (ss *SizingSet) SizingLeftElbowBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ELBOW.Left())
-}
-
-func (ss *SizingSet) SizingRightElbowBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ELBOW.Right())
-}
-
-func (ss *SizingSet) SizingLeftWristBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST.Left())
-}
-
-func (ss *SizingSet) SizingRightWristBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST.Right())
-}
-
-func (ss *SizingSet) SizingLeftWristTailBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST_TAIL.Left())
-}
-
-func (ss *SizingSet) SizingRightWristTailBone() *pmx.Bone {
-	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST_TAIL.Right())
+func (ss *SizingSet) SizingWristTailBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.WRIST_TAIL.StringFromDirection(direction))
 }
 
 // --------------------------------------------------------------------

@@ -301,7 +301,7 @@ func (su *SizingUpperUsecase) calculateAdjustedUpper(
 	err = miter.IterParallelByList(allFrames, blockSize, log_block_size,
 		func(index, data int) error {
 			if sizingSet.IsTerminate {
-				return merr.TerminateError
+				return merr.NewTerminateError("manual terminate")
 			}
 
 			// 上半身から首根元の傾き
@@ -596,7 +596,7 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 		prevFrame := 0
 		for fIndex, iFrame := range targetFrames {
 			if sizingSet.IsTerminate {
-				return merr.TerminateError
+				return merr.NewTerminateError("manual terminate")
 			}
 			frame := float32(iFrame)
 
@@ -650,54 +650,29 @@ func (su *SizingUpperUsecase) updateOutputMotion(
 }
 
 func (su *SizingUpperUsecase) checkBones(sizingSet *domain.SizingSet) (err error) {
-
-	for _, v := range [][]interface{}{
-		{sizingSet.OriginalCenterBone, pmx.CENTER.String(), true},
-		{sizingSet.OriginalTrunkRootBone, pmx.UPPER_ROOT.String(), false},
-		{sizingSet.OriginalUpperBone, pmx.UPPER.String(), true},
-		{sizingSet.OriginalNeckRootBone, pmx.NECK_ROOT.String(), false},
-	} {
-		getFunc := v[0].(func() *pmx.Bone)
-		boneName := v[1].(string)
-		isStandard := v[2].(bool)
-
-		if getFunc() == nil {
-			keyName := "ボーン不足エラー"
-			if !isStandard {
-				keyName = "検証ボーン不足エラー"
-			}
-			mlog.WT(mi18n.T("ボーン不足"), mi18n.T(keyName, map[string]interface{}{
-				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1, "ModelType": "元モデル", "BoneName": boneName}))
-			err = merr.NameNotFoundError
-		}
-	}
-
-	// ------------------------------------------
-
 	// グルーブはサイジング先に元々存在している場合のみ取得
 	sizingSet.SizingGrooveVanillaBone()
 	sizingSet.SizingUpper2VanillaBone()
 
-	for _, v := range [][]interface{}{
-		{sizingSet.SizingCenterBone, pmx.CENTER.String(), true},
-		{sizingSet.SizingTrunkRootBone, pmx.UPPER_ROOT.String(), false},
-		{sizingSet.SizingUpperBone, pmx.UPPER.String(), true},
-		{sizingSet.SizingNeckRootBone, pmx.NECK_ROOT.String(), false},
-	} {
-		getFunc := v[0].(func() *pmx.Bone)
-		boneName := v[1].(string)
-		isStandard := v[2].(bool)
-
-		if getFunc() == nil {
-			keyName := "ボーン不足エラー"
-			if !isStandard {
-				keyName = "検証ボーン不足エラー"
-			}
-			mlog.WT(mi18n.T("ボーン不足"), mi18n.T(keyName, map[string]interface{}{
-				"Process": mi18n.T("足補正"), "No": sizingSet.Index + 1, "ModelType": "先モデル", "BoneName": boneName}))
-			err = merr.NameNotFoundError
-		}
-	}
-
-	return err
+	return checkBones(
+		sizingSet,
+		[]domain.CheckTrunkBoneType{
+			{CheckFunk: sizingSet.OriginalCenterBone, BoneName: pmx.CENTER},
+			{CheckFunk: sizingSet.OriginalTrunkRootBone, BoneName: pmx.UPPER_ROOT},
+			{CheckFunk: sizingSet.OriginalUpperBone, BoneName: pmx.UPPER},
+			{CheckFunk: sizingSet.OriginalNeckRootBone, BoneName: pmx.NECK_ROOT},
+		},
+		[]domain.CheckDirectionBoneType{
+			{CheckFunk: sizingSet.OriginalArmBone, BoneName: pmx.ARM},
+		},
+		[]domain.CheckTrunkBoneType{
+			{CheckFunk: sizingSet.SizingCenterBone, BoneName: pmx.CENTER},
+			{CheckFunk: sizingSet.SizingTrunkRootBone, BoneName: pmx.UPPER_ROOT},
+			{CheckFunk: sizingSet.SizingUpperBone, BoneName: pmx.UPPER},
+			{CheckFunk: sizingSet.SizingNeckRootBone, BoneName: pmx.NECK_ROOT},
+		},
+		[]domain.CheckDirectionBoneType{
+			{CheckFunk: sizingSet.SizingArmBone, BoneName: pmx.ARM},
+		},
+	)
 }

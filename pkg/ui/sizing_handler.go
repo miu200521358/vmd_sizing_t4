@@ -184,7 +184,6 @@ func execSizing(cw *controller.ControlWindow, sizingState *SizingState) error {
 			for _, uc := range []usecase.ISizingUsecase{
 				usecase.NewSizingUpperUsecase(),    // 上半身補正
 				usecase.NewSizingShoulderUsecase(), // 肩補正
-				usecase.NewSizingAlignUsecase(),    // 手首位置合わせ
 			} {
 				if execResult, err := uc.Exec(sizingSet, len(sizingState.SizingSets), incrementCompletedCount); err != nil {
 					errorChan <- err
@@ -214,7 +213,7 @@ func execSizing(cw *controller.ControlWindow, sizingState *SizingState) error {
 	// チャネルからエラーを受け取る
 	for err := range errorChan {
 		if err != nil {
-			if err == merr.TerminateError {
+			if merr.IsTerminateError(err) {
 				mlog.I(mi18n.T("サイジング中断"))
 				break
 			} else {
