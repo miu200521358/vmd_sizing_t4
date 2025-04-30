@@ -379,6 +379,14 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 				Z: 1.0,
 			}
 
+			// 足中心の長さ差
+			originalLegCenterHeight := originalMorphLegCenterDelta.FilledGlobalPosition().Y
+			sizingLegCenterHeight := sizingMorphLegCenterDelta.FilledGlobalPosition().Y
+			legCenterRatio := sizingLegCenterHeight / originalLegCenterHeight
+
+			// 実際に傾ける大きさは、比率が小さいほど小さくする
+			slope := mmath.MQuaternionIdent.Slerp(originalLegSlope, legCenterRatio)
+
 			// -------------------------
 
 			originalLowerRootDelta := originalAllDeltas[index].Bones.GetByName(pmx.LOWER_ROOT.String())
@@ -399,7 +407,7 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			// スケール差を考慮した先の足ボーンのローカル位置
 			sizingLegCenterVerticalLocalPosition := originalLegCenterVerticalLocalPosition.Muled(legCenterFromLowerScale)
 
-			sizingLegCenterLocalPosition := originalLegSlope.MulVec3(sizingLegCenterVerticalLocalPosition)
+			sizingLegCenterLocalPosition := slope.MulVec3(sizingLegCenterVerticalLocalPosition)
 
 			sizingLowerRootDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LOWER_ROOT.String())
 			sizingLegCenterIdealGlobalPosition := sizingLowerRootDelta.FilledGlobalMatrix().Muled(
@@ -788,6 +796,15 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 			// 体軸までのYの長さ
 			originalMorphBodyAxisDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.BODY_AXIS.String())
 			sizingMorphBodyAxisDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.BODY_AXIS.String())
+
+			// originalLeftAnkleDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.ANKLE.Left())
+			// originalRightAnkleDelta := originalMorphAllDeltas[index].Bones.GetByName(pmx.ANKLE.Right())
+			// originalAnkleY := (originalLeftAnkleDelta.FilledGlobalPosition().Y + originalRightAnkleDelta.FilledGlobalPosition().Y) / 2.0
+
+			// sizingLeftAnkleDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.ANKLE.Left())
+			// sizingRightAnkleDelta := sizingMorphAllDeltas[index].Bones.GetByName(pmx.ANKLE.Right())
+			// sizingAnkleY := (sizingLeftAnkleDelta.FilledGlobalPosition().Y + sizingRightAnkleDelta.FilledGlobalPosition().Y) / 2.0
+
 			originalInitialBodyAxisY := originalMorphBodyAxisDelta.FilledGlobalPosition().Y
 			sizingInitialBodyAxisY := sizingMorphBodyAxisDelta.FilledGlobalPosition().Y
 
@@ -809,7 +826,7 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 			originalBodyAxisLocalPosition := originalCenterParentDelta.FilledGlobalMatrix().Inverted().MulVec3(originalBodyAxisDelta.FilledGlobalPosition())
 
 			// 体軸のローカル位置の高さが、元の体軸の高さに対してどのくらいの比率か
-			trunkRootYRatio := originalBodyAxisLocalPosition.Y / originalInitialBodyAxisY
+			trunkRootYRatio := (originalBodyAxisLocalPosition.Y) / originalInitialBodyAxisY
 
 			// 先の体軸の高さに、その比率をかける
 			sizingBodyAxisY := sizingInitialBodyAxisY * trunkRootYRatio
