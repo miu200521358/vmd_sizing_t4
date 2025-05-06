@@ -91,6 +91,10 @@ func (ss *SizingSet) OriginalLegIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG_IK.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) OriginalHipBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HIP.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) OriginalLegBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.LEG.StringFromDirection(direction))
 }
@@ -220,6 +224,10 @@ func (ss *SizingSet) SizingLegIkParentBone(direction pmx.BoneDirection) *pmx.Bon
 
 func (ss *SizingSet) SizingLegIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.LEG_IK.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) SizingHipBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HIP.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) SizingLegBone(direction pmx.BoneDirection) *pmx.Bone {
