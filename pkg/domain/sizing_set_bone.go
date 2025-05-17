@@ -27,6 +27,10 @@ func (ss *SizingSet) getOrFetchBone(model *pmx.PmxModel, boneCache map[string]*p
 // --------------------------------------------------------------------
 // OriginalConfigModel からボーンを取得するためのメソッド群
 
+func (ss *SizingSet) OriginalRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.ROOT.String())
+}
+
 func (ss *SizingSet) OriginalCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.CENTER.String())
 }
@@ -123,16 +127,32 @@ func (ss *SizingSet) OriginalToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_IK.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) OriginalToeTailBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) OriginalToeTailDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T_D.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) OriginalHeelBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HEEL.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) OriginalHeelDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.HEEL_D.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) OriginalToePBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_P.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) OriginalToePDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_P_D.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) OriginalToeCBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_C.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) OriginalToeCDBone(direction pmx.BoneDirection) *pmx.Bone {
@@ -161,6 +181,10 @@ func (ss *SizingSet) OriginalWristTailBone(direction pmx.BoneDirection) *pmx.Bon
 
 // --------------------------------------------------------------------
 // SizingConfigModel からボーンを取得するためのメソッド群
+
+func (ss *SizingSet) SizingRootBone() *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.ROOT.String())
+}
 
 func (ss *SizingSet) SizingCenterBone() *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.CENTER.String())
@@ -258,16 +282,32 @@ func (ss *SizingSet) SizingToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_IK.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) SizingToeTailBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_T.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) SizingToeTailDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_T_D.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) SizingHeelBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HEEL.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) SizingHeelDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.HEEL_D.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) SizingToePBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_P.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) SizingToePDBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_P_D.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) SizingToeCBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_C.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) SizingToeCDBone(direction pmx.BoneDirection) *pmx.Bone {
