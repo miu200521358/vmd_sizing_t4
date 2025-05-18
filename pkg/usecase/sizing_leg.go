@@ -1141,15 +1141,28 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 			}
 
 			for d, direction := range directions {
-				// 足根元から足首地面までの長さ差
+				// 足
+				originalMorphLegDelta := originalMorphAllDeltas[index].Bones.GetByName(
+					pmx.LEG.StringFromDirection(direction))
+				sizingMorphLegDelta := sizingMorphAllDeltas[index].Bones.GetByName(
+					pmx.LEG.StringFromDirection(direction))
+
 				originalMorphAnkleDelta := originalMorphAllDeltas[index].Bones.GetByName(
 					pmx.ANKLE.StringFromDirection(direction))
 				sizingMorphAnkleDelta := sizingMorphAllDeltas[index].Bones.GetByName(
 					pmx.ANKLE.StringFromDirection(direction))
 
+				// 足首地面の長さ差
 				originalAnkleLength := originalMorphAnkleDelta.FilledGlobalPosition().Y
 				sizingAnkleLength := sizingMorphAnkleDelta.FilledGlobalPosition().Y
 				ankleScale := sizingAnkleLength / originalAnkleLength
+
+				// 足から足首までの長さ差
+				originalLegLength := originalMorphLegDelta.FilledGlobalPosition().Distance(
+					originalMorphAnkleDelta.FilledGlobalPosition())
+				sizingLegLength := sizingMorphLegDelta.FilledGlobalPosition().Distance(
+					sizingMorphAnkleDelta.FilledGlobalPosition())
+				legScale := sizingLegLength / originalLegLength
 
 				originalMorphHeelDelta := originalMorphAllDeltas[index].Bones.GetByName(
 					pmx.HEEL.StringFromDirection(direction))
@@ -1172,21 +1185,46 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 					sizingMorphToeTailDelta.FilledGlobalPosition())
 				soleScale := sizingSoleLength / originalSoleLength
 
-				// --------------------------------
+				// -----------------------------
 
 				// 足IKがターゲットより伸びている場合の対応
+				originalLegDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG.StringFromDirection(direction))
 				originalLegIkDelta := originalAllDeltas[index].Bones.GetByName(pmx.LEG_IK.StringFromDirection(direction))
 				originalAnkleDelta := originalAllDeltas[index].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
 				originalLegIkDiff := originalLegIkDelta.FilledGlobalPosition().Subed(originalAnkleDelta.FilledGlobalPosition())
 				// 先モデルにおける足首から見た足IKの差分を求める
 				sizingLegIkDiff := originalLegIkDiff.Muled(moveScale)
 
-				ankleDelta := sizingLegIkOffAllDeltas[index].Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
+				originalHeelDelta := originalAllDeltas[index].Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
+				originalToeTailDelta := originalAllDeltas[index].Bones.GetByName(pmx.TOE_T_D.StringFromDirection(direction))
+				originalToePDelta := originalAllDeltas[index].Bones.GetByName(pmx.TOE_P_D.StringFromDirection(direction))
 
-				sizingAnkleIdealGlobalPosition := ankleDelta.FilledGlobalPosition()
+				// 元の足首からかかとの傾き
+				originalHeelVector := originalHeelDelta.FilledGlobalPosition().Subed(originalAnkleDelta.FilledGlobalPosition())
+				// 元のかかとからつま先の傾き
+				originalToeTailVector := originalToeTailDelta.FilledGlobalPosition().Subed(originalHeelDelta.FilledGlobalPosition())
+
+				sizingIdealHeelVector := originalHeelVector.MuledScalar(heelScale)
+				sizingIdealToeTailVector := originalToeTailVector.MuledScalar(soleScale)
+				originalToePVector := originalToePDelta.FilledGlobalPosition().Subed(originalToeTailDelta.FilledGlobalPosition())
+
+				// --------------------------------
+
+				legDelta := sizingLegIkOffAllDeltas[index].Bones.GetByName(pmx.LEG.StringFromDirection(direction))
+
+				// 足から見た足首のローカル位置
+				ankleLocalPosition := originalLegDelta.FilledGlobalMatrix().Inverted().MulVec3(
+					originalAnkleDelta.FilledGlobalPosition())
+				scaledAnkleLocalPosition := ankleLocalPosition.MuledScalar(legScale)
+
+				// 一旦この時点での理想位置を求める
+				sizingAnkleIdealGlobalPosition := legDelta.FilledGlobalMatrix().MulVec3(scaledAnkleLocalPosition)
+				sizingHeelPreIdealoGlobalPosition := sizingAnkleIdealGlobalPosition.Added(sizingIdealHeelVector)
+				sizingToePreIdealGlobalPosition := sizingHeelPreIdealoGlobalPosition.Added(sizingIdealToeTailVector)
+
 				sizingAnkleIdealGlobalPosition.Y += su.calculateAnkleYDiff(
-					originalMorphAllDeltas[index], originalAllDeltas[index],
-					sizingLegIkOffAllDeltas[index], direction, ankleScale)
+					originalMorphAllDeltas[index], originalAllDeltas[index], direction, ankleScale,
+					sizingHeelPreIdealoGlobalPosition.Y, sizingToePreIdealGlobalPosition.Y)
 				if mmath.NearEquals(originalAnkleDelta.FilledGlobalPosition().Y, originalMorphAnkleDelta.FilledGlobalPosition().Y, 1e-2) {
 					// 足首が動いていない場合、足IKを動かさない
 					sizingAnkleIdealGlobalPosition.Y = sizingMorphAnkleDelta.FilledGlobalPosition().Y
@@ -1196,20 +1234,7 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 				// 足IKのターゲットとしては、足IKを伸ばした場合を加味する
 				sizingAnkleIdealGlobalPosition.Add(sizingLegIkDiff)
 
-				originalHeelDelta := originalAllDeltas[index].Bones.GetByName(pmx.HEEL.StringFromDirection(direction))
-				originalToeTailDelta := originalAllDeltas[index].Bones.GetByName(pmx.TOE_T.StringFromDirection(direction))
-				originalToePDelta := originalAllDeltas[index].Bones.GetByName(pmx.TOE_P.StringFromDirection(direction))
-
-				// 元の足首からかかとの傾き
-				originalHeelVector := originalHeelDelta.FilledGlobalPosition().Subed(originalAnkleDelta.FilledGlobalPosition())
-				sizingIdealHeelVector := originalHeelVector.MuledScalar(heelScale)
-
-				// 元のかかとからつま先の傾き
-				originalToeTailVector := originalToeTailDelta.FilledGlobalPosition().Subed(originalHeelDelta.FilledGlobalPosition())
-				sizingIdealToeTailVector := originalToeTailVector.MuledScalar(soleScale)
-
-				originalToePVector := originalToePDelta.FilledGlobalPosition().Subed(originalToeTailDelta.FilledGlobalPosition())
-
+				// 最終的な理想位置を求める
 				sizingHeelIdealoGlobalPosition := sizingAnkleFitIdealGlobalPosition.Added(sizingIdealHeelVector)
 				sizingToeIdealGlobalPosition := sizingHeelIdealoGlobalPosition.Added(sizingIdealToeTailVector)
 				sizingToePIdealGlobalPosition := sizingToeIdealGlobalPosition.Added(originalToePVector)
@@ -1234,22 +1259,15 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 					leg_direction_bone_names[d], 1, false, false)
 
 				// 全親からみた足IKデフォルト位置からみた現在の足首のローカル位置
-				{
-					sizingLegIkMorphDelta := sizingMorphAllDeltas[index].Bones.Get(sizingSet.SizingLegIkBone(direction).Index())
-					sizingRootMorphDelta := sizingMorphAllDeltas[index].Bones.GetByName(sizingSet.SizingRootBone().Name())
-					sizingLegIkMorphLocalPosition :=
-						sizingRootMorphDelta.FilledGlobalMatrix().Inverted().MulVec3(
-							sizingLegIkMorphDelta.FilledGlobalPosition())
+				sizingLegIkMorphDelta := sizingMorphAllDeltas[index].Bones.Get(sizingSet.SizingLegIkBone(direction).Index())
+				sizingRootMorphDelta := sizingMorphAllDeltas[index].Bones.GetByName(sizingSet.SizingRootBone().Name())
+				sizingLegIkMorphLocalPosition :=
+					sizingRootMorphDelta.FilledGlobalMatrix().Inverted().MulVec3(
+						sizingLegIkMorphDelta.FilledGlobalPosition())
 
-					sizingAnkleDelta := sizingLegDeltas.Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
-					sizingRootDelta := sizingLegDeltas.Bones.GetByName(sizingSet.SizingRootBone().Name())
-					legIkPositions[d][index] = sizingRootDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingAnkleDelta.FilledGlobalPosition()).Subed(sizingLegIkMorphLocalPosition).Added(sizingLegIkDiff)
-
-					if mmath.NearEquals(originalLegIkDelta.FilledFramePosition().Y, 0.0, 1e-3) {
-						// 足IKがY=0のとき、そのまま流用する
-						legIkPositions[d][index].Y = originalLegIkDelta.FilledFramePosition().Y
-					}
-				}
+				sizingAnkleDelta := sizingLegDeltas.Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
+				sizingRootDelta := sizingLegDeltas.Bones.GetByName(sizingSet.SizingRootBone().Name())
+				legIkPositions[d][index] = sizingRootDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingAnkleDelta.FilledGlobalPosition()).Subed(sizingLegIkMorphLocalPosition).Added(sizingLegIkDiff)
 
 				legRotations[d][index] = sizingLegDeltas.Bones.GetByName(pmx.LEG.StringFromDirection(direction)).FilledFrameRotation().Copy()
 				kneeRotations[d][index] = sizingLegDeltas.Bones.GetByName(pmx.KNEE.StringFromDirection(direction)).FilledFrameRotation().Copy()
@@ -1325,13 +1343,12 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 }
 
 func (su *SizingLegUsecase) calculateAnkleYDiff(
-	originalMorphDelta, originalDelta, sizingDelta *delta.VmdDeltas, direction pmx.BoneDirection, ankleScale float64,
+	originalMorphDelta, originalDelta *delta.VmdDeltas,
+	direction pmx.BoneDirection, ankleScale, actualSizingHeelY, actualSizingToeTailY float64,
 ) float64 {
-	originalMorphAnkleDelta := originalMorphDelta.Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
-	originalToeTailDelta := originalDelta.Bones.GetByName(pmx.TOE_T.StringFromDirection(direction))
-	originalHeelDelta := originalDelta.Bones.GetByName(pmx.HEEL.StringFromDirection(direction))
-	sizingToeTailDelta := sizingDelta.Bones.GetByName(pmx.TOE_T.StringFromDirection(direction))
-	sizingHeelDelta := sizingDelta.Bones.GetByName(pmx.HEEL.StringFromDirection(direction))
+	originalMorphAnkleDelta := originalMorphDelta.Bones.GetByName(pmx.ANKLE_D.StringFromDirection(direction))
+	originalToeTailDelta := originalDelta.Bones.GetByName(pmx.TOE_T_D.StringFromDirection(direction))
+	originalHeelDelta := originalDelta.Bones.GetByName(pmx.HEEL_D.StringFromDirection(direction))
 
 	originalMorphAnkleY := originalMorphAnkleDelta.FilledGlobalPosition().Y
 	originalToeTailDY := originalToeTailDelta.FilledGlobalPosition().Y
@@ -1341,18 +1358,12 @@ func (su *SizingLegUsecase) calculateAnkleYDiff(
 	// つま先のY座標を元モデルのつま先のY座標*スケールに合わせる
 	idealSizingToeTailY := originalToeTailDY * ankleScale
 
-	// 現時点のつま先のY座標
-	actualToeTailY := sizingToeTailDelta.FilledGlobalPosition().Y
-
-	toeDiff := idealSizingToeTailY - actualToeTailY
+	toeDiff := idealSizingToeTailY - actualSizingToeTailY
 	lerpToeDiff := mmath.Lerp(toeDiff, 0, originalToeTailDY/originalMorphAnkleY)
 
 	// かかとの補正値 ------------------
 	// かかとのY座標を元モデルのかかとのY座標*スケールに合わせる
 	idealSizingHeelY := originalHeelDY * ankleScale
-
-	// 現時点のかかとのY座標
-	actualSizingHeelY := sizingHeelDelta.FilledGlobalPosition().Y
 
 	heelDiff := idealSizingHeelY - actualSizingHeelY
 	lerpHeelDiff := mmath.Lerp(heelDiff, 0, originalHeelDY/originalMorphAnkleY)
