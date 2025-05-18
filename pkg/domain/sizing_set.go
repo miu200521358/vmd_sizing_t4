@@ -627,6 +627,11 @@ func (ss *SizingSet) insertDebugBones(bones *pmx.Bones, displaySlots *pmx.Displa
 		{"先今右爪先CD1", rootBone.Index(), mmath.NewMVec3(), "足11右"},
 		{"元今右踵D1", rootBone.Index(), mmath.NewMVec3(), "足11右"},
 		{"先今右踵D1", rootBone.Index(), mmath.NewMVec3(), "足11右"},
+		// 足固定
+		{"元今左足首3", rootBone.Index(), mmath.NewMVec3(), "足13"},
+		{"先今左足首3", rootBone.Index(), mmath.NewMVec3(), "足13"},
+		{"元今右足首3", rootBone.Index(), mmath.NewMVec3(), "足13"},
+		{"先今右足首3", rootBone.Index(), mmath.NewMVec3(), "足13"},
 		// 上半身補正
 		{"元今上半身", rootBone.Index(), mmath.NewMVec3(), "上半身02"},
 		{"元今上半身2", rootBone.Index(), mmath.NewMVec3(), "上半身02"},

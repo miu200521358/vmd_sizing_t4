@@ -510,6 +510,10 @@ github.com/miu200521358/mlib_go/pkg/infrastructure/mgl.(*VertexBufferHandle).Upd
 	github.com/miu200521358/mlib_go@v0.0.3/pkg/infrastructure/mgl/vertex_buffer_builder.go:281 +0xea
 invalid memory address or nil pointer dereference
 
+不足ボーンの追加
+重心補正を足補正とは別に入れる？
+
+
 残件）
 ・絢ちゃんjsonの右手首あたり
 ・肩角度を調整すると全体にスケールが入る

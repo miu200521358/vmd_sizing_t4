@@ -273,6 +273,23 @@ func recordDebugData(
 	}
 }
 
+// recordDebugData デバッグデータを記録する
+func recordDebugDataDirection(
+	index int, debugBoneNames []pmx.StandardBoneName, direction pmx.BoneDirection,
+	vmdDeltas *delta.VmdDeltas, debugTarget debugTarget, debugType debugType,
+	positions [][]map[string][]*mmath.MVec3, rotations [][]map[string][]*mmath.MQuaternion,
+) {
+	for _, debugBoneName := range debugBoneNames {
+		boneName := debugBoneName.StringFromDirection(direction)
+		boneDelta := vmdDeltas.Bones.GetByName(boneName)
+		if boneDelta == nil {
+			continue
+		}
+		positions[debugTarget][debugType][boneName][index] = boneDelta.FilledGlobalPosition().Copy()
+		rotations[debugTarget][debugType][boneName][index] = boneDelta.FilledFrameRotation().Copy()
+	}
+}
+
 // outputDebugData デバッグデータの出力
 func outputDebugData(
 	allFrames []int, debugBoneNames []pmx.StandardBoneName, motionKey, outputPath string, model *pmx.PmxModel,

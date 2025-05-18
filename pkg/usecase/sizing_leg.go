@@ -251,10 +251,10 @@ func (su *SizingLegUsecase) Exec(
 	}
 
 	// 足IKのオフセットを元に戻す
-	su.updateLegIkOffset(sizingSet, allFrames, legScale)
+	su.updateLegIkOffset(sizingSet, originalAllDeltas, allFrames, legScale, "足13")
 
 	if mlog.IsDebug() {
-		outputVerboseMotion("足13", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
+		outputVerboseMotion("足14", sizingSet.OutputMotionPath, sizingSet.OutputMotion)
 	}
 
 	sizingSet.CompletedSizingLeg = true
@@ -366,8 +366,8 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 	sizingLowerResultRotations = make([]*mmath.MQuaternion, len(allFrames))
 
 	lowerIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_TRUNK)
-	leftLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_LEFT)
-	rightLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_RIGHT)
+	// leftLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_LEFT)
+	// rightLegIkBone := su.createLowerIkBone(sizingSet, pmx.BONE_DIRECTION_RIGHT)
 
 	debugBoneNames := []pmx.StandardBoneName{
 		pmx.LOWER, pmx.LEG_CENTER, pmx.LEG, pmx.HIP,
@@ -413,8 +413,7 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			legCenterFromLowerScale := &mmath.MVec3{
 				X: sizingLegWidth / originalLegWidth,
 				Y: sizingLowerHeight / originalLowerHeight,
-				Z: 1.0,
-			}
+				Z: 1.0}
 
 			// -------------------------
 
@@ -468,13 +467,9 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			// IK解決
 			sizingLowerDeltas, _ := deform.DeformIks(sizingSet.SizingConfigModel, sizingProcessMotion,
 				sizingAllDeltas[index], frame,
-				[]*pmx.Bone{lowerIkBone, leftLegIkBone, rightLegIkBone},
-				[]*pmx.Bone{sizingSet.SizingLegCenterBone(),
-					sizingSet.SizingLegBone(pmx.BONE_DIRECTION_LEFT),
-					sizingSet.SizingLegBone(pmx.BONE_DIRECTION_RIGHT)},
-				[]*mmath.MVec3{sizingLeftLegIdealGlobalPosition,
-					sizingLeftLegIdealGlobalPosition,
-					sizingRightLegIdealGlobalPosition},
+				[]*pmx.Bone{lowerIkBone},
+				[]*pmx.Bone{sizingSet.SizingLegCenterBone()},
+				[]*mmath.MVec3{sizingLegCenterIdealGlobalPosition},
 				trunk_lower_bone_names, 2, false, false)
 
 			sizingLowerResultDelta := sizingLowerDeltas.Bones.GetByName(pmx.LOWER.String())
@@ -488,8 +483,7 @@ func (su *SizingLegUsecase) calculateAdjustedLower(
 			{
 				// デフォーム情報を更新するため、クリア
 				sizingLowerDelta := sizingAllDeltas[index].Bones.GetByName(pmx.LOWER.String())
-				sizingLowerDelta.UnitMatrix = nil
-				sizingAllDeltas[index].Bones.Update(sizingLowerDelta)
+				sizingAllDeltas[index].Bones.Delete(sizingLowerDelta.Bone.Index())
 			}
 
 			incrementCompletedCount()
@@ -745,8 +739,7 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk(
 						if sizingDelta == nil {
 							continue
 						}
-						sizingDelta.UnitMatrix = nil
-						sizingAllDeltas[index].Bones.Update(sizingDelta)
+						sizingAllDeltas[index].Bones.Delete(sizingDelta.Bone.Index())
 					}
 				}
 
@@ -963,8 +956,7 @@ func (su *SizingLegUsecase) calculateAdjustedCenter(
 					if sizingDelta == nil {
 						continue
 					}
-					sizingDelta.UnitMatrix = nil
-					sizingAllDeltas[index].Bones.Update(sizingDelta)
+					sizingAllDeltas[index].Bones.Delete(sizingDelta.Bone.Index())
 				}
 			}
 
@@ -1225,7 +1217,7 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 				if mlog.IsDebug() {
 					recordDebugData(index, debugBoneNames, originalAllDeltas[index],
 						debugTargetOriginal, debugTypeInitial, debugPositions, debugRotations)
-					recordDebugData(index, debugBoneNames, sizingLegIkOnAllDeltas[index],
+					recordDebugData(index, debugBoneNames, sizingLegIkOffAllDeltas[index],
 						debugTargetSizing, debugTypeInitial, debugPositions, debugRotations)
 
 					debugPositions[debugTargetSizing][debugTypeIdeal][pmx.ANKLE.StringFromDirection(direction)][index] = sizingAnkleIdealGlobalPosition.Copy()
@@ -1252,6 +1244,11 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 					sizingAnkleDelta := sizingLegDeltas.Bones.GetByName(pmx.ANKLE.StringFromDirection(direction))
 					sizingRootDelta := sizingLegDeltas.Bones.GetByName(sizingSet.SizingRootBone().Name())
 					legIkPositions[d][index] = sizingRootDelta.FilledGlobalMatrix().Inverted().MulVec3(sizingAnkleDelta.FilledGlobalPosition()).Subed(sizingLegIkMorphLocalPosition).Added(sizingLegIkDiff)
+
+					if mmath.NearEquals(originalLegIkDelta.FilledFramePosition().Y, 0.0, 1e-3) {
+						// 足IKがY=0のとき、そのまま流用する
+						legIkPositions[d][index].Y = originalLegIkDelta.FilledFramePosition().Y
+					}
 				}
 
 				legRotations[d][index] = sizingLegDeltas.Bones.GetByName(pmx.LEG.StringFromDirection(direction)).FilledFrameRotation().Copy()
@@ -1304,8 +1301,7 @@ func (su *SizingLegUsecase) calculateAdjustedLegIk2(
 						if sizingDelta == nil {
 							continue
 						}
-						sizingDelta.UnitMatrix = nil
-						sizingLegIkOnAllDeltas[index].Bones.Update(sizingDelta)
+						sizingLegIkOnAllDeltas[index].Bones.Delete(sizingDelta.Bone.Index())
 					}
 				}
 			}
@@ -1707,31 +1703,58 @@ func (su *SizingLegUsecase) updateOutputMotion(
 	return nil
 }
 
-func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFrames []int, legScale float64) {
+func (su *SizingLegUsecase) updateLegIkOffset(
+	sizingSet *domain.SizingSet, originalAllDeltas []*delta.VmdDeltas,
+	allFrames []int, legScale float64, verboseMotionKey string,
+) {
 	// 元モーションのIKが動いていない区間を取得
 	fixIkFlags := make([][]bool, len(directions))
 	fixIkFlags[0] = make([]bool, len(allFrames))
 	fixIkFlags[1] = make([]bool, len(allFrames))
 
-	for i, iFrame := range allFrames {
-		for d, direction := range directions {
-			legIkBoneName := pmx.LEG_IK.StringFromDirection(direction)
+	debugBoneNames := []pmx.StandardBoneName{pmx.ANKLE}
+	debugPositions, debugRotations := newDebugData(allFrames, debugBoneNames)
 
+	for i, originalDeltas := range originalAllDeltas {
+		for d, direction := range directions {
 			if i == 0 {
 				fixIkFlags[d][i] = false
+
+				if mlog.IsDebug() {
+					recordDebugDataDirection(i, debugBoneNames, direction, originalDeltas,
+						debugTargetOriginal, debugTypeInitial, debugPositions, debugRotations)
+				}
+
 				continue
 			}
 
-			frame := float32(iFrame)
-			legIkBf := sizingSet.OriginalMotion.BoneFrames.Get(legIkBoneName).Get(frame)
-			prevLegIkBf := sizingSet.OriginalMotion.BoneFrames.Get(legIkBoneName).Get(frame - 1)
+			// 足IK親などで動かされている場合もあるので、足IKのグローバル位置で判定
+			legBoneName := pmx.LEG_IK.StringFromDirection(direction)
+			nowLegIkPosition := originalDeltas.Bones.GetByName(legBoneName).FilledGlobalPosition()
+			prevLegIkPosition := originalAllDeltas[i-1].Bones.GetByName(legBoneName).FilledGlobalPosition()
 
-			fixIkFlags[d][i] = legIkBf.FilledPosition().Distance(prevLegIkBf.FilledPosition()) < 0.005*legScale
+			if nowLegIkPosition.Distance(prevLegIkPosition) < 0.01*legScale {
+				fixIkFlags[d][i] = true
+
+				if mlog.IsDebug() {
+					recordDebugDataDirection(i, debugBoneNames, direction, originalDeltas,
+						debugTargetOriginal, debugTypeInitial, debugPositions, debugRotations)
+				}
+			} else {
+				if mlog.IsDebug() {
+					recordDebugDataDirection(i, debugBoneNames, direction, originalDeltas,
+						debugTargetSizing, debugTypeInitial, debugPositions, debugRotations)
+				}
+			}
 		}
 
 		if i > 0 && i%1000 == 0 {
 			processLog("足補正17", sizingSet.Index, i, len(allFrames))
 		}
+	}
+
+	if mlog.IsDebug() {
+		outputDebugData(allFrames, debugBoneNames, verboseMotionKey, sizingSet.OutputMotionPath, sizingSet.SizingConfigModel, debugPositions, debugRotations)
 	}
 
 	processLog("足補正18", sizingSet.Index, 0, 0)
@@ -1745,14 +1768,8 @@ func (su *SizingLegUsecase) updateLegIkOffset(sizingSet *domain.SizingSet, allFr
 					prevFrame := sizingSet.OutputMotion.BoneFrames.Get(boneName).PrevFrame(frame)
 					prevBf := sizingSet.OutputMotion.BoneFrames.Get(boneName).Get(prevFrame)
 					bf.Position = prevBf.FilledPosition().Copy()
+					sizingSet.OutputMotion.BoneFrames.Get(boneName).Update(bf)
 				}
-				// originalBf := sizingSet.OriginalMotion.BoneFrames.Get(boneName).Get(frame)
-				// if mmath.NearEquals(originalBf.FilledPosition().Y, 0.0, 1e-2) {
-				// 	// 元の足IKが0の場合、0にする
-				// 	bf.Position.Y = 0.0
-				// }
-
-				sizingSet.OutputMotion.BoneFrames.Get(boneName).Update(bf)
 
 				return true
 			})
