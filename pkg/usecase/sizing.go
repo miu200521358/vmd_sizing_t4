@@ -298,6 +298,9 @@ func outputDebugData(
 						bf := vmd.NewBoneFrame(frame)
 						bf.Position = positions[debugTargetIndex][debugTypeIndex][boneName][iFrame]
 						bf.Rotation = rotations[debugTargetIndex][debugTypeIndex][boneName][iFrame]
+						if bf.Position == nil && bf.Rotation == nil {
+							continue
+						}
 						motion.InsertBoneFrame(outputBoneName, bf)
 					}
 				}
@@ -329,6 +332,7 @@ func checkBones(
 				"ModelType": "元モデル", "BoneName": v.BoneName.String()})
 			mlog.WT(mi18n.T("ボーン不足"), message)
 			errorMessage = append(errorMessage, message)
+			err = merr.NewNameNotFoundError(v.BoneName.String(), message)
 		}
 	}
 
@@ -344,6 +348,7 @@ func checkBones(
 					"ModelType": "元モデル", "BoneName": v.BoneName.StringFromDirection(direction)})
 				mlog.WT(mi18n.T("ボーン不足"), message)
 				errorMessage = append(errorMessage, message)
+				err = merr.NewNameNotFoundError(v.BoneName.StringFromDirection(direction), message)
 			}
 		}
 	}
@@ -359,6 +364,7 @@ func checkBones(
 				"ModelType": "先モデル", "BoneName": v.BoneName.String()})
 			mlog.WT(mi18n.T("ボーン不足"), message)
 			errorMessage = append(errorMessage, message)
+			err = merr.NewNameNotFoundError(v.BoneName.String(), message)
 		}
 	}
 
@@ -374,6 +380,7 @@ func checkBones(
 					"ModelType": "先モデル", "BoneName": v.BoneName.StringFromDirection(direction)})
 				mlog.WT(mi18n.T("ボーン不足"), message)
 				errorMessage = append(errorMessage, message)
+				err = merr.NewNameNotFoundError(v.BoneName.StringFromDirection(direction), message)
 			}
 		}
 	}

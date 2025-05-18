@@ -497,14 +497,14 @@
     },
     {
         "id": "足補正11",
-        "translation": "【No.{{.No}}】足補正 - {{.Direction}}足 - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
+        "translation": "【No.{{.No}}】足補正 - {{.UpdateBoneName}} - 結果モーションへの出力 ({{.FramesIndex}}回目) [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
-        "id": "足補正12",
+        "id": "足補正17",
         "translation": "【No.{{.No}}】足補正 - 足IK固定検知 [{{.IterIndex}}/{{.AllCount}}]"
     },
     {
-        "id": "足補正13",
+        "id": "足補正18",
         "translation": "【No.{{.No}}】足補正 - 足IK固定再設定"
     },
     {
