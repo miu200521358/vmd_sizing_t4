@@ -414,6 +414,7 @@ var log_block_size = runtime.NumCPU() * 50
 
 // 方向
 var directions = []pmx.BoneDirection{pmx.BONE_DIRECTION_LEFT, pmx.BONE_DIRECTION_RIGHT}
+var reverse_directions = []pmx.BoneDirection{pmx.BONE_DIRECTION_RIGHT, pmx.BONE_DIRECTION_LEFT}
 
 // 体幹下部ボーン名
 var trunk_lower_bone_names = []string{

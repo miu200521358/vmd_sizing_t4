@@ -127,6 +127,10 @@ func (ss *SizingSet) OriginalToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_IK.StringFromDirection(direction))
 }
 
+func (ss *SizingSet) OriginalToeExBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_EX.StringFromDirection(direction))
+}
+
 func (ss *SizingSet) OriginalToeTailBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.OriginalConfigModel, ss.originalBoneCache, pmx.TOE_T.StringFromDirection(direction))
 }
@@ -280,6 +284,10 @@ func (ss *SizingSet) SizingAnkleDGroundBone(direction pmx.BoneDirection) *pmx.Bo
 
 func (ss *SizingSet) SizingToeIkBone(direction pmx.BoneDirection) *pmx.Bone {
 	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_IK.StringFromDirection(direction))
+}
+
+func (ss *SizingSet) SizingToeExBone(direction pmx.BoneDirection) *pmx.Bone {
+	return ss.getOrFetchBone(ss.SizingConfigModel, ss.sizingBoneCache, pmx.TOE_EX.StringFromDirection(direction))
 }
 
 func (ss *SizingSet) SizingToeTailBone(direction pmx.BoneDirection) *pmx.Bone {
