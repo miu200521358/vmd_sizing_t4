@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"fmt"
-	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"runtime"
+
+	"github.com/miu200521358/vmd_sizing_t4/pkg/domain"
 
 	"github.com/miu200521358/mlib_go/pkg/config/merr"
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"

@@ -1,9 +1,10 @@
 package ui
 
 import (
-	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"path/filepath"
 	"strconv"
+
+	"github.com/miu200521358/vmd_sizing_t4/pkg/domain"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mconfig"
 	"github.com/miu200521358/mlib_go/pkg/config/merr"

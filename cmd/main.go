@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"miu200521358/vmd_sizing_t4/pkg/ui"
+	"github.com/miu200521358/vmd_sizing_t4/pkg/ui"
 
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/miu200521358/walk/pkg/declarative"

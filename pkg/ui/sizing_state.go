@@ -3,10 +3,11 @@ package ui
 import (
 	"encoding/json"
 	"fmt"
-	"miu200521358/vmd_sizing_t4/pkg/domain"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/miu200521358/vmd_sizing_t4/pkg/domain"
 
 	"github.com/miu200521358/mlib_go/pkg/config/mi18n"
 	"github.com/miu200521358/mlib_go/pkg/config/mlog"
