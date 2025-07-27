@@ -22,6 +22,9 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 	sizingState := new(SizingState)
 
 	sizingState.Player = widget.NewMotionPlayer()
+	sizingState.Player.SetOnChangePlayingPre(func(playing bool) {
+		sizingState.SetSizingOptionEnabled(!playing)
+	})
 
 	sizingState.OutputMotionPicker = widget.NewVmdSaveFilePicker(
 		mi18n.T("出力モーション(Vmd)"),
@@ -258,9 +261,6 @@ func NewSizingPage(mWidgets *controller.MWidgets) declarative.TabPage {
 		sizingState.AdoptSizingCheck.CheckStateChanged().Attach(func() {
 			changeSizingCheck(mWidgets.Window(), sizingState)
 		})
-	})
-	mWidgets.SetOnChangePlaying(func(playing bool) {
-		sizingState.SetSizingOptionEnabled(!playing)
 	})
 
 	return declarative.TabPage{
